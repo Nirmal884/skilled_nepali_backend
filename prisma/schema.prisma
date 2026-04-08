@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String         @id @default(uuid())
+  email           String         @unique
+  fullName        String
+  password        String
+  country         Int
+  role            Role           @default(JOBSEEKER)
+  jobCategoryId   String?
+  jobCategory     JobCategory?   @relation(fields: [jobCategoryId], references: [id])
+  applicantTypeId String?
+  applicantType   ApplicantType? @relation(fields: [applicantTypeId], references: [id])
+  experience      Float?
+  pastExperience  String?
+  resume          String?
+  companyName     String?
+  designation     String?
+  companyLogo     String?
+  centreName      String?
+  centreLogo      String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+
+  @@map("user_profiles")
+}
+
+model JobCategory {
+  id           String    @id @default(uuid())
+  categoryName String    @unique
+  userProfiles User[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  @@map("job_categories")
+}
+
+model ApplicantType {
+  id                String    @id @default(uuid())
+  applicantTypeName String    @unique
+  userProfiles      User[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  @@map("applicant_types")
+}
+
+enum Role {
+  JOBSEEKER
+  EMPLOYER
+  TRAINING_CENTRE
+}
