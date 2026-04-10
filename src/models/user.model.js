@@ -12,6 +12,7 @@ const UserModel = {
         const userList = await prisma.user.findFirst({
             where: { email: email, deletedAt: null }
         })
+        // console.log(userList, "UserList")
         return userList;
     }
 }
