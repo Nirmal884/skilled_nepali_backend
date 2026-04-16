@@ -32,6 +32,7 @@ model User {
   centreName      String?
   centreLogo      String?
   jobs            Jobs[]
+  isAdminApproved Boolean        @default(false)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   deletedAt       DateTime?
@@ -96,6 +97,7 @@ enum Role {
   JOBSEEKER
   EMPLOYER
   TRAINING_CENTRE
+  ADMIN
 }
 
 enum JobType {

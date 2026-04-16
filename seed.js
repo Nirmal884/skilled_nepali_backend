@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { PrismaPg } = require('@prisma/adapter-pg');
+const bcrypt = require('bcryptjs');
 process.loadEnvFile('.env');
 
 const adapter = new PrismaPg({
@@ -27,7 +28,7 @@ const jobCategories = [
     { categoryName: 'Other' },
 ];
 
-async function main() {
+async function seedJobCategories() {
     console.log('Seeding job categories...');
     if (prisma.jobCategory) {
         const result = await prisma.jobCategory.createMany({
@@ -36,18 +37,9 @@ async function main() {
         });
         console.log(`✅ Seeded ${result.count} job categories.`);
     } else {
-        console.error('❌ Error: prisma.jobCategory is undefined. Please check your Prisma schema.');
+        console.error('❌ Error: prisma.jobCategory is undefined.');
     }
 }
-
-// main()
-//     .catch((e) => {
-//         console.error('❌ Seeding failed:', e);
-//         process.exit(1);
-//     })
-//     .finally(async () => {
-//         await prisma.$disconnect();
-//     });
 
 const applicantTypes = [
     { applicantTypeName: 'Fresh Graduate / Entry Level' },
@@ -63,7 +55,7 @@ const applicantTypes = [
 ]
 
 
-async function applicantType() {
+async function seedApplicantTypes() {
     console.log('Seeding Applicant Type...');
     if (prisma.applicantType) {
         const result = await prisma.applicantType.createMany({
@@ -72,15 +64,45 @@ async function applicantType() {
         });
         console.log(`✅ Seeded ${result.count} Applicant Type.`);
     } else {
-        console.error('❌ Error: prisma.applicantType is undefined. Please check your Prisma schema.');
+        console.error('❌ Error: prisma.applicantType is undefined.');
     }
 }
 
-applicantType()
-    .catch((e) => {
+async function seedAdmin() {
+    console.log('Seeding Admin user...');
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const adminData = {
+        email: 'admin@skillednepali.com',
+        fullName: 'System Administrator',
+        password: hashedPassword,
+        country: 1,
+        role: 'ADMIN',
+    };
+
+    try {
+        const admin = await prisma.user.upsert({
+            where: { email: adminData.email },
+            update: {},
+            create: adminData,
+        });
+        console.log(`✅ Admin user ${admin.email} is ready.`);
+    } catch (error) {
+        console.error('❌ Error seeding Admin:', error);
+    }
+}
+
+async function runSeed() {
+    try {
+        // await seedJobCategories();
+        // await seedApplicantTypes();
+        await seedAdmin();
+        console.log('🚀 Seeding completed successfully!');
+    } catch (e) {
         console.error('❌ Seeding failed:', e);
         process.exit(1);
-    })
-    .finally(async () => {
+    } finally {
         await prisma.$disconnect();
-    });
+    }
+}
+
+runSeed();
