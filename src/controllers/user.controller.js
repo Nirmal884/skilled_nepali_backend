@@ -38,6 +38,18 @@ const UserController = {
         return res.status(200).json({ success: true, statusCode: 200, message: "Successfully logged out" });
     },
 
+    async getAllUsers(req, res) {
+        try {
+            const { role, search, page, limit } = req.query;
+            const { users, count, message } = await UserService.getAllUsers(role, search, page, limit);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: { users, count } });
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
+
     async updateLogo(req, res) {
         try {
             const { id: userId, role } = req.user;

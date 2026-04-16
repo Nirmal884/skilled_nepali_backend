@@ -8,7 +8,7 @@ const { authenticate } = require('../middleware/auth.middleware');
 const JobController = require('../controllers/job.controller');
 const router = express.Router();
 
-// user section routes
+// users routes
 router.post("/create-user", upload.fields([
     { name: 'resume', maxCount: 1 },
     { name: 'companyLogo', maxCount: 1 },
@@ -22,6 +22,7 @@ router.post("/update-logo", authenticate, upload.fields([
     { name: 'companyLogo', maxCount: 1 },
     { name: 'centreLogo', maxCount: 1 }
 ]), UserController.updateLogo);
+router.get("/get-all-users", authenticate, UserController.getAllUsers);
 
 // job category routes
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);

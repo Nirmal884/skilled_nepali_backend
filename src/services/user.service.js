@@ -99,6 +99,11 @@ const UserService = {
         }
     },
 
+    async getAllUsers(role, search, page, limit) {
+        const { users, count } = await UserModel.getAllUsers(role, search, Number(page), Number(limit));
+        return { users, count, message: "Users fetched successfully" };
+    },
+
     async verifyPhone(phone) {
         const user = await UserModel.verifyPhone(phone);
         if (!user) {

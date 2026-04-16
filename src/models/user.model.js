@@ -56,6 +56,34 @@ const UserModel = {
         return userList;
     },
 
+    async getAllUsers(role, search, page, limit) {
+
+        const roleCondition = role === 'ADMIN'
+            ? { not: 'ADMIN' }
+            : role;
+
+        const whereClause = {
+            deletedAt: null,
+            role: roleCondition
+        };
+
+        if (search) {
+            whereClause.OR = [
+                { fullName: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search, mode: 'insensitive' } },
+                { companyName: { contains: search, mode: 'insensitive' } },
+                { centreName: { contains: search, mode: 'insensitive' } },
+            ];
+        }
+
+        const [users, count] = await prisma.$transaction([
+            prisma.user.findMany({ where: whereClause, skip: page ? (page - 1) * limit : 0, take: limit ? limit : 10 }),
+            prisma.user.count({ where: whereClause })
+        ]);
+        return { users, count };
+    },
+
     async verifyPhone(phone) {
         const userList = await prisma.user.findFirst({
             where: { phone: phone, deletedAt: null }
