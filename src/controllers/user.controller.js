@@ -17,9 +17,69 @@ const UserController = {
         try {
             const { email, password } = req.body;
             const { message, token, user } = await UserService.login(email, password);
-            return res.status(200).json({ success: true, statusCode: 200, message: message, data: { token, user } });
+
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Lax', // Use Lax for localhost cross-port
+                maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            });
+
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: { user } });
         } catch (error) {
             console.error('Error logging in:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
+
+    async logout(req, res) {
+        res.clearCookie('token');
+        return res.status(200).json({ success: true, statusCode: 200, message: "Successfully logged out" });
+    },
+
+    async updateLogo(req, res) {
+        try {
+            const { id: userId, role } = req.user;
+            const files = req.files;
+            const { updatedUser, message } = await UserService.updateLogo(userId, role, files);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: updatedUser });
+        } catch (error) {
+            console.error('Error updating logo:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
+
+    async getMe(req, res) {
+        try {
+            const user = req.user;
+            return res.status(200).json({ success: true, statusCode: 200, data: { user } });
+        } catch (error) {
+            console.error('Error fetching user:', error);
+            return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error' });
+        }
+    },
+
+    async generateToken(req, res) {
+        try {
+
+        } catch (error) {
+            console.log("Error occoured", error)
+            const statusCode = error.statusCode || 500
+            return res.status(statusCode).json({
+                success: false, statusCode: statusCode, message: error.message
+            })
+        }
+    },
+
+    async verifyPhone(req, res) {
+        try {
+            const { phone } = req.body;
+            const { message, user } = await UserService.verifyPhone(phone);
+            return res.status(200).json({ success: true, statusCode: 201, message: message, data: user });
+        } catch (error) {
+            console.error('Error verifying phone:', error);
             const statusCode = error.statusCode || 500;
             return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
         }

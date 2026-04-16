@@ -61,7 +61,11 @@ const UserService = {
             id: user.id,
             email: user.email,
             role: user.role,
-            name: user.fullName
+            name: user.fullName,
+            companyName: user.companyName,
+            companyLogo: user.companyLogo,
+            centreName: user.centreName,
+            centreLogo: user.centreLogo
         }, process.env.JWT_SECRET, { expiresIn: '24h' })
 
         return ({
@@ -71,10 +75,40 @@ const UserService = {
                 id: user.id,
                 email: user.email,
                 role: user.role,
-                name: user.fullName
+                name: user.fullName,
+                companyName: user.companyName,
+                companyLogo: user.companyLogo,
+                centreName: user.centreName,
+                centreLogo: user.centreLogo,
+
             }
         })
 
+    },
+
+    async updateLogo(userId, role, files) {
+        if (files.companyLogo) {
+            const uploadedLogo = await uploadToS3(files.companyLogo[0].buffer, files.companyLogo[0].originalname, files.companyLogo[0].mimetype, "images");
+            const updatedUser = await UserModel.updateLogo(userId, role, uploadedLogo.Location);
+            return { updatedUser, message: "Logo updated successfully" };
+        }
+        if (files.centreLogo) {
+            const uploadedLogo = await uploadToS3(files.centreLogo[0].buffer, files.centreLogo[0].originalname, files.centreLogo[0].mimetype, "images");
+            const updatedUser = await UserModel.updateLogo(userId, role, uploadedLogo.Location);
+            return { updatedUser, message: "Logo updated successfully" };
+        }
+    },
+
+    async verifyPhone(phone) {
+        const user = await UserModel.verifyPhone(phone);
+        if (!user) {
+            const error = new Error("User not found")
+            error.statusCode = 404;
+            throw error;
+        } else if (user) {
+            console.log(user, "USER")
+        }
+        return { user, message: "Phone verified successfully" };
     }
 
 }

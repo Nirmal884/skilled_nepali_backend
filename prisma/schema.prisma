@@ -18,6 +18,7 @@ model User {
   password        String
   country         Int
   role            Role           @default(JOBSEEKER)
+  phone           String?        @default("")
   jobCategoryId   String?
   jobCategory     JobCategory?   @relation(fields: [jobCategoryId], references: [id])
   applicantTypeId String?
@@ -30,6 +31,7 @@ model User {
   companyLogo     String?
   centreName      String?
   centreLogo      String?
+  jobs            Jobs[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   deletedAt       DateTime?
@@ -41,6 +43,7 @@ model JobCategory {
   id           String    @id @default(uuid())
   categoryName String    @unique
   userProfiles User[]
+  jobs         Jobs[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
@@ -59,8 +62,51 @@ model ApplicantType {
   @@map("applicant_types")
 }
 
+model Jobs {
+  id                  String              @id @default(uuid())
+  title               String
+  type                JobType
+  country             Int
+  location            String
+  jobCategoryId       String
+  jobCategory         JobCategory         @relation(fields: [jobCategoryId], references: [id])
+  minSalary           Float               @default(0)
+  maxSalary           Float
+  currency            String              @default("QAR")
+  experience          String?
+  description         String?
+  requirements        String[]            @default([])
+  benefits            String[]            @default([])
+  responsibilities    String[]            @default([])
+  deadLine            DateTime?
+  isUrgent            Boolean             @default(false)
+  noOfOpenings        Int                 @default(1)
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  isAdminApproved     Boolean             @default(false)
+  adminApprovalStatus AdminApprovalStatus @default(PENDING)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  deletedAt           DateTime?
+
+  @@map("jobs")
+}
+
 enum Role {
   JOBSEEKER
   EMPLOYER
   TRAINING_CENTRE
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum AdminApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
