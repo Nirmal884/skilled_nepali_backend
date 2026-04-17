@@ -6,6 +6,7 @@ const UserController = require('../controllers/user.controller');
 const loginLimiter = require('../middleware/ratelimiter');
 const { authenticate } = require('../middleware/auth.middleware');
 const JobController = require('../controllers/job.controller');
+const AdminDashboardController = require('../controllers/admin.controller');
 const router = express.Router();
 
 // users routes
@@ -42,5 +43,8 @@ router.post('/delete-job-request', authenticate, JobController.deleteJobRequest)
 router.get('/list-delete-requested-jobs', authenticate, JobController.listDeleteRequestedJobs)
 router.post('/approve-job-deletion', authenticate, JobController.approveDeletion)
 router.post('/cancel-job-deletion-request', authenticate, JobController.cancelDeletionRequest)
+
+// admin router
+router.get('/get-admin-dashboard-stats', authenticate, AdminDashboardController.getAdminDashboardStats)
 
 module.exports = router;
