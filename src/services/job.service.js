@@ -17,8 +17,8 @@ const JobService = {
         return { jobs, totalJobs, message: "Jobs fetched successfully" }
     },
 
-    async listJobForDashboard(page, limit) {
-        const { jobs, totalJobs, activeJobs, pendingJobs } = await JobModel.listJobForDashboard(Number(page), Number(limit))
+    async listJobForDashboard(page, limit, userId) {
+        const { jobs, totalJobs, activeJobs, pendingJobs } = await JobModel.listJobForDashboard(Number(page), Number(limit), userId)
         return { jobs, totalJobs, activeJobs, pendingJobs, message: "Jobs fetched successfully" }
     },
 

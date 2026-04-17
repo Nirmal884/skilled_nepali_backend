@@ -62,10 +62,11 @@ const JobModel = {
         return { jobs, totalJobs };
     },
 
-    async listJobForDashboard(page, limit) {
+    async listJobForDashboard(page, limit, userId) {
         const jobs = await prisma.jobs.findMany({
             where: {
                 deletedAt: null,
+                userId
             },
             select: {
                 id: true,
@@ -84,20 +85,23 @@ const JobModel = {
         const totalJobs = await prisma.jobs.count({
             where: {
                 deletedAt: null,
+                userId
             }
         })
 
         const activeJobs = await prisma.jobs.count({
             where: {
                 deletedAt: null,
-                adminApprovalStatus: "APPROVED"
+                adminApprovalStatus: "APPROVED",
+                userId
             }
         })
 
         const pendingJobs = await prisma.jobs.count({
             where: {
                 deletedAt: null,
-                adminApprovalStatus: "PENDING"
+                adminApprovalStatus: "PENDING",
+                userId
             }
         })
 

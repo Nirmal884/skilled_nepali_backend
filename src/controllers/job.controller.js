@@ -42,8 +42,8 @@ const JobController = {
 
     async listJobForDashboard(req, res) {
         try {
-            const { page, limit } = req.query;
-            const { jobs, totalJobs, activeJobs, pendingJobs, message } = await JobService.listJobForDashboard(Number(page), Number(limit))
+            const { page, limit, userId } = req.query;
+            const { jobs, totalJobs, activeJobs, pendingJobs, message } = await JobService.listJobForDashboard(Number(page), Number(limit), userId)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
