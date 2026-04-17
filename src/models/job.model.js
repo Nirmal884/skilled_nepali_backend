@@ -39,11 +39,23 @@ const JobModel = {
     },
 
     async listAllJobs(userId, status, page, limit) {
+        const where = {
+            deletedAt: null,
+        }
+        if (userId) {
+            where.userId = userId
+        }
+        if (status) {
+            where.adminApprovalStatus = status
+        }
         const jobs = await prisma.jobs.findMany({
-            where: {
-                userId: userId,
-                deletedAt: null,
-                adminApprovalStatus: status
+            where: where,
+            include: {
+                user: {
+                    select: {
+                        companyName: true
+                    }
+                }
             },
             orderBy: {
                 createdAt: 'desc'
@@ -53,11 +65,7 @@ const JobModel = {
         })
 
         const totalJobs = await prisma.jobs.count({
-            where: {
-                userId: userId,
-                deletedAt: null,
-                adminApprovalStatus: status
-            }
+            where: where
         })
         return { jobs, totalJobs };
     },
