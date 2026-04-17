@@ -50,6 +50,18 @@ const UserController = {
         }
     },
 
+    async deleteUser(req, res) {
+        try {
+            const { id: userId } = req.params;
+            const { deletedUser, message } = await UserService.deleteUser(userId);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: deletedUser });
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
+
     async updateLogo(req, res) {
         try {
             const { id: userId, role } = req.user;

@@ -84,6 +84,18 @@ const UserModel = {
         return { users, count };
     },
 
+    async deleteUser(userId) {
+        const deletedUser = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                deletedAt: new Date()
+            }
+        })
+        return deletedUser;
+    },
+
     async verifyPhone(phone) {
         const userList = await prisma.user.findFirst({
             where: { phone: phone, deletedAt: null }

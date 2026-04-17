@@ -104,6 +104,11 @@ const UserService = {
         return { users, count, message: "Users fetched successfully" };
     },
 
+    async deleteUser(userId) {
+        const deletedUser = await UserModel.deleteUser(userId);
+        return { deletedUser, message: "User deleted successfully" };
+    },
+
     async verifyPhone(phone) {
         const user = await UserModel.verifyPhone(phone);
         if (!user) {

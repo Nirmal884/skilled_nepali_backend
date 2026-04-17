@@ -23,6 +23,7 @@ router.post("/update-logo", authenticate, upload.fields([
     { name: 'centreLogo', maxCount: 1 }
 ]), UserController.updateLogo);
 router.get("/get-all-users", authenticate, UserController.getAllUsers);
+router.delete("/delete-user/:id", authenticate, UserController.deleteUser);
 
 // job category routes
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);
