@@ -101,6 +101,87 @@ const JobController = {
                 message: error?.message || "Internal server error"
             })
         }
+    },
+
+    async deleteJobRequest(req, res) {
+        try {
+            const { jobId, reason } = req.body;
+            const { jobResponse, message } = await JobService.deleteJobRequest(jobId, reason)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: jobResponse,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
+    },
+
+    async listDeleteRequestedJobs(req, res) {
+        try {
+            const { page, limit } = req.query;
+            const { jobs, totalJobs, message } = await JobService.listDeleteRequestedJobs(Number(page), Number(limit))
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: jobs,
+                count: totalJobs,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
+    },
+
+    async approveDeletion(req, res) {
+        try {
+            const { jobId } = req.body;
+            const { jobResponse, message } = await JobService.approveDeletion(jobId)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: jobResponse,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
+    },
+
+    async cancelDeletionRequest(req, res) {
+        try {
+            const { jobId } = req.body;
+            const { jobResponse, message } = await JobService.cancelDeletionRequest(jobId)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: jobResponse,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
     }
 }
 

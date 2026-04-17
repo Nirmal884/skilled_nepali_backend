@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "jobs" ADD COLUMN     "deleteRequestedOn" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;

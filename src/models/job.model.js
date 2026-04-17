@@ -41,6 +41,10 @@ const JobModel = {
     async listAllJobs(userId, status, page, limit) {
         const where = {
             deletedAt: null,
+            OR: [
+                { deletionReason: "" },
+                { deletionReason: null }
+            ]
         }
         if (userId) {
             where.userId = userId
@@ -71,62 +75,53 @@ const JobModel = {
     },
 
     async listJobForDashboard(page, limit, userId) {
-        const jobs = await prisma.jobs.findMany({
-            where: {
-                deletedAt: null,
-                userId
-            },
-            select: {
-                id: true,
-                title: true,
-                type: true,
-                createdAt: true,
-                adminApprovalStatus: true,
-            },
-            orderBy: {
-                createdAt: 'desc'
-            },
-            skip: (page - 1) * limit,
-            take: limit
-        })
+        const skip = (page - 1) * limit;
 
-        const totalJobs = await prisma.jobs.count({
-            where: {
-                deletedAt: null,
-                userId
-            }
-        })
+        const whereCondition = {
+            deletedAt: null,
+            userId,
+            OR: [
+                { deletionReason: "" },
+                { deletionReason: null }
+            ]
+        };
 
-        const activeJobs = await prisma.jobs.count({
-            where: {
-                deletedAt: null,
-                adminApprovalStatus: "APPROVED",
-                userId
-            }
-        })
+        const [jobs, totalJobs, activeJobs, pendingJobs] = await prisma.$transaction([
+            prisma.jobs.findMany({
+                where: whereCondition,
+                select: {
+                    id: true,
+                    title: true,
+                    type: true,
+                    createdAt: true,
+                    adminApprovalStatus: true,
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip,
+                take: limit
+            }),
 
-        const pendingJobs = await prisma.jobs.count({
-            where: {
-                deletedAt: null,
-                adminApprovalStatus: "PENDING",
-                userId
-            }
-        })
+            prisma.jobs.count({
+                where: whereCondition
+            }),
 
-        // const totalApplications = await prisma.applications.count({
-        //     where: {
-        //         deletedAt: null,
-        //     }
-        // })
+            prisma.jobs.count({
+                where: {
+                    ...whereCondition,
+                    adminApprovalStatus: "APPROVED"
+                }
+            }),
 
-        // const todaysApplications = await prisma.applications.count({
-        //     where: {
-        //         deletedAt: null,
-        //         createdAt: {
-        //             gte: new Date(new Date().setHours(0, 0, 0, 0))
-        //         }
-        //     }
-        // })
+            prisma.jobs.count({
+                where: {
+                    ...whereCondition,
+                    adminApprovalStatus: "PENDING"
+                }
+            })
+        ]);
+
         return { jobs, totalJobs, activeJobs, pendingJobs };
     },
 
@@ -146,13 +141,101 @@ const JobModel = {
         const job = await prisma.jobs.findUnique({
             where: {
                 id: jobId,
-                deletedAt: null
+                deletedAt: null,
+                OR: [
+                    { deletionReason: "" },
+                    { deletionReason: null }
+                ]
             },
             include: {
                 jobCategory: true
             }
         })
         return job;
+    },
+
+    async deleteJobRequest(jobId, reason) {
+        const jobData = await prisma.jobs.update({
+            where: {
+                id: jobId
+            },
+            data: {
+                deletionReason: reason,
+                deleteRequestedOn: new Date()
+            }
+        })
+
+        return jobData;
+    },
+
+    async listDeleteRequestedJobs(page, limit) {
+        const skip = page ? (page - 1) * limit : 0;
+        const take = limit ? limit : 10;
+
+        const [jobs, totalJobs] = await prisma.$transaction([
+            prisma.jobs.findMany({
+                where: {
+                    deletedAt: null,
+                    AND: [
+                        { deletionReason: { not: null } },
+                        { deletionReason: { not: "" } }
+                    ]
+                },
+                skip,
+                take,
+                select: {
+                    id: true,
+                    title: true,
+                    deletionReason: true,
+                    createdAt: true,
+                    location: true,
+                    deadLine: true,
+                    adminApprovalStatus: true,
+                    deleteRequestedOn: true,
+                    user: {
+                        select: {
+                            companyName: true,
+                            fullName: true
+                        }
+                    }
+                }
+            }),
+            prisma.jobs.count({
+                where: {
+                    deletedAt: null,
+                    AND: [
+                        { deletionReason: { not: null } },
+                        { deletionReason: { not: "" } }
+                    ]
+                }
+            })
+        ]);
+
+        return { jobs, totalJobs };
+    },
+
+    async approveDeletion(jobId) {
+        const jobData = await prisma.jobs.update({
+            where: {
+                id: jobId
+            },
+            data: {
+                deletedAt: new Date()
+            }
+        });
+        return jobData;
+    },
+
+    async cancelDeletionRequest(jobId) {
+        const jobData = await prisma.jobs.update({
+            where: {
+                id: jobId
+            },
+            data: {
+                deletionReason: ""
+            }
+        });
+        return jobData;
     }
 }
 

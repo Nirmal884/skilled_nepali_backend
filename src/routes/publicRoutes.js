@@ -38,5 +38,9 @@ router.get('/get-all-jobs', authenticate, JobController.listAllJobs)
 router.get('/get-job-for-dashboard', authenticate, JobController.listJobForDashboard)
 router.get('/get-job/:id', authenticate, JobController.getJobById)
 router.post('/admin-approve-job', authenticate, JobController.adminApproveJob)
+router.post('/delete-job-request', authenticate, JobController.deleteJobRequest)
+router.get('/list-delete-requested-jobs', authenticate, JobController.listDeleteRequestedJobs)
+router.post('/approve-job-deletion', authenticate, JobController.approveDeletion)
+router.post('/cancel-job-deletion-request', authenticate, JobController.cancelDeletionRequest)
 
 module.exports = router;

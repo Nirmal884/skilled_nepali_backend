@@ -25,6 +25,26 @@ const JobService = {
     async adminApproveJob(jobId, status) {
         const jobResponse = await JobModel.adminApproveJob(jobId, status)
         return { jobResponse, message: "Job approved successfully" }
+    },
+
+    async deleteJobRequest(jobId, reason) {
+        const jobResponse = await JobModel.deleteJobRequest(jobId, reason)
+        return { jobResponse, message: "Job deletion request sent successfully" }
+    },
+
+    async listDeleteRequestedJobs(page, limit) {
+        const { jobs, totalJobs } = await JobModel.listDeleteRequestedJobs(page, limit)
+        return { jobs, totalJobs, message: "Delete requested jobs fetched successfully" }
+    },
+
+    async approveDeletion(jobId) {
+        const jobResponse = await JobModel.approveDeletion(jobId)
+        return { jobResponse, message: "Job deletion approved successfully" }
+    },
+
+    async cancelDeletionRequest(jobId) {
+        const jobResponse = await JobModel.cancelDeletionRequest(jobId)
+        return { jobResponse, message: "Job deletion request cancelled successfully" }
     }
 }
 

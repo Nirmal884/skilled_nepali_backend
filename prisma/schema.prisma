@@ -64,31 +64,34 @@ model ApplicantType {
 }
 
 model Jobs {
-  id                  String              @id @default(uuid())
-  title               String
-  type                JobType
-  country             Int
-  location            String
-  jobCategoryId       String
-  jobCategory         JobCategory         @relation(fields: [jobCategoryId], references: [id])
-  minSalary           Float               @default(0)
-  maxSalary           Float
-  currency            String              @default("QAR")
-  experience          String?
-  description         String?
-  requirements        String[]            @default([])
-  benefits            String[]            @default([])
-  responsibilities    String[]            @default([])
-  deadLine            DateTime?
-  isUrgent            Boolean             @default(false)
-  noOfOpenings        Int                 @default(1)
-  userId              String
-  user                User                @relation(fields: [userId], references: [id])
-  isAdminApproved     Boolean             @default(false)
-  adminApprovalStatus AdminApprovalStatus @default(PENDING)
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  deletedAt           DateTime?
+  id                      String              @id @default(uuid())
+  title                   String
+  type                    JobType
+  country                 Int
+  location                String
+  jobCategoryId           String
+  jobCategory             JobCategory         @relation(fields: [jobCategoryId], references: [id])
+  minSalary               Float               @default(0)
+  maxSalary               Float
+  currency                String              @default("QAR")
+  experience              String?
+  description             String?
+  requirements            String[]            @default([])
+  benefits                String[]            @default([])
+  responsibilities        String[]            @default([])
+  deadLine                DateTime?
+  isUrgent                Boolean             @default(false)
+  noOfOpenings            Int                 @default(1)
+  userId                  String
+  user                    User                @relation(fields: [userId], references: [id])
+  isAdminApprovedDeletion Boolean             @default(false)
+  adminApprovalStatus     AdminApprovalStatus @default(PENDING)
+  deletionReason          String?             @default("")
+  deleteRequestedOn       DateTime?           @default(now())
+  adminApprovedOn         DateTime?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  deletedAt               DateTime?
 
   @@map("jobs")
 }
