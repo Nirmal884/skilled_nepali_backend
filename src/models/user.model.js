@@ -18,8 +18,9 @@ const UserModel = {
             centreName: data.centreName,
             centreLogo: data.centreLogo,
         };
-        if (data.jobCategoryId) {
-            filteredData.jobCategory = { connect: { id: data.jobCategoryId } };
+        if (data.jobCategoryIds) {
+            const ids = Array.isArray(data.jobCategoryIds) ? data.jobCategoryIds : [data.jobCategoryIds];
+            filteredData.jobCategories = { connect: ids.map(id => ({ id })) };
         }
         if (data.applicantTypeId) {
             filteredData.applicantType = { connect: { id: data.applicantTypeId } };

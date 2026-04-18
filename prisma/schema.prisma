@@ -19,8 +19,7 @@ model User {
   country         Int
   role            Role           @default(JOBSEEKER)
   phone           String?        @default("")
-  jobCategoryId   String?
-  jobCategory     JobCategory?   @relation(fields: [jobCategoryId], references: [id])
+  jobCategories   JobCategory[]  @relation("UserJobCategories")
   applicantTypeId String?
   applicantType   ApplicantType? @relation(fields: [applicantTypeId], references: [id])
   experience      Float?
@@ -43,7 +42,7 @@ model User {
 model JobCategory {
   id           String    @id @default(uuid())
   categoryName String    @unique
-  userProfiles User[]
+  users        User[]    @relation("UserJobCategories")
   jobs         Jobs[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -55,7 +54,7 @@ model JobCategory {
 model ApplicantType {
   id                String    @id @default(uuid())
   applicantTypeName String    @unique
-  userProfiles      User[]
+  users             User[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   deletedAt         DateTime?
