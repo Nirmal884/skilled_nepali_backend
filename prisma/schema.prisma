@@ -12,32 +12,86 @@ datasource db {
 }
 
 model User {
-  id              String         @id @default(uuid())
-  email           String         @unique
-  fullName        String
-  password        String
-  country         Int
-  role            Role           @default(JOBSEEKER)
-  phone           String?        @default("")
-  jobCategories   JobCategory[]  @relation("UserJobCategories")
-  applicantTypeId String?
-  applicantType   ApplicantType? @relation(fields: [applicantTypeId], references: [id])
-  experience      Float?
-  pastExperience  String?
-  resume          String?
-  companyName     String?
-  designation     String?
-  companyLogo     String?
-  centreName      String?
-  centreLogo      String?
-  jobs            Jobs[]
-  skills          Skill[]        @relation("UserSkills")
-  isAdminApproved Boolean        @default(false)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  deletedAt       DateTime?
+  id                String           @id @default(uuid())
+  email             String           @unique
+  fullName          String
+  title             String?
+  profilePicture    String?
+  bio               String?
+  password          String
+  country           Int
+  role              Role             @default(JOBSEEKER)
+  phone             String?          @default("")
+  jobCategories     JobCategory[]    @relation("UserJobCategories")
+  applicantTypeId   String?
+  applicantType     ApplicantType?   @relation(fields: [applicantTypeId], references: [id])
+  experience        Float?
+  pastExperience    String?
+  resume            String?
+  companyName       String?
+  designation       String?
+  companyLogo       String?
+  centreName        String?
+  centreLogo        String?
+  jobs              Jobs[]
+  skills            Skill[]          @relation("UserSkills")
+  isProfileComplete Boolean          @default(false)
+  workExperiences   WorkExperience[]
+  educations        Education[]
+  certifications    Certifications[]
+  isAdminApproved   Boolean          @default(false)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  deletedAt         DateTime?
 
   @@map("user_profiles")
+}
+
+model WorkExperience {
+  id          String    @id @default(uuid())
+  userId      String
+  title       String
+  companyName String
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("work_experiences")
+}
+
+model Education {
+  id           String    @id @default(uuid())
+  userId       String
+  fieldOfStudy String?
+  institution  String?
+  startDate    DateTime?
+  endDate      DateTime?
+  isCompleted  Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@map("educations")
+}
+
+model Certifications {
+  id                String    @id @default(uuid())
+  userId            String
+  certificationName String?
+  issuingAuthority  String?
+  issueDate         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  user              User      @relation(fields: [userId], references: [id])
+
+  @@map("certifications")
 }
 
 model JobCategory {

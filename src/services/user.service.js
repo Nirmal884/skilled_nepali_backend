@@ -119,7 +119,22 @@ const UserService = {
             console.log(user, "USER")
         }
         return { user, message: "Phone verified successfully" };
+    },
+
+    async getUserProfile(userId) {
+        const user = await UserModel.getUserProfile(userId);
+        return { user, message: "User profile fetched successfully" };
+    },
+
+    async updateProfile(userId, data) {
+        const updatedUser = await UserModel.updateProfile(userId, data);
+        return { updatedUser, message: "Profile updated successfully" };
+    },
+    async createOrUpdateExperience(userId, data) {
+        const experience = await UserModel.createOrUpdateExperience(userId, data);
+        return { experience, message: "Experience created or updated successfully" };
     }
+
 
 }
 

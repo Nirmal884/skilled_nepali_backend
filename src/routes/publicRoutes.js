@@ -25,6 +25,9 @@ router.post("/update-logo", authenticate, upload.fields([
 ]), UserController.updateLogo);
 router.get("/get-all-users", authenticate, UserController.getAllUsers);
 router.delete("/delete-user/:id", authenticate, UserController.deleteUser);
+router.get("/get-user-profile/:id", authenticate, UserController.getUserProfile);
+router.put("/update-profile/:id", authenticate, UserController.updateProfile);
+router.post("/create-or-update-experience/:id", authenticate, UserController.createOrUpdateExperience);
 
 // job category routes
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);

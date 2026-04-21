@@ -107,6 +107,71 @@ const UserController = {
             const statusCode = error.statusCode || 500;
             return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
         }
+    },
+
+    async getUserProfile(req, res) {
+        try {
+            const { id: userId } = req.params;
+            const { user, message } = await UserService.getUserProfile(userId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: user
+            });
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
+    },
+
+    async updateProfile(req, res) {
+        try {
+            const { id: userId } = req.params;
+            const data = req.body;
+            const { updatedUser, message } = await UserService.updateProfile(userId, data);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: updatedUser
+            });
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
+    },
+
+    async createOrUpdateExperience(req, res) {
+        try {
+            const { id: userId } = req.params;
+            const data = req.body;
+            const { experience, message } = await UserService.createOrUpdateExperience(userId, data);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: experience
+            });
+        } catch (error) {
+            console.error('Error creating or updating experience:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
     }
 }
 

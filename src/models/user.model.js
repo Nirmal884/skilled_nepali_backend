@@ -1,4 +1,5 @@
-const prisma = require("../config/db")
+const prisma = require("../config/db");
+const { countryOptions, gccCountryOptions } = require("../data/countryData");
 
 const UserModel = {
     async createUser(data) {
@@ -24,6 +25,10 @@ const UserModel = {
         }
         if (data.applicantTypeId) {
             filteredData.applicantType = { connect: { id: data.applicantTypeId } };
+        }
+
+        if (data.role === "JOBSEEKER") {
+            filteredData.isAdminApproved = true;
         }
 
         const userData = await prisma.user.create({
@@ -104,7 +109,128 @@ const UserModel = {
         console.log(userList, "PHONE VERIFY")
         return userList;
 
-    }
+    },
+
+    async getUserProfile(userId) {
+        const allCountries = [...countryOptions, ...gccCountryOptions];
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            include: {
+                jobCategories: {
+                    select: {
+                        id: true,
+                        categoryName: true
+                    },
+                },
+                applicantType: {
+                    select: {
+                        id: true,
+                        applicantTypeName: true
+                    }
+                },
+                educations: {
+                    select: {
+                        id: true,
+                        institution: true,
+                        fieldOfStudy: true,
+                        startDate: true,
+                        endDate: true,
+                        isCompleted: true,
+                    }
+                },
+                workExperiences: {
+                    select: {
+                        id: true,
+                        title: true,
+                        companyName: true,
+                        startDate: true,
+                        endDate: true,
+                        isCurrent: true,
+                        description: true
+                    }
+                },
+                certifications: {
+                    select: {
+                        id: true,
+                        certificationName: true,
+                        issuingAuthority: true,
+                        issueDate: true,
+                    }
+                },
+                skills: {
+                    select: {
+                        id: true,
+                        skillName: true
+                    }
+                }
+            }
+        });
+
+        if (!user) return null;
+
+        const mappedUser = {
+            ...user,
+            country: allCountries.find(item => item.value === user.country)?.label || user.country,
+        };
+
+        delete mappedUser.password;
+        delete mappedUser.applicantTypeId;
+
+        return mappedUser;
+    },
+
+    async updateProfile(userId, data) {
+        const updateUser = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                ...(data.fullName && { fullName: data.fullName }),
+                ...(data.title && { title: data.title }),
+                ...(data.bio && { bio: data.bio }),
+                ...(data.email && { email: data.email }),
+                ...(data.phone && { phone: data.phone }),
+            }
+        })
+        return updateUser;
+    },
+
+    async createOrUpdateExperience(userId, data) {
+        const { id, title, companyName, startDate, endDate, isCurrent, description } = data;
+        if (id) {
+            const updatedExperience = await prisma.workExperience.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    title: title,
+                    companyName: companyName,
+                    startDate: startDate,
+                    endDate: endDate,
+                    isCurrent: isCurrent,
+                    description: description
+                }
+            })
+            return updatedExperience;
+        } else {
+            const createdExperience = await prisma.workExperience.create({
+                data: {
+                    userId: userId,
+                    title: title,
+                    companyName: companyName,
+                    startDate: startDate,
+                    endDate: endDate,
+                    isCurrent: isCurrent,
+                    description: description
+                }
+            })
+            return createdExperience;
+        }
+    },
+
 }
 
 module.exports = UserModel;
