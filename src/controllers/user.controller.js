@@ -172,6 +172,27 @@ const UserController = {
                 message: error.message
             });
         }
+    },
+
+    async deleteExperience(req, res) {
+        try {
+            const { id: experienceId } = req.params;
+            const { deletedExperience, message } = await UserService.deleteExperience(experienceId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: deletedExperience
+            });
+        } catch (error) {
+            console.error('Error deleting experience:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
     }
 }
 

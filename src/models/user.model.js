@@ -142,6 +142,9 @@ const UserModel = {
                     }
                 },
                 workExperiences: {
+                    where: {
+                        deletedAt: null
+                    },
                     select: {
                         id: true,
                         title: true,
@@ -230,6 +233,18 @@ const UserModel = {
             return createdExperience;
         }
     },
+
+    async deleteExperience(experienceId) {
+        const deletedExperience = await prisma.workExperience.update({
+            where: {
+                id: experienceId
+            },
+            data: {
+                deletedAt: new Date()
+            }
+        })
+        return deletedExperience;
+    }
 
 }
 

@@ -133,6 +133,10 @@ const UserService = {
     async createOrUpdateExperience(userId, data) {
         const experience = await UserModel.createOrUpdateExperience(userId, data);
         return { experience, message: "Experience created or updated successfully" };
+    },
+    async deleteExperience(experienceId) {
+        const deletedExperience = await UserModel.deleteExperience(experienceId);
+        return { deletedExperience, message: "Experience deleted successfully" };
     }
 
 
