@@ -193,6 +193,49 @@ const UserController = {
                 message: error.message
             });
         }
+    },
+
+    async createOrUpdateEducation(req, res) {
+        try {
+            const { id: userId } = req.params;
+            const data = req.body;
+            const { education, message } = await UserService.createOrUpdateEducation(userId, data);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: education
+            });
+        } catch (error) {
+            console.error('Error creating or updating education:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
+    },
+
+    async deleteEducation(req, res) {
+        try {
+            const { id: educationId } = req.params;
+            const { deletedEducation, message } = await UserService.deleteEducation(educationId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: deletedEducation
+            });
+        } catch (error) {
+            console.error('Error deleting education:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
     }
 }
 

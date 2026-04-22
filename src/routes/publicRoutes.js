@@ -29,6 +29,8 @@ router.get("/get-user-profile/:id", authenticate, UserController.getUserProfile)
 router.put("/update-profile/:id", authenticate, UserController.updateProfile);
 router.post("/create-or-update-experience/:id", authenticate, UserController.createOrUpdateExperience);
 router.post("/delete-experience/:id", authenticate, UserController.deleteExperience);
+router.post("/create-or-update-education/:id", authenticate, UserController.createOrUpdateEducation);
+router.post("/delete-education/:id", authenticate, UserController.deleteEducation);
 
 // job category routes
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);

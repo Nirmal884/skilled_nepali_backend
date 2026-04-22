@@ -137,8 +137,15 @@ const UserService = {
     async deleteExperience(experienceId) {
         const deletedExperience = await UserModel.deleteExperience(experienceId);
         return { deletedExperience, message: "Experience deleted successfully" };
+    },
+    async createOrUpdateEducation(userId, data) {
+        const education = await UserModel.createOrUpdateEducation(userId, data);
+        return { education, message: "Education details created or updated successfully" };
+    },
+    async deleteEducation(educationId) {
+        const deletedEducation = await UserModel.deleteEducation(educationId);
+        return { deletedEducation, message: "Education details deleted successfully" };
     }
-
 
 }
 

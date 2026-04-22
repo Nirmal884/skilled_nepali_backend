@@ -132,6 +132,9 @@ const UserModel = {
                     }
                 },
                 educations: {
+                    where: {
+                        deletedAt: null
+                    },
                     select: {
                         id: true,
                         institution: true,
@@ -139,6 +142,9 @@ const UserModel = {
                         startDate: true,
                         endDate: true,
                         isCompleted: true,
+                    },
+                    orderBy: {
+                        endDate: 'desc'
                     }
                 },
                 workExperiences: {
@@ -244,6 +250,49 @@ const UserModel = {
             }
         })
         return deletedExperience;
+    },
+
+    async createOrUpdateEducation(userId, data) {
+        const { id, fieldOfStudy, institution, startDate, endDate, isCompleted } = data;
+        if (id) {
+            const updateEducation = await prisma.education.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    fieldOfStudy: fieldOfStudy,
+                    institution: institution,
+                    startDate: startDate,
+                    endDate: endDate,
+                    isCompleted: isCompleted
+                }
+            })
+            return updateEducation;
+        } else {
+            const createEducation = await prisma.education.create({
+                data: {
+                    userId: userId,
+                    fieldOfStudy: fieldOfStudy,
+                    institution: institution,
+                    startDate: startDate,
+                    endDate: endDate,
+                    isCompleted: isCompleted
+                }
+            })
+            return createEducation;
+        }
+    },
+
+    async deleteEducation(educationId) {
+        const deletedEducation = await prisma.education.update({
+            where: {
+                id: educationId
+            },
+            data: {
+                deletedAt: new Date()
+            }
+        })
+        return deletedEducation;
     }
 
 }
