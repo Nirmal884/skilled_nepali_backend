@@ -8,13 +8,29 @@ const SkillsModel = {
             }
         })
     },
-    async getAllSkills() {
-        return await prisma.skill.findMany({
-            where: {
-                deletedAt: null
-            }
-        })
+    async getAllSkills(page, limit) {
+        const skip = page ? (page - 1) * limit : 0;
+        const take = limit ? limit : 20;
+        const [skills, totalSkills] = await prisma.$transaction([
+            prisma.skill.findMany({
+                where: {
+                    deletedAt: null
+                },
+                skip,
+                take,
+                orderBy: {
+                    skillName: "asc"
+                }
+            }),
+            prisma.skill.count({
+                where: {
+                    deletedAt: null
+                }
+            })
+        ])
+        return { skills, totalSkills }
     },
+
     async getSkillByName(skillName) {
         return await prisma.skill.findUnique({
             where: {

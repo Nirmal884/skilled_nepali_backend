@@ -8,8 +8,9 @@ const SkillsService = {
         }
         return await SkillsModel.createSkill(data.skillName);
     },
-    async getAllSkills() {
-        return await SkillsModel.getAllSkills();
+    async getAllSkills(page, limit) {
+        const { skills, totalSkills } = await SkillsModel.getAllSkills(Number(page), Number(limit));
+        return { skills, totalSkills };
     },
     async getSkillByName(skillName) {
         return await SkillsModel.getSkillByName(skillName);

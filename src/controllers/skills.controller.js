@@ -20,11 +20,13 @@ const SkillsController = {
     },
     async getAllSkills(req, res) {
         try {
-            const skills = await SkillsService.getAllSkills();
+            const { page, limit } = req.query;
+            const { skills, totalSkills } = await SkillsService.getAllSkills(page, limit);
             return res.status(200).json({
                 success: true,
                 message: "Skills fetched successfully",
-                data: skills
+                data: skills,
+                count: totalSkills
             })
         } catch (error) {
             return res.status(500).json({
