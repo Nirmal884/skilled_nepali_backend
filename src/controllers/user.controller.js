@@ -236,7 +236,52 @@ const UserController = {
                 message: error.message
             });
         }
-    }
+    },
+
+    async createOrUpdateCertification(req, res) {
+        try {
+            const { id: userId } = req.params;
+            const data = req.body;
+            const { certification, message } = await UserService.createOrUpdateCertification(userId, data);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: certification
+            });
+        } catch (error) {
+            console.error('Error creating or updating certification:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
+    },
+
+    async deleteCertification(req, res) {
+        try {
+            const { id: certificationId } = req.params;
+            const { deletedCertification, message } = await UserService.deleteCertification(certificationId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: deletedCertification
+            });
+        } catch (error) {
+            console.error('Error deleting certification:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
+    },
+
+
 }
 
 module.exports = UserController;

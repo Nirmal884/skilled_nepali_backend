@@ -145,8 +145,15 @@ const UserService = {
     async deleteEducation(educationId) {
         const deletedEducation = await UserModel.deleteEducation(educationId);
         return { deletedEducation, message: "Education details deleted successfully" };
+    },
+    async createOrUpdateCertification(userId, data) {
+        const certification = await UserModel.createOrUpdateCertification(userId, data);
+        return { certification, message: "Certification Created or Updated successfully" }
+    },
+    async deleteCertification(certificationId) {
+        const deletedCertification = await UserModel.deleteCertification(certificationId);
+        return { deletedCertification, message: "Certification deleted successfully" };
     }
-
 }
 
 module.exports = UserService;

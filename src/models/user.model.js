@@ -162,6 +162,9 @@ const UserModel = {
                     }
                 },
                 certifications: {
+                    where: {
+                        deletedAt: null
+                    },
                     select: {
                         id: true,
                         certificationName: true,
@@ -293,8 +296,46 @@ const UserModel = {
             }
         })
         return deletedEducation;
+    },
+
+    async createOrUpdateCertification(userId, data) {
+        const { id, certificationName, issuingAuthority, issueDate } = data;
+        if (id) {
+            const updateCertification = await prisma.certifications.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    certificationName: certificationName,
+                    issuingAuthority: issuingAuthority,
+                    issueDate: issueDate
+                }
+            })
+            return updateCertification;
+        } else {
+            const createCertification = await prisma.certifications.create({
+                data: {
+                    userId: userId,
+                    certificationName: certificationName,
+                    issuingAuthority: issuingAuthority,
+                    issueDate: issueDate
+                }
+            })
+            return createCertification;
+        }
+    },
+
+    async deleteCertification(certificationId) {
+        const deletedCertification = await prisma.certifications.update({
+            where: {
+                id: certificationId
+            },
+            data: {
+                deletedAt: new Date()
+            }
+        })
+        return deletedCertification;
     }
 
 }
-
 module.exports = UserModel;

@@ -31,6 +31,8 @@ router.post("/create-or-update-experience/:id", authenticate, UserController.cre
 router.post("/delete-experience/:id", authenticate, UserController.deleteExperience);
 router.post("/create-or-update-education/:id", authenticate, UserController.createOrUpdateEducation);
 router.post("/delete-education/:id", authenticate, UserController.deleteEducation);
+router.post("/create-or-update-certification/:id", authenticate, UserController.createOrUpdateCertification);
+router.post("/delete-certification/:id", authenticate, UserController.deleteCertification);
 
 // job category routes
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);
