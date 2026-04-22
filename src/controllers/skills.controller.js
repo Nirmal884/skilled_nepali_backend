@@ -4,7 +4,8 @@ const SkillsController = {
     async createSkills(req, res) {
         try {
             const { skillName } = req.body;
-            const skills = await SkillsService.createSkills(skillName);
+            const userId = req.user.id;
+            const skills = await SkillsService.createSkills(skillName, userId);
             return res.status(201).json({
                 success: true,
                 message: "Skill created successfully",
@@ -20,8 +21,8 @@ const SkillsController = {
     },
     async getAllSkills(req, res) {
         try {
-            const { page, limit } = req.query;
-            const { skills, totalSkills } = await SkillsService.getAllSkills(page, limit);
+            const { page, limit, search } = req.query;
+            const { skills, totalSkills } = await SkillsService.getAllSkills(page, limit, search);
             return res.status(200).json({
                 success: true,
                 message: "Skills fetched successfully",

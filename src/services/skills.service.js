@@ -1,15 +1,11 @@
 const SkillsModel = require("../models/skills.model");
 
 const SkillsService = {
-    async createSkills(data) {
-        const existingSkills = await SkillsModel.getSkillByName(data.skillName);
-        if (existingSkills) {
-            throw new Error("Skill already exists");
-        }
-        return await SkillsModel.createSkill(data.skillName);
+    async createSkills(skillName, userId) {
+        return await SkillsModel.createSkill(skillName, userId);
     },
-    async getAllSkills(page, limit) {
-        const { skills, totalSkills } = await SkillsModel.getAllSkills(Number(page), Number(limit));
+    async getAllSkills(page, limit, search) {
+        const { skills, totalSkills } = await SkillsModel.getAllSkills(Number(page), Number(limit), search);
         return { skills, totalSkills };
     },
     async getSkillByName(skillName) {

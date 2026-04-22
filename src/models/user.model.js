@@ -205,6 +205,11 @@ const UserModel = {
                 ...(data.bio && { bio: data.bio }),
                 ...(data.email && { email: data.email }),
                 ...(data.phone && { phone: data.phone }),
+                ...(data.skills && {
+                    skills: {
+                        set: data.skills.map(skill => ({ id: skill.id }))
+                    }
+                })
             }
         })
         return updateUser;
