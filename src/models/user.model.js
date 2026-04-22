@@ -194,25 +194,59 @@ const UserModel = {
         return mappedUser;
     },
 
+    // async updateProfile(userId, data) {
+    //     const updateUser = await prisma.user.update({
+    //         where: {
+    //             id: userId
+    //         },
+    //         data: {
+    //             ...(data.fullName && { fullName: data.fullName }),
+    //             ...(data.title && { title: data.title }),
+    //             ...(data.bio && { bio: data.bio }),
+    //             ...(data.email && { email: data.email }),
+    //             ...(data.phone && { phone: data.phone }),
+    //             ...(data.skills && {
+    //                 skills: {
+    //                     set: data.skills.map(skill => ({ id: skill.id }))
+    //                 }
+    //             })
+    //         }
+    //     })
+    //     return updateUser;
+    // },
+
     async updateProfile(userId, data) {
-        const updateUser = await prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                ...(data.fullName && { fullName: data.fullName }),
-                ...(data.title && { title: data.title }),
-                ...(data.bio && { bio: data.bio }),
-                ...(data.email && { email: data.email }),
-                ...(data.phone && { phone: data.phone }),
-                ...(data.skills && {
-                    skills: {
-                        set: data.skills.map(skill => ({ id: skill.id }))
+        const skillsToConnect = [];
+
+        for (const skill of data.skills) {
+            let existing = await prisma.skill.findFirst({
+                where: {
+                    skillName: {
+                        equals: skill,
+                        mode: "insensitive"
                     }
-                })
+                }
+            });
+
+            if (!existing) {
+                existing = await prisma.skill.create({
+                    data: { skillName: skill }
+                });
             }
-        })
-        return updateUser;
+
+            skillsToConnect.push({ id: existing.id });
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                skills: {
+                    set: skillsToConnect
+                }
+            }
+        });
+
+        return updatedUser;
     },
 
     async createOrUpdateExperience(userId, data) {
