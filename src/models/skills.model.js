@@ -50,7 +50,6 @@ const SkillsModel = {
     },
 
     async getSkillByName(skillName) {
-        console.log(skillName, "SKILL NAME")
         return await prisma.skill.findUnique({
             where: {
                 deletedAt: null,

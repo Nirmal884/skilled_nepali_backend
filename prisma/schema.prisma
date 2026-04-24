@@ -161,6 +161,22 @@ model Skill {
   @@map("skills")
 }
 
+model Testimonial {
+  id              String    @id @default(uuid())
+  name            String
+  role            Role
+  country         String?
+  quote           String
+  position        String?
+  rating          Int
+  status          AdminApprovalStatus @default(PENDING)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  @@map("testimonials")
+}
+
 enum Role {
   JOBSEEKER
   EMPLOYER

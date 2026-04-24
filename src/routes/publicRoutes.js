@@ -8,6 +8,7 @@ const { authenticate } = require('../middleware/auth.middleware');
 const JobController = require('../controllers/job.controller');
 const AdminDashboardController = require('../controllers/admin.controller');
 const SkillsController = require('../controllers/skills.controller');
+const TestimonialsController = require('../controllers/testimonials.controller');
 const router = express.Router();
 
 // users routes
@@ -39,6 +40,12 @@ router.post("/delete-certification/:id", authenticate, UserController.deleteCert
 router.post("/create-skills", authenticate, SkillsController.createSkills);
 router.post("/delete-skill/:id", authenticate, SkillsController.deleteSkill);
 router.get("/get-all-skills", authenticate, SkillsController.getAllSkills);
+
+// testimonials section 
+router.post("/create-testimonial", TestimonialsController.addTestimonial);
+router.get("/get-all-testimonials", authenticate, TestimonialsController.getAllTestimonials);
+router.get("/get-approved-testimonials", TestimonialsController.getApprovedTestimonials);
+router.post("/update-testimonial-status/:id", authenticate, TestimonialsController.updateStatus);
 
 // job category routes
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);
