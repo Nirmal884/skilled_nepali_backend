@@ -44,7 +44,7 @@ router.get("/get-all-skills", authenticate, SkillsController.getAllSkills);
 // testimonials section 
 router.post("/create-testimonial", TestimonialsController.addTestimonial);
 router.get("/get-all-testimonials", authenticate, TestimonialsController.getAllTestimonials);
-router.get("/get-approved-testimonials", TestimonialsController.getApprovedTestimonials);
+router.get("/get-testimonials", TestimonialsController.getApprovedTestimonials);
 router.post("/update-testimonial-status/:id", authenticate, TestimonialsController.updateStatus);
 
 // job category routes
