@@ -162,19 +162,33 @@ model Skill {
 }
 
 model Testimonial {
-  id              String    @id @default(uuid())
-  name            String
-  role            Role
-  country         String?
-  quote           String
-  position        String?
-  rating          Int
-  status          AdminApprovalStatus @default(PENDING)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  id        String              @id @default(uuid())
+  name      String
+  role      Role
+  country   String?
+  quote     String
+  position  String?
+  rating    Int
+  status    AdminApprovalStatus @default(PENDING)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  deletedAt DateTime?
 
   @@map("testimonials")
+}
+
+model Enquiry {
+  id        String         @id @default(uuid())
+  name      String
+  email     String
+  phone     String
+  subject   MessageSubject
+  enquiry   String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  deletedAt DateTime?
+
+  @@map("enquiries")
 }
 
 enum Role {
@@ -195,4 +209,11 @@ enum AdminApprovalStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum MessageSubject {
+  JOBINQUIRY
+  EMPLOYERPARTNERSHIP
+  TRAININGINQUIRY
+  GENERALINQUIRY
 }

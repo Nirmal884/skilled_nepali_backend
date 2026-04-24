@@ -18,7 +18,18 @@ const TestimonialService = {
 
     async updateStatus(id, status) {
         return await TestimonialModel.updateStatus(id, status);
+    },
+
+    async addEnquiry(data) {
+        return await TestimonialModel.addEnquiry(data);
+    },
+
+    async getEnquiries(page, limit, search, subject) {
+        const { enquiries, count } = await TestimonialModel.getEnquiries(Number(page), Number(limit), search, subject);
+        return { enquiries, count };
     }
+
+
 }
 
 module.exports = TestimonialService;

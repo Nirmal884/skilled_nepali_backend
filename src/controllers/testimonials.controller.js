@@ -47,6 +47,29 @@ const TestimonialsController = {
             return res.status(500).json({ success: false, message: "Failed to update testimonial status", error: error.message });
         }
     },
+
+    async addEnquiry(req, res) {
+        try {
+            const data = req.body;
+            if (!data.name || !data.email || !data.phone || !data.subject || !data.enquiry) {
+                throw new Error("Please provide all the required fields");
+            }
+            const enquiry = await TestimonialService.addEnquiry(data);
+            return res.status(201).json({ success: true, message: "Enquiry added successfully", data: enquiry });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Failed to add enquiry", error: error.message });
+        }
+    },
+
+    async getEnquiries(req, res) {
+        try {
+            const { page, limit, search, subject } = req.query;
+            const { enquiries, count } = await TestimonialService.getEnquiries(page, limit, search, subject);
+            return res.status(200).json({ success: true, message: "Enquiries fetched successfully", data: enquiries, count });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Failed to fetch enquiries", error: error.message });
+        }
+    },
 }
 
 module.exports = TestimonialsController;

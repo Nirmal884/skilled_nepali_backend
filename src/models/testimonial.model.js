@@ -82,6 +82,50 @@ const TestimonialModel = {
         return { testimonials, count };
     },
 
+    async addEnquiry(data) {
+        const enquiry = await prisma.enquiry.create({
+            data: {
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                subject: data.subject,
+                enquiry: data.enquiry,
+            }
+        })
+        return enquiry;
+    },
+
+    async getEnquiries(page, limit, search, subject) {
+        const whereClause = {
+            deletedAt: null,
+            ...(search && search.trim() !== "" && {
+                OR: [
+                    { name: { contains: search, mode: "insensitive" } },
+                    { email: { contains: search, mode: "insensitive" } },
+                ]
+            }),
+            ...(subject && subject.trim() !== "" && subject !== "ALL" && {
+                subject: subject
+            })
+        };
+        const [enquiries, count] = await prisma.$transaction([
+            prisma.enquiry.findMany({
+                where: whereClause,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                skip: (page - 1) * limit,
+                take: limit,
+            }),
+            prisma.enquiry.count({
+                where: whereClause,
+            })
+        ]);
+        return { enquiries, count };
+    },
+
+
+
 
 };
 

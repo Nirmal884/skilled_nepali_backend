@@ -47,6 +47,10 @@ router.get("/get-all-testimonials", authenticate, TestimonialsController.getAllT
 router.get("/get-testimonials", TestimonialsController.getApprovedTestimonials);
 router.post("/update-testimonial-status/:id", authenticate, TestimonialsController.updateStatus);
 
+// enquiries section 
+router.post("/create-enquiry", TestimonialsController.addEnquiry);
+router.get("/get-enquiries", authenticate, TestimonialsController.getEnquiries);
+
 // job category routes
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);
 router.get('/get-countries', JobCategoryController.getCountries);
