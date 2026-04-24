@@ -69,6 +69,9 @@ const TestimonialModel = {
         const [testimonials, count] = await prisma.$transaction([
             prisma.testimonial.findMany({
                 where: whereClause,
+                orderBy: {
+                    createdAt: 'desc',
+                },
                 skip: (page - 1) * limit,
                 take: limit,
             }),
