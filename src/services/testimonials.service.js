@@ -6,8 +6,8 @@ const TestimonialService = {
         return testimonial;
     },
 
-    async getApprovedTestimonials(page, limit) {
-        const { testimonials, count } = await TestimonialModel.getApprovedTestimonials(Number(page), Number(limit));
+    async getApprovedTestimonials(page, limit, role) {
+        const { testimonials, count } = await TestimonialModel.getApprovedTestimonials(Number(page), Number(limit), role);
         return { testimonials, count };
     },
 

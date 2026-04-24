@@ -15,12 +15,13 @@ const TestimonialModel = {
         return testimonial;
     },
 
-    async getApprovedTestimonials(page, limit) {
+    async getApprovedTestimonials(page, limit, role) {
         const [testimonials, count] = await prisma.$transaction([
             prisma.testimonial.findMany({
                 where: {
                     deletedAt: null,
                     status: 'APPROVED',
+                    role: role
                 },
                 select: {
                     id: true,
@@ -43,6 +44,7 @@ const TestimonialModel = {
                 where: {
                     deletedAt: null,
                     status: 'APPROVED',
+                    role: role
                 },
             })
         ]);

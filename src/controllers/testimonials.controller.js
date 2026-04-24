@@ -16,8 +16,8 @@ const TestimonialsController = {
 
     async getApprovedTestimonials(req, res) {
         try {
-            const { page, limit } = req.query;
-            const { testimonials, count } = await TestimonialService.getApprovedTestimonials(page, limit);
+            const { page, limit, role } = req.query;
+            const { testimonials, count } = await TestimonialService.getApprovedTestimonials(page, limit, role);
             return res.status(200).json({ success: true, message: "Testimonials fetched successfully", data: testimonials, count });
         } catch (error) {
             return res.status(500).json({ success: false, message: "Failed to fetch testimonials", error: error.message });
