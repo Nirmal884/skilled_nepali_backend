@@ -7,6 +7,7 @@ const TestimonialModel = {
                 name: data.name,
                 role: data.role,
                 country: data.country,
+                company: data.company,
                 position: data.position,
                 quote: data.quote,
                 rating: data.rating,
@@ -15,14 +16,20 @@ const TestimonialModel = {
         return testimonial;
     },
 
-    async getApprovedTestimonials(page, limit, role) {
+    async getApprovedTestimonials(page, limit, role, company) {
+        const whereClause = {
+            deletedAt: null,
+            role: role,
+        };
+
+        if (company) {
+            whereClause.company = company;
+        } else {
+            whereClause.status = 'APPROVED';
+        }
         const [testimonials, count] = await prisma.$transaction([
             prisma.testimonial.findMany({
-                where: {
-                    deletedAt: null,
-                    status: 'APPROVED',
-                    role: role
-                },
+                where: whereClause,
                 select: {
                     id: true,
                     name: true,
@@ -31,7 +38,7 @@ const TestimonialModel = {
                     position: true,
                     quote: true,
                     rating: true,
-                    status: false,
+                    status: true,
                     createdAt: true,
                 },
                 orderBy: {
@@ -41,11 +48,7 @@ const TestimonialModel = {
                 take: limit,
             }),
             prisma.testimonial.count({
-                where: {
-                    deletedAt: null,
-                    status: 'APPROVED',
-                    role: role
-                },
+                where: whereClause
             })
         ]);
         return { testimonials, count };
@@ -58,13 +61,16 @@ const TestimonialModel = {
         });
     },
 
-    async getAllTestimonials(page, limit, search) {
+    async getAllTestimonials(page, limit, search, role, company) {
         const whereClause = {
             deletedAt: null,
+            ...(role && { role }),
+            ...(company && { company }),
             ...(search && search.trim() !== "" && {
                 OR: [
                     { name: { contains: search, mode: "insensitive" } },
-                    { position: { contains: search, mode: "insensitive" } }
+                    { position: { contains: search, mode: "insensitive" } },
+                    { company: { contains: search, mode: "insensitive" } }
                 ]
             })
         };

@@ -169,6 +169,7 @@ model Testimonial {
   quote     String
   position  String?
   rating    Int
+  company   String?
   status    AdminApprovalStatus @default(PENDING)
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt

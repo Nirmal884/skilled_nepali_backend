@@ -6,13 +6,13 @@ const TestimonialService = {
         return testimonial;
     },
 
-    async getApprovedTestimonials(page, limit, role) {
-        const { testimonials, count } = await TestimonialModel.getApprovedTestimonials(Number(page), Number(limit), role);
+    async getApprovedTestimonials(page, limit, role, company) {
+        const { testimonials, count } = await TestimonialModel.getApprovedTestimonials(Number(page), Number(limit), role, company);
         return { testimonials, count };
     },
 
-    async getAllTestimonials(page, limit, search) {
-        const { testimonials, count } = await TestimonialModel.getAllTestimonials(Number(page), Number(limit), search);
+    async getAllTestimonials(page, limit, search, role, company) {
+        const { testimonials, count } = await TestimonialModel.getAllTestimonials(Number(page), Number(limit), search, role, company);
         return { testimonials, count };
     },
 
