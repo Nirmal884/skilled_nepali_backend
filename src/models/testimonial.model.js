@@ -36,6 +36,7 @@ const TestimonialModel = {
                     role: true,
                     country: true,
                     position: true,
+                    company: true,
                     quote: true,
                     rating: true,
                     status: true,
