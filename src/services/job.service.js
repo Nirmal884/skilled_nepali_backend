@@ -1,3 +1,4 @@
+const { gccCountryOptions } = require("../data/countryData")
 const JobModel = require("../models/job.model")
 
 const JobService = {
@@ -51,6 +52,13 @@ const JobService = {
     async listAllApprovedJobs(page, limit, search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray) {
         const { jobs, totalJobs } = await JobModel.listAllApprovedJobs(Number(page), Number(limit), search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray)
         return { jobs, totalJobs, message: "Jobs fetched successfully" }
+    },
+
+    async fetchJobById(jobId) {
+        const job = await JobModel.fetchJobById(jobId)
+        const countryName = await gccCountryOptions.find((item) => item.value === job.country)
+        if (!job) throw new Error("Job not found")
+        return { job, countryName }
     }
 }
 

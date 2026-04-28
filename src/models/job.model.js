@@ -337,6 +337,24 @@ const JobModel = {
             })
         ]);
         return { jobs, totalJobs };
+    },
+
+    async fetchJobById(jobId) {
+        const job = await prisma.jobs.findUnique({
+            where: {
+                id: jobId
+            },
+            include: {
+                jobCategory: true,
+                user: {
+                    select: {
+                        companyName: true
+                    }
+                }
+            }
+        })
+
+        return job
     }
 }
 

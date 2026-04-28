@@ -204,6 +204,26 @@ const JobController = {
                 message: error?.message || "Internal server error"
             })
         }
+    },
+
+    async fetchJobById(req, res) {
+        try {
+            const { jobId } = req.params;
+            const { job, countryName } = await JobService.fetchJobById(jobId)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: { ...job, countryName: countryName.label },
+                message: "Job fetched successfully"
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
     }
 }
 
