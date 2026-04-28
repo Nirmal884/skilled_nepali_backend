@@ -236,6 +236,107 @@ const JobModel = {
             }
         });
         return jobData;
+    },
+
+
+    // for web 
+
+    async listAllApprovedJobs(page, limit, search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray) {
+        const skip = page ? (page - 1) * limit : 0;
+        const take = limit ? limit : 10;
+
+        const where = {
+            adminApprovalStatus: "APPROVED",
+            deletedAt: null,
+            OR: [
+                { deletionReason: "" },
+                { deletionReason: null }
+            ]
+            // deletionReason: { in: ["", null] },
+            // AND: []
+        }
+        if (isUrgent === true || isUrgent === 'true') {
+            where.isUrgent = true
+        }
+
+        if (freshersOnly === true || freshersOnly === 'true') {
+            where.experience = "Entry-level"
+        }
+
+        if (countryArray) {
+            const countryList = Array.isArray(countryArray)
+                ? countryArray.map(Number)
+                : countryArray.split(',').map(Number);
+            const cleanArray = countryList.filter(n => !isNaN(n));
+            if (cleanArray.length > 0) {
+                where.country = { in: cleanArray };
+            }
+        }
+
+        if (jobCategoryArray) {
+            const jobCategoryList = Array.isArray(jobCategoryArray)
+                ? jobCategoryArray
+                : jobCategoryArray.split(',');
+            const cleanArray = jobCategoryList
+                .map(id => id.trim())
+                .filter(id => id !== "" && id !== "undefined" && id !== "null");
+            if (cleanArray.length > 0) {
+                where.jobCategoryId = { in: cleanArray };
+            }
+        }
+
+        if (experienceArray) {
+            const experienceList = Array.isArray(experienceArray)
+                ? experienceArray
+                : experienceArray.split(',');
+            const cleanArray = experienceList
+                .map(id => id.trim())
+                .filter(id => id !== "" && id !== "undefined" && id !== "null");
+            if (cleanArray.length > 0) {
+                where.experience = { in: cleanArray };
+            }
+        }
+
+        if (jobTypeArray) {
+            const jobTypeList = Array.isArray(jobTypeArray)
+                ? jobTypeArray
+                : jobTypeArray.split(',');
+            const cleanArray = jobTypeList
+                .map(id => id.trim())
+                .filter(id => id !== "" && id !== "undefined" && id !== "null");
+            if (cleanArray.length > 0) {
+                where.type = { in: cleanArray };
+            }
+        }
+
+        if (search) {
+            where.title = {
+                contains: search,
+                mode: "insensitive"
+            }
+        }
+        const [jobs, totalJobs] = await prisma.$transaction([
+            prisma.jobs.findMany({
+                where: where,
+                include: {
+                    jobCategory: true,
+                    user: {
+                        select: {
+                            companyName: true
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip,
+                take
+            }),
+            prisma.jobs.count({
+                where: where
+            })
+        ]);
+        return { jobs, totalJobs };
     }
 }
 

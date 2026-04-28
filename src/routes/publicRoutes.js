@@ -68,7 +68,7 @@ router.post('/delete-job-request', authenticate, JobController.deleteJobRequest)
 router.get('/list-delete-requested-jobs', authenticate, JobController.listDeleteRequestedJobs)
 router.post('/approve-job-deletion', authenticate, JobController.approveDeletion)
 router.post('/cancel-job-deletion-request', authenticate, JobController.cancelDeletionRequest)
-
+router.get('/list-all-verified-jobs', JobController.listAllApprovedJobs)
 // admin router
 router.get('/get-admin-dashboard-stats', authenticate, AdminDashboardController.getAdminDashboardStats)
 

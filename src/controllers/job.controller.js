@@ -182,6 +182,28 @@ const JobController = {
                 message: error?.message || "Internal server error"
             })
         }
+    },
+
+    // for web
+    async listAllApprovedJobs(req, res) {
+        try {
+            const { page, limit, search, isUrgent, freshersOnly, "countries[]": countryArray, "jobCategories[]": jobCategoryArray, "experience[]": experienceArray, "jobType[]": jobTypeArray } = req.query;
+            const { jobs, totalJobs, message } = await JobService.listAllApprovedJobs(Number(page), Number(limit), search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: jobs,
+                count: totalJobs,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
     }
 }
 
