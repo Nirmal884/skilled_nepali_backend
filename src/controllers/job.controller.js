@@ -208,8 +208,8 @@ const JobController = {
 
     async fetchJobById(req, res) {
         try {
-            const { jobId } = req.params;
-            const { job, countryName } = await JobService.fetchJobById(jobId)
+            const { jobId, userId } = req.params;
+            const { job, countryName } = await JobService.fetchJobById(jobId, userId)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
@@ -217,6 +217,43 @@ const JobController = {
                 message: "Job fetched successfully"
             })
         } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
+    },
+
+    async applyJob(req, res) {
+        try {
+            const { userId, jobId } = req.body;
+            const { jobApplication, message } = await JobService.applyJob(userId, jobId)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: jobApplication,
+                message: message
+            })
+        } catch (error) {
+            if (error.code === "PROFILE_INCOMPLETE") {
+                return res.status(400).json({
+                    success: false,
+                    statusCode: 400,
+                    message: error.message,
+                    missingFields: error.missingFields
+                });
+            }
+
+            if (error.code === "ALREADY_APPLIED") {
+                return res.status(400).json({
+                    success: false,
+                    statusCode: 400,
+                    message: error.message,
+                });
+            }
+
             console.log("Error:", error)
             return res.status(500).json({
                 success: false,

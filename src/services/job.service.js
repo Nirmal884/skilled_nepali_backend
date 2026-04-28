@@ -54,11 +54,16 @@ const JobService = {
         return { jobs, totalJobs, message: "Jobs fetched successfully" }
     },
 
-    async fetchJobById(jobId) {
-        const job = await JobModel.fetchJobById(jobId)
+    async fetchJobById(jobId, userId) {
+        const job = await JobModel.fetchJobById(jobId, userId)
         const countryName = await gccCountryOptions.find((item) => item.value === job.country)
         if (!job) throw new Error("Job not found")
         return { job, countryName }
+    },
+
+    async applyJob(userId, jobId) {
+        const jobApplication = await JobModel.applyJob(userId, jobId)
+        return { jobApplication, message: "Job applied successfully" }
     }
 }
 

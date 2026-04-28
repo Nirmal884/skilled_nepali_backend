@@ -40,6 +40,7 @@ model User {
   educations        Education[]
   certifications    Certifications[]
   isAdminApproved   Boolean          @default(false)
+  jobApplications   JobApplication[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   deletedAt         DateTime?
@@ -143,6 +144,7 @@ model Jobs {
   deletionReason          String?             @default("")
   deleteRequestedOn       DateTime?           @default(now())
   adminApprovedOn         DateTime?
+  jobApplications         JobApplication[]
   createdAt               DateTime            @default(now())
   updatedAt               DateTime            @updatedAt
   deletedAt               DateTime?
@@ -192,6 +194,22 @@ model Enquiry {
   @@map("enquiries")
 }
 
+model JobApplication {
+  id        String            @id @default(uuid())
+  userId    String
+  jobId     String
+  status    ApplicationStatus @default(APPLIED)
+  resume    String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  job  Jobs @relation(fields: [jobId], references: [id])
+
+  @@unique([userId, jobId])
+  @@map("job_applications")
+}
+
 enum Role {
   JOBSEEKER
   EMPLOYER
@@ -217,4 +235,12 @@ enum MessageSubject {
   EMPLOYERPARTNERSHIP
   TRAININGINQUIRY
   GENERALINQUIRY
+}
+
+enum ApplicationStatus {
+  APPLIED
+  REVIEWING
+  SHORTLISTED
+  REJECTED
+  HIRED
 }
