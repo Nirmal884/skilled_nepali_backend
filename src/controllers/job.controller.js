@@ -189,12 +189,35 @@ const JobController = {
     async listJobApplicaton(req, res) {
         try {
             const { page, limit, userId, search, status, employerId } = req.query;
-            const { jobAplication, count, message } = await JobService.listJobApplicaton(userId, Number(page), Number(limit), search, status, employerId)
+            const { jobAplication, count, inReviewCount, shortlistCount, rejectedCount, message } = await JobService.listJobApplicaton(userId, Number(page), Number(limit), search, status, employerId)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
                 data: jobAplication,
                 count: count,
+                inReviewCount: inReviewCount,
+                shortlistCount: shortlistCount,
+                rejectedCount: rejectedCount,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
+    },
+
+    async updateJobApplicationStatus(req, res) {
+        try {
+            const { applicationId, status } = req.body;
+            const { updatedApplication, message } = await JobService.updateJobApplicationStatus(applicationId, status)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: updatedApplication,
                 message: message
             })
         } catch (error) {

@@ -72,6 +72,7 @@ router.get('/list-all-verified-jobs', JobController.listAllApprovedJobs)
 router.get('/fetch-job-by-id/:jobId', optionalAuthenticate, JobController.fetchJobById)
 router.post('/apply-job', authenticate, authorize('JOBSEEKER'), JobController.applyJob)
 router.get('/list-applied-jobs', authenticate, JobController.listJobApplicaton)
+router.patch('/update-job-status', authenticate, JobController.updateJobApplicationStatus)
 
 // admin router
 router.get('/get-admin-dashboard-stats', authenticate, AdminDashboardController.getAdminDashboardStats)

@@ -260,6 +260,14 @@ const JobModel = {
         return jobData;
     },
 
+    async updateJobApplicationStatus(applicationId, status) {
+        const updatedApplication = await prisma.jobApplication.update({
+            where: { id: applicationId },
+            data: { status }
+        });
+        return updatedApplication;
+    },
+
     async listJobApplicaton(userId, page, limit, search, status, employerId) {
         const skip = page ? (page - 1) * limit : 0;
         const take = limit ? limit : 10;
@@ -294,7 +302,7 @@ const JobModel = {
             })
         };
 
-        const [jobAplication, count] = await prisma.$transaction([
+        const [jobAplication, count, inReviewCount, shortlistCount, rejectedCount] = await prisma.$transaction([
             prisma.jobApplication.findMany({
                 where: whereClause,
                 include: {
@@ -324,9 +332,27 @@ const JobModel = {
             }),
             prisma.jobApplication.count({
                 where: whereClause
+            }),
+            prisma.jobApplication.count({
+                where: {
+                    ...whereClause,
+                    status: "REVIEWING"
+                }
+            }),
+            prisma.jobApplication.count({
+                where: {
+                    ...whereClause,
+                    status: "SHORTLISTED"
+                }
+            }),
+            prisma.jobApplication.count({
+                where: {
+                    ...whereClause,
+                    status: "REJECTED"
+                }
             })
         ])
-        return { jobAplication, count }
+        return { jobAplication, count, inReviewCount, shortlistCount, rejectedCount }
     },
 
 
