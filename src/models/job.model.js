@@ -603,7 +603,7 @@ const JobModel = {
 
         try {
             return await prisma.jobApplication.create({
-                data: { userId, jobId }
+                data: { userId, jobId, resume: user.resume }
             });
         } catch (error) {
             if (error.code === "P2002") {
