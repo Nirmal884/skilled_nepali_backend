@@ -216,34 +216,45 @@ const UserModel = {
     // },
 
     async updateProfile(userId, data) {
-        const skillsToConnect = [];
+        console.log(data, "DATA");
 
-        for (const skill of data.skills) {
-            let existing = await prisma.skill.findFirst({
-                where: {
-                    skillName: {
-                        equals: skill,
-                        mode: "insensitive"
+        const updateData = {
+            ...(data.fullName && { fullName: data.fullName }),
+            ...(data.title && { title: data.title }),
+            ...(data.bio && { bio: data.bio }),
+            ...(data.email && { email: data.email }),
+            ...(data.phone && { phone: data.phone }),
+            ...(data.country && { country: data.country }),
+            ...(data.experience && { experience: data.experience }),
+            ...(data.pastExperience && { pastExperience: data.pastExperience }),
+            ...(data.resume && { resume: data.resume }),
+        };
+
+        if (data.skills && Array.isArray(data.skills)) {
+            const skillsToConnect = [];
+            for (const skill of data.skills) {
+                let existing = await prisma.skill.findFirst({
+                    where: {
+                        skillName: {
+                            equals: skill,
+                            mode: "insensitive"
+                        }
                     }
-                }
-            });
-
-            if (!existing) {
-                existing = await prisma.skill.create({
-                    data: { skillName: skill }
                 });
-            }
 
-            skillsToConnect.push({ id: existing.id });
+                if (!existing) {
+                    existing = await prisma.skill.create({
+                        data: { skillName: skill }
+                    });
+                }
+                skillsToConnect.push({ id: existing.id });
+            }
+            updateData.skills = { set: skillsToConnect };
         }
 
         const updatedUser = await prisma.user.update({
             where: { id: userId },
-            data: {
-                skills: {
-                    set: skillsToConnect
-                }
-            }
+            data: updateData
         });
 
         return updatedUser;

@@ -25,6 +25,23 @@ const authenticate = (req, res, next) => {
     }
 };
 
+const optionalAuthenticate = (req, res, next) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        console.log("Invalid token:", error.message);
+        next();
+    }
+};
+
 const authorize = (...allowedRoles) => {
     return (req, res, next) => {
         if (!req.user || !allowedRoles.includes(req.user.role)) {
@@ -38,4 +55,4 @@ const authorize = (...allowedRoles) => {
     };
 };
 
-module.exports = { authenticate, authorize };
+module.exports = { authenticate, optionalAuthenticate, authorize };

@@ -208,7 +208,8 @@ const JobController = {
 
     async fetchJobById(req, res) {
         try {
-            const { jobId, userId } = req.params;
+            const { jobId } = req.params;
+            const userId = req.user?.id;
             const { job, countryName } = await JobService.fetchJobById(jobId, userId)
             return res.status(200).json({
                 success: true,
@@ -228,7 +229,8 @@ const JobController = {
 
     async applyJob(req, res) {
         try {
-            const { userId, jobId } = req.body;
+            const { jobId } = req.body;
+            const userId = req.user.id;
             const { jobApplication, message } = await JobService.applyJob(userId, jobId)
             return res.status(200).json({
                 success: true,

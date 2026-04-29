@@ -351,14 +351,16 @@ const JobModel = {
                         companyName: true
                     }
                 },
-                jobApplications: {
-                    where: {
-                        userId: userId
-                    },
-                    select: {
-                        status: true
+                ...(userId ? {
+                    jobApplications: {
+                        where: {
+                            userId: userId
+                        },
+                        select: {
+                            status: true
+                        }
                     }
-                }
+                } : {})
             }
         })
 
@@ -442,8 +444,12 @@ const JobModel = {
                 phone: true,
                 title: true,
                 country: true,
-                experience: true,
                 resume: true,
+                experience: true,
+                workExperiences: {
+                    where: { deletedAt: null },
+                    select: { id: true }
+                },
                 skills: {
                     where: { deletedAt: null },
                     select: { id: true }
@@ -463,12 +469,11 @@ const JobModel = {
         }
 
         const missingFields = [];
-
         if (!user.email) missingFields.push("Email");
         if (!user.phone || user.phone.trim() === "") missingFields.push("Phone");
         if (!user.title) missingFields.push("Title");
         if (user.country === null || user.country === undefined) missingFields.push("Country");
-        if (!user.experience) missingFields.push("Experience");
+        if (user.workExperiences.length === 0) missingFields.push("Experience");
         if (!user.resume) missingFields.push("Resume");
         if (user.skills.length === 0) missingFields.push("Skills");
         if (user.educations.length === 0) missingFields.push("Education");
