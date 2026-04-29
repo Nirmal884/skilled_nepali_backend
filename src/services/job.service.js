@@ -48,6 +48,11 @@ const JobService = {
         return { jobResponse, message: "Job deletion request cancelled successfully" }
     },
 
+    async listJobApplicaton(userId, page, limit, search, status) {
+        const { jobAplication, count } = await JobModel.listJobApplicaton(userId, Number(page), Number(limit), search, status)
+        return { jobAplication, count, message: "Job applications fetched successfully" }
+    },
+
     // for web
     async listAllApprovedJobs(page, limit, search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray) {
         const { jobs, totalJobs } = await JobModel.listAllApprovedJobs(Number(page), Number(limit), search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray)

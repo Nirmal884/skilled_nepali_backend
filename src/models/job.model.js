@@ -238,6 +238,51 @@ const JobModel = {
         return jobData;
     },
 
+    async listJobApplicaton(userId, page, limit, search, status) {
+        const skip = page ? (page - 1) * limit : 0;
+        const take = limit ? limit : 10;
+
+        const whereClause = {
+            userId: userId,
+            ...(status && { status }),
+            ...(search && {
+                job: {
+                    title: {
+                        contains: search,
+                        mode: 'insensitive'
+                    }
+                }
+            })
+        };
+
+        const [jobAplication, count] = await prisma.$transaction([
+            prisma.jobApplication.findMany({
+                where: whereClause,
+                include: {
+                    job: {
+                        include: {
+                            user: {
+                                select: {
+                                    companyName: true,
+                                    fullName: true
+                                }
+                            }
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip,
+                take
+            }),
+            prisma.jobApplication.count({
+                where: whereClause
+            })
+        ])
+        return { jobAplication, count }
+    },
+
 
     // for web 
 
@@ -366,8 +411,6 @@ const JobModel = {
 
         return job
     },
-
-    //for web
 
     // async applyJob(userId, jobId) {
     //     const checkProfileCompletion = await prisma.user.findUnique({

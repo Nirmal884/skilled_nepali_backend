@@ -184,6 +184,27 @@ const JobController = {
         }
     },
 
+    async listJobApplicaton(req, res) {
+        try {
+            const { page, limit, userId, search, status } = req.query;
+            const { jobAplication, count, message } = await JobService.listJobApplicaton(userId, Number(page), Number(limit), search, status)
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: jobAplication,
+                count: count,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            })
+        }
+    },
+
     // for web
     async listAllApprovedJobs(req, res) {
         try {
