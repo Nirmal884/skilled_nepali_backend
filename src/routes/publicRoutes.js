@@ -4,7 +4,7 @@ const ApplicantTypeController = require('../controllers/applicantType.controller
 const upload = require('../middleware/multer');
 const UserController = require('../controllers/user.controller');
 const loginLimiter = require('../middleware/ratelimiter');
-const { authenticate } = require('../middleware/auth.middleware');
+const { authenticate, optionalAuthenticate, authorize } = require('../middleware/auth.middleware');
 const JobController = require('../controllers/job.controller');
 const AdminDashboardController = require('../controllers/admin.controller');
 const SkillsController = require('../controllers/skills.controller');
@@ -69,8 +69,8 @@ router.get('/list-delete-requested-jobs', authenticate, JobController.listDelete
 router.post('/approve-job-deletion', authenticate, JobController.approveDeletion)
 router.post('/cancel-job-deletion-request', authenticate, JobController.cancelDeletionRequest)
 router.get('/list-all-verified-jobs', JobController.listAllApprovedJobs)
-router.get('/fetch-job-by-id/:jobId', JobController.fetchJobById)
-router.post('/apply-job', authenticate, JobController.applyJob)
+router.get('/fetch-job-by-id/:jobId', optionalAuthenticate, JobController.fetchJobById)
+router.post('/apply-job', authenticate, authorize('JOBSEEKER'), JobController.applyJob)
 
 // admin router
 router.get('/get-admin-dashboard-stats', authenticate, AdminDashboardController.getAdminDashboardStats)
