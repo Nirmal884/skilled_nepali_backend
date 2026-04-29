@@ -19,8 +19,8 @@ const JobService = {
     },
 
     async listJobForDashboard(page, limit, userId) {
-        const { jobs, totalJobs, activeJobs, pendingJobs } = await JobModel.listJobForDashboard(Number(page), Number(limit), userId)
-        return { jobs, totalJobs, activeJobs, pendingJobs, message: "Jobs fetched successfully" }
+        const { jobs, totalJobs, activeJobs, pendingJobs, totalJobApplications, todaysApplications } = await JobModel.listJobForDashboard(Number(page), Number(limit), userId)
+        return { jobs, totalJobs, activeJobs, pendingJobs, totalJobApplications, todaysApplications, message: "Jobs fetched successfully" }
     },
 
     async adminApproveJob(jobId, status) {
@@ -48,8 +48,8 @@ const JobService = {
         return { jobResponse, message: "Job deletion request cancelled successfully" }
     },
 
-    async listJobApplicaton(userId, page, limit, search, status) {
-        const { jobAplication, count } = await JobModel.listJobApplicaton(userId, Number(page), Number(limit), search, status)
+    async listJobApplicaton(userId, page, limit, search, status, employerId) {
+        const { jobAplication, count } = await JobModel.listJobApplicaton(userId, Number(page), Number(limit), search, status, employerId)
         return { jobAplication, count, message: "Job applications fetched successfully" }
     },
 

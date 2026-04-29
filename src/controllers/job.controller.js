@@ -43,7 +43,7 @@ const JobController = {
     async listJobForDashboard(req, res) {
         try {
             const { page, limit, userId } = req.query;
-            const { jobs, totalJobs, activeJobs, pendingJobs, message } = await JobService.listJobForDashboard(Number(page), Number(limit), userId)
+            const { jobs, totalJobs, activeJobs, pendingJobs, totalJobApplications, todaysApplications, message } = await JobService.listJobForDashboard(Number(page), Number(limit), userId)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
@@ -51,6 +51,8 @@ const JobController = {
                 totalJobs: totalJobs,
                 activeJobs: activeJobs,
                 pendingJobs: pendingJobs,
+                totalJobApplications: totalJobApplications,
+                todaysApplications: todaysApplications,
                 message: message
             })
         } catch (error) {
@@ -186,8 +188,8 @@ const JobController = {
 
     async listJobApplicaton(req, res) {
         try {
-            const { page, limit, userId, search, status } = req.query;
-            const { jobAplication, count, message } = await JobService.listJobApplicaton(userId, Number(page), Number(limit), search, status)
+            const { page, limit, userId, search, status, employerId } = req.query;
+            const { jobAplication, count, message } = await JobService.listJobApplicaton(userId, Number(page), Number(limit), search, status, employerId)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,

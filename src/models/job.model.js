@@ -59,6 +59,11 @@ const JobModel = {
                     select: {
                         companyName: true
                     }
+                },
+                _count: {
+                    select: {
+                        jobApplications: true
+                    }
                 }
             },
             orderBy: {
@@ -86,7 +91,7 @@ const JobModel = {
             ]
         };
 
-        const [jobs, totalJobs, activeJobs, pendingJobs] = await prisma.$transaction([
+        const [jobs, totalJobs, activeJobs, pendingJobs, totalJobApplications, todaysApplications] = await prisma.$transaction([
             prisma.jobs.findMany({
                 where: whereCondition,
                 select: {
@@ -119,10 +124,27 @@ const JobModel = {
                     ...whereCondition,
                     adminApprovalStatus: "PENDING"
                 }
+            }),
+            prisma.jobApplication.count({
+                where: {
+                    job: {
+                        userId: userId
+                    }
+                }
+            }),
+            prisma.jobApplication.count({
+                where: {
+                    job: {
+                        userId: userId
+                    },
+                    createdAt: {
+                        gte: new Date(new Date().setHours(0, 0, 0, 0))
+                    }
+                }
             })
         ]);
 
-        return { jobs, totalJobs, activeJobs, pendingJobs };
+        return { jobs, totalJobs, activeJobs, pendingJobs, totalJobApplications, todaysApplications };
     },
 
     async adminApproveJob(jobId, status) {
@@ -238,20 +260,37 @@ const JobModel = {
         return jobData;
     },
 
-    async listJobApplicaton(userId, page, limit, search, status) {
+    async listJobApplicaton(userId, page, limit, search, status, employerId) {
         const skip = page ? (page - 1) * limit : 0;
         const take = limit ? limit : 10;
 
         const whereClause = {
-            userId: userId,
+            ...(userId && { userId: userId }),
+            ...(employerId && {
+                job: {
+                    userId: employerId
+                }
+            }),
             ...(status && { status }),
             ...(search && {
-                job: {
-                    title: {
-                        contains: search,
-                        mode: 'insensitive'
+                OR: [
+                    {
+                        job: {
+                            title: {
+                                contains: search,
+                                mode: 'insensitive'
+                            }
+                        }
+                    },
+                    {
+                        user: {
+                            fullName: {
+                                contains: search,
+                                mode: 'insensitive'
+                            }
+                        }
                     }
-                }
+                ]
             })
         };
 
@@ -259,6 +298,13 @@ const JobModel = {
             prisma.jobApplication.findMany({
                 where: whereClause,
                 include: {
+                    user: {
+                        select: {
+                            fullName: true,
+                            email: true,
+                            phone: true
+                        }
+                    },
                     job: {
                         include: {
                             user: {
