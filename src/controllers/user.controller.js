@@ -38,6 +38,25 @@ const UserController = {
         return res.status(200).json({ success: true, statusCode: 200, message: "Successfully logged out" });
     },
 
+    async updateResume(req, res) {
+        try {
+            const userId = req.user.id;
+            const files = req.files;
+            const { updatedUser, message } = await UserService.updateResume(userId, files)
+            return res.status(200).json({
+                success: true,
+                data: updatedUser,
+                message: message
+            })
+        } catch (error) {
+            console.log("Error:", error)
+            return res.status(500).json({
+                success: false,
+                message: error?.message || "Internal server error"
+            })
+        }
+    },
+
     async getAllUsers(req, res) {
         try {
             const { role, search, page, limit } = req.query;

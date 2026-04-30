@@ -54,6 +54,13 @@ const UserModel = {
         return updatedUser;
     },
 
+    async updateResume(userId, resumePath) {
+        return await prisma.user.update({
+            where: { id: userId },
+            data: { resume: resumePath }
+        });
+    },
+
     async findUserByEmail(email) {
         const userList = await prisma.user.findFirst({
             where: { email: email, deletedAt: null }

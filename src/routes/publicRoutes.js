@@ -25,6 +25,9 @@ router.post("/update-logo", authenticate, upload.fields([
     { name: 'companyLogo', maxCount: 1 },
     { name: 'centreLogo', maxCount: 1 }
 ]), UserController.updateLogo);
+router.post("/update-resume", authenticate, upload.fields([
+    { name: 'resume', maxCount: 1 }
+]), UserController.updateResume);
 router.get("/get-all-users", authenticate, UserController.getAllUsers);
 router.delete("/delete-user/:id", authenticate, UserController.deleteUser);
 router.get("/get-user-profile/:id", authenticate, UserController.getUserProfile);

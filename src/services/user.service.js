@@ -43,7 +43,6 @@ const UserService = {
     async login(email, passowrd) {
 
         const user = await UserModel.findUserByEmail(email);
-        console.log(user, "USER", email)
         if (!user) {
             const error = new Error('Invalid Credentials')
             error.statusCode = 401;
@@ -65,7 +64,8 @@ const UserService = {
             companyName: user.companyName,
             companyLogo: user.companyLogo,
             centreName: user.centreName,
-            centreLogo: user.centreLogo
+            centreLogo: user.centreLogo,
+            resume: user.resume
         }, process.env.JWT_SECRET, { expiresIn: '24h' })
 
         return ({
@@ -80,7 +80,7 @@ const UserService = {
                 companyLogo: user.companyLogo,
                 centreName: user.centreName,
                 centreLogo: user.centreLogo,
-
+                resume: user.resume
             }
         })
 
@@ -97,6 +97,15 @@ const UserService = {
             const updatedUser = await UserModel.updateLogo(userId, role, uploadedLogo.Location);
             return { updatedUser, message: "Logo updated successfully" };
         }
+    },
+
+    async updateResume(userId, files) {
+        if (files.resume) {
+            const uploadedResume = await uploadToS3(files.resume[0].buffer, files.resume[0].originalname, files.resume[0].mimetype, "documents");
+            const updatedUser = await UserModel.updateResume(userId, uploadedResume.Location);
+            return { updatedUser, message: "Resume updated successfully" };
+        }
+        throw new Error("Resume file is required");
     },
 
     async getAllUsers(role, search, page, limit) {
