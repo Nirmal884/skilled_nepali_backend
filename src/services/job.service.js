@@ -59,8 +59,8 @@ const JobService = {
     },
 
     // for web
-    async listAllApprovedJobs(page, limit, search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray) {
-        const { jobs, totalJobs } = await JobModel.listAllApprovedJobs(Number(page), Number(limit), search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray)
+    async listAllApprovedJobs(page, limit, search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray, isRecommended, userId) {
+        const { jobs, totalJobs } = await JobModel.listAllApprovedJobs(Number(page), Number(limit), search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray, isRecommended, userId)
         return { jobs, totalJobs, message: "Jobs fetched successfully" }
     },
 

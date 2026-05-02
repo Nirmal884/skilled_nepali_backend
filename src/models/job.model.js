@@ -358,7 +358,7 @@ const JobModel = {
 
     // for web 
 
-    async listAllApprovedJobs(page, limit, search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray) {
+    async listAllApprovedJobs(page, limit, search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray, isRecommended, userId) {
         const skip = page ? (page - 1) * limit : 0;
         const take = limit ? limit : 10;
 
@@ -369,9 +369,21 @@ const JobModel = {
                 { deletionReason: "" },
                 { deletionReason: null }
             ]
-            // deletionReason: { in: ["", null] },
-            // AND: []
         }
+
+        let filterCategoryIds = [];
+        if (isRecommended === true || isRecommended === 'true') {
+            if (userId) {
+                const user = await prisma.user.findUnique({
+                    where: { id: userId },
+                    include: { jobCategories: true }
+                });
+                if (user && user.jobCategories.length > 0) {
+                    filterCategoryIds = user.jobCategories.map(cat => cat.id);
+                }
+            }
+        }
+
         if (isUrgent === true || isUrgent === 'true') {
             where.isUrgent = true
         }
@@ -397,9 +409,18 @@ const JobModel = {
             const cleanArray = jobCategoryList
                 .map(id => id.trim())
                 .filter(id => id !== "" && id !== "undefined" && id !== "null");
+
             if (cleanArray.length > 0) {
-                where.jobCategoryId = { in: cleanArray };
+                if (filterCategoryIds.length > 0) {
+                    filterCategoryIds = cleanArray.filter(id => filterCategoryIds.includes(id));
+                } else {
+                    filterCategoryIds = cleanArray;
+                }
             }
+        }
+
+        if (filterCategoryIds.length > 0) {
+            where.jobCategoryId = { in: filterCategoryIds };
         }
 
         if (experienceArray) {

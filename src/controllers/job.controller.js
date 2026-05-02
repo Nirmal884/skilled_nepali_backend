@@ -233,8 +233,9 @@ const JobController = {
     // for web
     async listAllApprovedJobs(req, res) {
         try {
-            const { page, limit, search, isUrgent, freshersOnly, "countries[]": countryArray, "jobCategories[]": jobCategoryArray, "experience[]": experienceArray, "jobType[]": jobTypeArray } = req.query;
-            const { jobs, totalJobs, message } = await JobService.listAllApprovedJobs(Number(page), Number(limit), search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray)
+            const { page, limit, search, isUrgent, freshersOnly, isRecommended, "countries[]": countryArray, "jobCategories[]": jobCategoryArray, "experience[]": experienceArray, "jobType[]": jobTypeArray } = req.query;
+            const userId = req.user?.id;
+            const { jobs, totalJobs, message } = await JobService.listAllApprovedJobs(Number(page), Number(limit), search, isUrgent, freshersOnly, countryArray, jobCategoryArray, experienceArray, jobTypeArray, isRecommended, userId)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
