@@ -588,8 +588,6 @@ const JobModel = {
         if (!user.phone || user.phone.trim() === "") missingFields.push("Phone");
         if (!user.title) missingFields.push("Title");
         if (user.country === null || user.country === undefined) missingFields.push("Country");
-        if (user.workExperiences.length === 0) missingFields.push("Experience");
-        if (!user.resume) missingFields.push("Resume");
         if (user.skills.length === 0) missingFields.push("Skills");
         if (user.educations.length === 0) missingFields.push("Education");
 

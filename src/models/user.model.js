@@ -223,7 +223,6 @@ const UserModel = {
     // },
 
     async updateProfile(userId, data) {
-        console.log(data, "DATA");
 
         const updateData = {
             ...(data.fullName && { fullName: data.fullName }),
@@ -277,8 +276,8 @@ const UserModel = {
                 data: {
                     title: title,
                     companyName: companyName,
-                    startDate: startDate,
-                    endDate: endDate,
+                    startDate: startDate ? new Date(startDate) : undefined,
+                    endDate: endDate ? new Date(endDate) : null,
                     isCurrent: isCurrent,
                     description: description
                 }
@@ -290,8 +289,8 @@ const UserModel = {
                     userId: userId,
                     title: title,
                     companyName: companyName,
-                    startDate: startDate,
-                    endDate: endDate,
+                    startDate: startDate ? new Date(startDate) : undefined,
+                    endDate: endDate ? new Date(endDate) : null,
                     isCurrent: isCurrent,
                     description: description
                 }
@@ -322,8 +321,8 @@ const UserModel = {
                 data: {
                     fieldOfStudy: fieldOfStudy,
                     institution: institution,
-                    startDate: startDate,
-                    endDate: endDate,
+                    startDate: startDate ? new Date(startDate) : undefined,
+                    endDate: endDate ? new Date(endDate) : null,
                     isCompleted: isCompleted
                 }
             })
@@ -334,8 +333,8 @@ const UserModel = {
                     userId: userId,
                     fieldOfStudy: fieldOfStudy,
                     institution: institution,
-                    startDate: startDate,
-                    endDate: endDate,
+                    startDate: startDate ? new Date(startDate) : undefined,
+                    endDate: endDate ? new Date(endDate) : null,
                     isCompleted: isCompleted
                 }
             })
@@ -365,7 +364,7 @@ const UserModel = {
                 data: {
                     certificationName: certificationName,
                     issuingAuthority: issuingAuthority,
-                    issueDate: issueDate
+                    issueDate: issueDate ? new Date(issueDate) : undefined
                 }
             })
             return updateCertification;
@@ -375,7 +374,7 @@ const UserModel = {
                     userId: userId,
                     certificationName: certificationName,
                     issuingAuthority: issuingAuthority,
-                    issueDate: issueDate
+                    issueDate: issueDate ? new Date(issueDate) : undefined
                 }
             })
             return createCertification;
