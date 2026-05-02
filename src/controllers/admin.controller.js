@@ -19,7 +19,49 @@ const AdminDashboardController = {
                 message: statusCode === 500 ? "Internal Server Error" : error.message
             });
         }
-    }
+    },
+
+    async getUserGrowthGraphStats(req, res) {
+        try {
+            const { period } = req.query;
+            const stats = await AdminDashboardService.getUserGrowthGraphStats(period);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "User growth graph stats fetched successfully",
+                data: stats
+            });
+        } catch (error) {
+            console.error('Error fetching user growth graph stats:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: statusCode === 500 ? "Internal Server Error" : error.message
+            });
+        }
+    },
+
+    async getTotalApplicationsGraphStats(req, res) {
+        try {
+            const { period } = req.query;
+            const stats = await AdminDashboardService.getTotalApplicationsGraphStats(period);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Total applications graph stats fetched successfully",
+                data: stats
+            });
+        } catch (error) {
+            console.error('Error fetching total applications graph stats:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: statusCode === 500 ? "Internal Server Error" : error.message
+            });
+        }
+    },
 }
 
 module.exports = AdminDashboardController;
