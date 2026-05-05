@@ -91,7 +91,14 @@ const UserModel = {
         }
 
         const [users, count] = await prisma.$transaction([
-            prisma.user.findMany({ where: whereClause, skip: page ? (page - 1) * limit : 0, take: limit ? limit : 10 }),
+            prisma.user.findMany({
+                where: whereClause,
+                skip: page ? (page - 1) * limit : 0,
+                take: limit ? limit : 10,
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            }),
             prisma.user.count({ where: whereClause })
         ]);
         return { users, count };

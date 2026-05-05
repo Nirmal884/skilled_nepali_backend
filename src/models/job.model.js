@@ -153,7 +153,8 @@ const JobModel = {
                 id: jobId
             },
             data: {
-                adminApprovalStatus: status
+                adminApprovalStatus: status,
+                adminApprovedOn: new Date()
             }
         })
         return jobData;
