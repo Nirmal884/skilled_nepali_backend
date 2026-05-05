@@ -9,6 +9,7 @@ const JobController = require('../controllers/job.controller');
 const AdminDashboardController = require('../controllers/admin.controller');
 const SkillsController = require('../controllers/skills.controller');
 const TestimonialsController = require('../controllers/testimonials.controller');
+const NewsLetterController = require('../controllers/newsletter.controller');
 const router = express.Router();
 
 // users routes
@@ -81,5 +82,8 @@ router.patch('/update-job-status', authenticate, JobController.updateJobApplicat
 router.get('/get-admin-dashboard-stats', authenticate, AdminDashboardController.getAdminDashboardStats)
 router.get('/get-user-growth-graph-stats', authenticate, AdminDashboardController.getUserGrowthGraphStats)
 router.get('/get-total-applications-graph-stats', authenticate, AdminDashboardController.getTotalApplicationsGraphStats)
+
+// news letter router
+router.post('/subscribe', NewsLetterController.subscribe)
 
 module.exports = router;
