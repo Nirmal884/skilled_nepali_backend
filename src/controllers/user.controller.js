@@ -38,6 +38,42 @@ const UserController = {
         return res.status(200).json({ success: true, statusCode: 200, message: "Successfully logged out" });
     },
 
+    async sendOtpForPasswordChange(req, res) {
+        try {
+            const { number } = req.body;
+            const { message } = await UserService.sendOtpForPasswordChange(number);
+            return res.status(200).json({ success: true, statusCode: 200, message: message });
+        } catch (error) {
+            console.error('Error sending OTP for password change:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
+
+    async verifyOtpForPasswordChange(req, res) {
+        try {
+            const { number, otp } = req.body;
+            const { updatedUser, message } = await UserService.verifyOtpForPasswordChange(number, otp);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: updatedUser });
+        } catch (error) {
+            console.error('Error verifying OTP for password change:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
+
+    async changePassword(req, res) {
+        try {
+            const { userId, password } = req.body;
+            const { updatedUser, message } = await UserService.changePassword(userId, password);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: updatedUser });
+        } catch (error) {
+            console.error('Error changing password:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
+
     async updateResume(req, res) {
         try {
             const userId = req.user.id;

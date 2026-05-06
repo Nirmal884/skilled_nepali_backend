@@ -41,6 +41,8 @@ model User {
   certifications    Certifications[]
   isAdminApproved   Boolean          @default(false)
   jobApplications   JobApplication[]
+  otp               String?
+  otpExpiry         DateTime?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   deletedAt         DateTime?

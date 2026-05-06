@@ -86,6 +86,22 @@ const UserService = {
 
     },
 
+    async sendOtpForPasswordChange(number) {
+        const updatedUser = await UserModel.sendOtpForPasswordChange(number);
+        return { updatedUser, message: "OTP sent successfully" };
+    },
+
+    async verifyOtpForPasswordChange(number, otp) {
+        const updatedUser = await UserModel.verifyOtpForPasswordChange(number, otp);
+        return { updatedUser, message: "OTP verified successfully" };
+    },
+
+    async changePassword(userId, password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const updatedUser = await UserModel.changePassword(userId, hashedPassword);
+        return { updatedUser, message: "Password changed successfully" };
+    },
+
     async updateLogo(userId, role, files) {
         if (files.companyLogo) {
             const uploadedLogo = await uploadToS3(files.companyLogo[0].buffer, files.companyLogo[0].originalname, files.companyLogo[0].mimetype, "images");

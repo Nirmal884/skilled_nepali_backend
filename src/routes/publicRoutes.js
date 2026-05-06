@@ -20,6 +20,9 @@ router.post("/create-user", upload.fields([
 ]), UserController.createUser);
 router.post("/login", loginLimiter, UserController.login);
 router.post("/logout", UserController.logout);
+router.post("/send-otp-for-password-change", UserController.sendOtpForPasswordChange);
+router.post("/verify-otp-for-password-change", UserController.verifyOtpForPasswordChange);
+router.post("/change-password", UserController.changePassword);
 router.get("/me", authenticate, UserController.getMe);
 router.post("/verify-phone", UserController.verifyPhone);
 router.post("/update-logo", authenticate, upload.fields([

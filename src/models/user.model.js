@@ -37,6 +37,48 @@ const UserModel = {
         return userData;
     },
 
+    async sendOtpForPasswordChange(number) {
+        const user = await prisma.user.findFirst({
+            where: { phone: number, deletedAt: null }
+        })
+        if (!user) {
+            throw new Error("User not found");
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log(otp, "OTP")
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                otp: otp,
+                otpExpiry: new Date(Date.now() + 10 * 60 * 1000)
+            }
+        })
+        return updatedUser;
+    },
+
+    async verifyOtpForPasswordChange(number, otp) {
+        const user = await prisma.user.findFirst({
+            where: { phone: number, otp: otp, deletedAt: null }
+        })
+        if (!user) {
+            throw new Error("Invalid OTP");
+        }
+        if (user.otpExpiry < new Date()) {
+            throw new Error("OTP expired");
+        }
+        return user;
+    },
+
+    async changePassword(userId, password) {
+        const user = await prisma.user.update({
+            where: { id: userId },
+            data: { password: password }
+        })
+        return user;
+    },
+
     async updateLogo(userId, role, logo) {
         const data = {};
         if (role === "EMPLOYER") {
