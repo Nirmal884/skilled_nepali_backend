@@ -1,9 +1,10 @@
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
     skipSuccessfulRequests: true,
+    keyGenerator: (req) => req.ip,
     handler: (req, res, next, options) => {
         return res.status(options.statusCode).json({
             success: false,
