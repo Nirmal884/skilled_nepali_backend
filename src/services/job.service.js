@@ -71,6 +71,12 @@ const JobService = {
         return { job, countryName }
     },
 
+    //expire jobs wich past deadline
+    async expirePastDeadlineJob() {
+        const result = await JobModel.expirePastDeadlineJob()
+        return { result, message: "Jobs expired successfully" }
+    },
+
     async applyJob(userId, jobId) {
         const jobApplication = await JobModel.applyJob(userId, jobId)
         return { jobApplication, message: "Job applied successfully" }

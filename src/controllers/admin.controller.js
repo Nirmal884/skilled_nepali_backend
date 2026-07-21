@@ -62,6 +62,34 @@ const AdminDashboardController = {
             });
         }
     },
+
+    async downloadUsersExcel(req, res) {
+        try {
+
+            const { role } = req.query;
+
+            const { buffer, count, message } = await AdminDashboardService.dowloadUsersExcel(role);
+
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=users-list.xlsx'
+            );
+
+            return res.status(200).send(buffer);
+        } catch (error) {
+            console.error('Error fetching users excel:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: statusCode === 500 ? "Internal Server Error" : error.message
+            });
+        }
+    }
 }
 
 module.exports = AdminDashboardController;

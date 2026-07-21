@@ -258,6 +258,27 @@ const AdminDashboardModel = {
         }
 
         return filled;
+    },
+
+    async downloadUserExcel(role) {
+        const [users, count] = await prisma.$transaction([
+            prisma.user.findMany({
+                where: {
+                    deletedAt: null,
+                    role: role,
+                },
+            }),
+            prisma.user.count({
+                where: {
+                    deletedAt: null,
+                    role: role
+                }
+            })
+        ])
+
+        const cleanedUsers = users.map(({ password, ...user }) => user);
+        return { users: cleanedUsers, count }
+
     }
 
 }

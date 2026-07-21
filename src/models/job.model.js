@@ -100,6 +100,11 @@ const JobModel = {
                     type: true,
                     createdAt: true,
                     adminApprovalStatus: true,
+                    _count: {
+                        select: {
+                            jobApplications: true
+                        }
+                    }
                 },
                 orderBy: {
                     createdAt: 'desc'
@@ -154,7 +159,8 @@ const JobModel = {
             },
             data: {
                 adminApprovalStatus: status,
-                adminApprovedOn: new Date()
+                adminApprovedOn: new Date(),
+                jobStatus: "ACTIVE"
             }
         })
         return jobData;
@@ -506,73 +512,26 @@ const JobModel = {
         return job
     },
 
-    // async applyJob(userId, jobId) {
-    //     const checkProfileCompletion = await prisma.user.findUnique({
-    //         where: {
-    //             id: userId
-    //         },
-    //         select: {
-    //             fullName: true,
-    //             email: true,
-    //             phone: true,
-    //             title: true,
-    //             country: true,
-    //             experience: true,
-    //             skills: {
-    //                 where: { deletedAt: null },
-    //                 select: { id: true }
-    //             },
-    //             educations: {
-    //                 where: { deletedAt: null },
-    //                 select: { id: true }
-    //             }
-    //         }
-    //     })
+    async expirePastDeadlineJob() {
+        const { count } = await prisma.jobs.updateMany({
+            where: {
+                deadLine: {
+                    lt: new Date()
+                },
+                jobStatus: {
+                    in: ["ACTIVE", "PENDING"]
+                },
+                adminApprovalStatus: "APPROVED",
+                deletedAt: null
+            },
+            data: {
+                jobStatus: "EXPIRED",
+            }
+        })
 
-    //     const missingFields = [];
+        return count;
+    },
 
-    //     if (!checkProfileCompletion.email) missingFields.push("Email");
-    //     if (!checkProfileCompletion.phone) missingFields.push("Phone");
-    //     if (!checkProfileCompletion.title) missingFields.push("Title");
-    //     if (!checkProfileCompletion.country) missingFields.push("Country");
-    //     if (checkProfileCompletion.skills.length === 0) missingFields.push("Skills");
-    //     if (!checkProfileCompletion.experience) missingFields.push("Experience");
-    //     if (checkProfileCompletion.educations.length === 0) missingFields.push("Education");
-
-    //     if (missingFields.length > 0) {
-    //         throw {
-    //             code: "PROFILE_INCOMPLETE",
-    //             message: "Complete your profile before applying",
-    //             missingFields
-    //         };
-    //     }
-
-    //     //check if user has already applied for this job
-    //     const existingApplication = await prisma.jobApplication.findFirst({
-    //         where: {
-    //             userId: userId,
-    //             jobId: jobId
-    //         }
-    //     })
-
-    //     if (existingApplication) {
-    //         throw {
-    //             code: "ALREADY_APPLIED",
-    //             message: "You have already applied for this job"
-    //         }
-    //     }
-
-    //     const createdApplication = await prisma.jobApplication.create({
-    //         data: {
-    //             userId: userId,
-    //             jobId: jobId
-    //         }
-    //     })
-
-    //     return createdApplication;
-
-
-    // }
     async applyJob(userId, jobId) {
         const user = await prisma.user.findUnique({
             where: { id: userId },

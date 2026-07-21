@@ -85,6 +85,7 @@ router.patch('/update-job-status', authenticate, JobController.updateJobApplicat
 router.get('/get-admin-dashboard-stats', authenticate, AdminDashboardController.getAdminDashboardStats)
 router.get('/get-user-growth-graph-stats', authenticate, AdminDashboardController.getUserGrowthGraphStats)
 router.get('/get-total-applications-graph-stats', authenticate, AdminDashboardController.getTotalApplicationsGraphStats)
+router.get('/download-all-users-excel', authenticate, AdminDashboardController.downloadUsersExcel)
 
 // news letter router
 router.post('/subscribe', NewsLetterController.subscribe)

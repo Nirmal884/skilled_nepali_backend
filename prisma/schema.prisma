@@ -13,6 +13,7 @@ datasource db {
 
 model User {
   id                String           @id @default(uuid())
+  userId            Int              @default(autoincrement())
   email             String           @unique
   fullName          String
   title             String?
@@ -137,6 +138,7 @@ model Jobs {
   benefits                String[]            @default([])
   responsibilities        String[]            @default([])
   deadLine                DateTime?
+  jobStatus               JobStatus           @default(PENDING)
   isUrgent                Boolean             @default(false)
   noOfOpenings            Int                 @default(1)
   userId                  String
@@ -234,6 +236,13 @@ enum JobType {
   PART_TIME
   CONTRACT
   INTERNSHIP
+}
+
+enum JobStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  DELETED
 }
 
 enum AdminApprovalStatus {
