@@ -371,6 +371,7 @@ const JobModel = {
 
         const where = {
             adminApprovalStatus: "APPROVED",
+            jobStatus: "ACTIVE",
             deletedAt: null,
             OR: [
                 { deletionReason: "" },
