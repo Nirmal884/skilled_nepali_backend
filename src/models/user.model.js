@@ -143,7 +143,9 @@ const UserModel = {
             }),
             prisma.user.count({ where: whereClause })
         ]);
-        return { users, count };
+
+        const cleanedUser = users?.map(({ password, ...user }) => user)
+        return { users: cleanedUser, count };
     },
 
     async deleteUser(userId) {
