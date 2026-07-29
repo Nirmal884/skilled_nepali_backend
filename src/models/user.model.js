@@ -285,7 +285,15 @@ const UserModel = {
             ...(data.experience && { experience: data.experience }),
             ...(data.pastExperience && { pastExperience: data.pastExperience }),
             ...(data.resume && { resume: data.resume }),
+            ...(data.centreName && { centreName: data.centreName }),
+            ...(data.address && { address: data.address }),
+            ...(data.website && { website: data.website }),
+            ...(data.about && { about: data.about }),
+            ...(data.latitude && { latitude: data.latitude }),
+            ...(data.longitude && { longitude: data.longitude }),
         };
+
+        console.log(updateData, "UPDATE*&*&*&*")
 
         if (data.skills && Array.isArray(data.skills)) {
             const skillsToConnect = [];

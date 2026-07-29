@@ -44,9 +44,16 @@ model User {
   jobApplications   JobApplication[]
   otp               String?
   otpExpiry         DateTime?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  deletedAt         DateTime?
+  // training centre data 
+  website           String?          @default("")
+  about             String?
+  address           String?
+  latitude          Float?
+  longitude         Float?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("user_profiles")
 }
