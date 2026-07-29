@@ -13,7 +13,7 @@ app.use(
         origin: [
             "http://localhost:3000",
             "http://localhost:5173",
-            "https://cms.kaamdaar.owlstip.com/"
+            "https://cms.kaamdaar.owlstip.com"
         ],
         credentials: true
     })
