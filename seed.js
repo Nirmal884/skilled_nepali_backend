@@ -160,9 +160,9 @@ async function seedApplicantTypes() {
 
 async function seedAdmin() {
     console.log('Seeding Admin user...');
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const hashedPassword = await bcrypt.hash('Admin@2026', 10);
     const adminData = {
-        email: 'admin@skillednepali.com',
+        email: 'admin@kaamdaar.com',
         fullName: 'System Administrator',
         password: hashedPassword,
         country: 1,
@@ -199,9 +199,9 @@ async function seedSkills() {
 
 async function runSeed() {
     try {
-        // await seedJobCategories();
-        // await seedApplicantTypes();
-        // await seedAdmin();
+        await seedJobCategories();
+        await seedApplicantTypes();
+        await seedAdmin();
         await seedSkills();
         console.log('🚀 Seeding completed successfully!');
     } catch (e) {
