@@ -91,6 +91,7 @@ const AdminDashboardModel = {
             FROM "user_profiles"
             WHERE "createdAt" >= $1
               AND "createdAt" < $2
+              AND "role" <> 'ADMIN'
               AND "deletedAt" IS NULL
         ) as sub
         GROUP BY "${dateKey}"
