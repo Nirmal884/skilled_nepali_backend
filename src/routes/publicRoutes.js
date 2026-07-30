@@ -10,6 +10,7 @@ const AdminDashboardController = require('../controllers/admin.controller');
 const SkillsController = require('../controllers/skills.controller');
 const TestimonialsController = require('../controllers/testimonials.controller');
 const NewsLetterController = require('../controllers/newsletter.controller');
+const SubscriptionController = require('../controllers/subscription.controller');
 const router = express.Router();
 
 // users routes
@@ -89,5 +90,8 @@ router.get('/download-all-users-excel', authenticate, AdminDashboardController.d
 
 // news letter router
 router.post('/subscribe', NewsLetterController.subscribe)
+
+//subscription route
+router.post('/create-subscription', authenticate, SubscriptionController.createSubscription)
 
 module.exports = router;
