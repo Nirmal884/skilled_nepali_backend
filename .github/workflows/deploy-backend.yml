@@ -40,5 +40,9 @@ jobs:
 
             npm ci
 
+            npx prisma generate
+
+            npx prisma migrate deploy
+
 
             pm2 restart kaamdaar-api
