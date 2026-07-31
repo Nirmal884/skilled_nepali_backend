@@ -12,10 +12,11 @@ const SubscriptionModel = {
         if (existingSub && existingSub.status === "ACTIVE") {
             throw new Error("User already has an active subscription.");
         }
+        const isYearly = data?.planType?.includes('YEARLY');
 
         const razorpaySubscription = await razorpay.subscriptions.create({
             plan_id: data?.planId,
-            total_count: data?.total_count || 120,
+            total_count: isYearly ? 10 : 100,
             quantity: 1,
             customer_notify: 1
         });
