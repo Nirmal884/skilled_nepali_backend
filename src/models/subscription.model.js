@@ -18,7 +18,7 @@ const SubscriptionModel = {
             plan_id: data?.planId,
             total_count: isYearly ? 10 : 100,
             quantity: 1,
-            customer_notify: 1
+            customer_notify: 0
         });
 
         console.log(razorpaySubscription, "RZP_Payment details *****")
