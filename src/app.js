@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const publicRoutes = require('./routes/publicRoutes')
+const webhookRoutes = require('./routes/webhookRoutes')
 
 
 const app = express();
@@ -19,6 +20,12 @@ app.use(
         credentials: true
     })
 )
+
+app.use(
+    '/api/v1/webhooks',
+    express.raw({ type: 'application/json' }),
+    webhookRoutes
+);
 
 app.use(express.json())
 app.use(cookieParser())
