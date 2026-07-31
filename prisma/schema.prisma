@@ -44,6 +44,7 @@ model User {
   jobApplications   JobApplication[]
   otp               String?
   otpExpiry         DateTime?
+  subscriptions     Subscriptions[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   deletedAt         DateTime?
@@ -224,6 +225,25 @@ model NewsLetter {
   @@map("news_letters")
 }
 
+model Subscriptions {
+  id                String     @id @default(uuid())
+  userId            String     @unique
+  razorpaySubId     String     @unique
+  planId            String
+  planType          PlanType
+  status            PlanStatus
+  cancelAtPeriodEnd Boolean    @default(false)
+  currentCycleStart DateTime?
+  currentCycleEnd   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
 enum Role {
   JOBSEEKER
   EMPLOYER
@@ -264,4 +284,20 @@ enum ApplicationStatus {
   SHORTLISTED
   REJECTED
   HIRED
+}
+
+enum PlanStatus {
+  CREATED // Created in DB/Razorpay, but payment not completed yet
+  AUTHENTICATED // First payment authorized
+  ACTIVE // Subscription is active and paid
+  PAST_DUE // Auto-debit renewal failed (payment issue)
+  CANCELLED // Subscription cancelled by user or admin
+  COMPLETED // Max billing cycles reached
+}
+
+enum PlanType {
+  MONTHLY_ELITE
+  MONTHLY_PLATINUM
+  YEARLY_ELITE
+  YEARLY_PLATINUM
 }
