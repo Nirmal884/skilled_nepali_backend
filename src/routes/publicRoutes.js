@@ -94,4 +94,7 @@ router.post('/subscribe', NewsLetterController.subscribe)
 //subscription route
 router.post('/create-subscription', authenticate, SubscriptionController.createSubscription)
 
+//verify subscription
+router.post('/verify-subscription', authenticate, SubscriptionController.verifySubscription)
+
 module.exports = router;

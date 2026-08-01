@@ -47,6 +47,43 @@ const SubscriptionModel = {
         });
 
         return { subData, keyId, razorpaySubId: razorpaySubscription.id };
+    },
+
+    async verifySubscription(data) {
+        const { razorpay_subscription_id } = data;
+
+        if (!razorpay_subscription_id) {
+            throw new Error('Subscription ID is required');
+        }
+
+        const razorpaySub = await razorpay.subscriptions.fetch(razorpay_subscription_id);
+
+        if (!razorpaySub) {
+            throw new Error('Subscription not found');
+        }
+
+        if (razorpaySub.status === 'active' || razorpaySub.status === 'authenticated') {
+            const currentCycleStart = razorpaySub.current_start
+                ? new Date(razorpaySub.current_start * 1000)
+                : new Date();
+
+            const currentCycleEnd = razorpaySub.current_end
+                ? new Date(razorpaySub.current_end * 1000)
+                : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+            const updateSub = await prisma.subscriptions.update({
+                where: { razorpaySubId: razorpay_subscription_id },
+                data: {
+                    status: 'ACTIVE',
+                    currentCycleStart: currentCycleStart,
+                    currentCycleEnd: currentCycleEnd
+                }
+            });
+
+            return updateSub;
+        } else {
+            throw new Error('Subscription is not active');
+        }
     }
 };
 

@@ -29,6 +29,30 @@ const SubscriptionController = {
                 error: error.message
             });
         }
+    },
+
+    async verifySubscription(req, res) {
+        try {
+            const { razorpay_subscription_id } = req.body;
+            if (!razorpay_subscription_id) {
+                throw new Error("Please provide subscription ID");
+            }
+            const updatedSub = await SubsciptionService.verifySubscription({ razorpay_subscription_id });
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Subscription verified successfully",
+                data: updatedSub
+            });
+        } catch (error) {
+            console.log("subscription:", error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Failed to verify subscription",
+                error: error.message
+            });
+        }
     }
 }
 

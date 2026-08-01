@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-const prisma = require('../config/db')
+const prisma = require('../config/db');
+const razorpay = require('../config/razorpay');
 
 
 router.post('/razorpay', async (req, res) => {
