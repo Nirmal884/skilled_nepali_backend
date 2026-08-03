@@ -132,8 +132,9 @@ const UserController = {
 
     async getMe(req, res) {
         try {
-            const user = req.user;
-            return res.status(200).json({ success: true, statusCode: 200, data: { user } });
+            const userData = req.user;
+            const user = await UserService.getUserProfile(userData.id)
+            return res.status(200).json({ success: true, statusCode: 200, data: user });
         } catch (error) {
             console.error('Error fetching user:', error);
             return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error' });

@@ -196,6 +196,64 @@ async function seedSkills() {
     }
 }
 
+async function seedPlans() {
+    console.log('Seeding plans...');
+    const plansToSeed = [
+        {
+            razorpayPlanId: 'plan_TGw0mEsbkNVMbg',
+            name: 'Employer Monthly Elite',
+            description: 'Elite subscription with monthly billing',
+            amount: 499900,
+            currency: 'INR',
+            period: 'MONTHLY',
+            interval: 1,
+            planType: 'MONTHLY_ELITE',
+            isActive: true,
+        },
+        {
+            razorpayPlanId: 'plan_TGw1N0QTFlpdd0',
+            name: 'Employer Monthly Platinum',
+            description: 'Platinum subscription with monthly billing',
+            amount: 1499900,
+            currency: 'INR',
+            period: 'MONTHLY',
+            interval: 1,
+            planType: 'MONTHLY_PLATINUM',
+            isActive: true,
+        },
+        {
+            razorpayPlanId: 'plan_TGw4euTex3wSJB',
+            name: 'Employer Yearly Elite',
+            description: 'Elite subscription with yearly billing',
+            amount: 4798800,
+            currency: 'INR',
+            period: 'YEARLY',
+            interval: 1,
+            planType: 'YEARLY_ELITE',
+            isActive: true,
+        },
+        {
+            razorpayPlanId: 'plan_TGw8whLvp0JRb6',
+            name: 'Employer Yearly Platinum',
+            description: 'Platinum subscription with yearly billing',
+            amount: 14398800,
+            currency: 'INR',
+            period: 'YEARLY',
+            interval: 1,
+            planType: 'YEARLY_PLATINUM',
+            isActive: true,
+        },
+    ];
+
+    for (const plan of plansToSeed) {
+        await prisma.plan.upsert({
+            where: { razorpayPlanId: plan.razorpayPlanId },
+            update: plan,
+            create: plan,
+        });
+    }
+    console.log(`✅ Seeded plans successfully.`);
+}
 
 async function runSeed() {
     try {
@@ -203,6 +261,7 @@ async function runSeed() {
         await seedApplicantTypes();
         await seedAdmin();
         await seedSkills();
+        await seedPlans();
         console.log('🚀 Seeding completed successfully!');
     } catch (e) {
         console.error('❌ Seeding failed:', e);
