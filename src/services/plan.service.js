@@ -30,7 +30,13 @@ const PlanService = {
             period: data.period.toUpperCase(),
             interval: data.interval || 1,
             planType: data.planType,
-            isActive: true
+            forRole: data.forRole,
+            isActive: true,
+            features: data.features,
+            jobPostingLimit: data.jobPostingLimit,
+            featuredJobCount: data.featuredJobCount,
+            hasResumeAccess: data.hasResumeAccess,
+            hasDirectChat: data.hasDirectChat
         });
 
         return newPlan;
@@ -42,8 +48,8 @@ const PlanService = {
     },
 
     // Get all plans
-    async getAllPlans(onlyActive) {
-        return await PlanModel.getAllPlans(onlyActive);
+    async getAllPlans(onlyActive, role) {
+        return await PlanModel.getAllPlans(onlyActive, role);
     }
 };
 

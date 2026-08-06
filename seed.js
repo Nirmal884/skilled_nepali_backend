@@ -198,6 +198,25 @@ async function seedSkills() {
 
 async function seedPlans() {
     console.log('Seeding plans...');
+    const eliteFeatures = [
+        "Post up to 5 jobs",
+        "1 Featured job posting",
+        "Email & chat support",
+        "Standard candidate matching",
+        "Basic employer profile"
+    ];
+
+    const platinumFeatures = [
+        "Post up to 15 jobs",
+        "5 Featured job postings",
+        "Unlimited Resume access",
+        "Direct chat with candidates",
+        "Priority support",
+        "Advanced candidate matching",
+        "Premium employer profile",
+        "Social media promotion"
+    ];
+
     const plansToSeed = [
         {
             razorpayPlanId: 'plan_TGw0mEsbkNVMbg',
@@ -208,7 +227,13 @@ async function seedPlans() {
             period: 'MONTHLY',
             interval: 1,
             planType: 'MONTHLY_ELITE',
+            forRole: 'EMPLOYER',
             isActive: true,
+            features: eliteFeatures,
+            jobPostingLimit: 5,
+            featuredJobCount: 1,
+            hasResumeAccess: false,
+            hasDirectChat: false,
         },
         {
             razorpayPlanId: 'plan_TGw1N0QTFlpdd0',
@@ -219,7 +244,13 @@ async function seedPlans() {
             period: 'MONTHLY',
             interval: 1,
             planType: 'MONTHLY_PLATINUM',
+            forRole: 'EMPLOYER',
             isActive: true,
+            features: platinumFeatures,
+            jobPostingLimit: 15,
+            featuredJobCount: 5,
+            hasResumeAccess: true,
+            hasDirectChat: true,
         },
         {
             razorpayPlanId: 'plan_TGw4euTex3wSJB',
@@ -230,7 +261,13 @@ async function seedPlans() {
             period: 'YEARLY',
             interval: 1,
             planType: 'YEARLY_ELITE',
+            forRole: 'EMPLOYER',
             isActive: true,
+            features: eliteFeatures,
+            jobPostingLimit: 5,
+            featuredJobCount: 1,
+            hasResumeAccess: false,
+            hasDirectChat: false,
         },
         {
             razorpayPlanId: 'plan_TGw8whLvp0JRb6',
@@ -241,7 +278,13 @@ async function seedPlans() {
             period: 'YEARLY',
             interval: 1,
             planType: 'YEARLY_PLATINUM',
+            forRole: 'EMPLOYER',
             isActive: true,
+            features: platinumFeatures,
+            jobPostingLimit: 15,
+            featuredJobCount: 5,
+            hasResumeAccess: true,
+            hasDirectChat: true,
         },
     ];
 
@@ -257,10 +300,10 @@ async function seedPlans() {
 
 async function runSeed() {
     try {
-        await seedJobCategories();
-        await seedApplicantTypes();
-        await seedAdmin();
-        await seedSkills();
+        // await seedJobCategories();
+        // await seedApplicantTypes();
+        // await seedAdmin();
+        // await seedSkills();
         await seedPlans();
         console.log('🚀 Seeding completed successfully!');
     } catch (e) {

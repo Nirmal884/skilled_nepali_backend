@@ -4,7 +4,20 @@ const PlanController = {
     // Create subscription plan (Admin only)
     async createPlan(req, res) {
         try {
-            const { name, description, amount, period, interval, planType } = req.body;
+            const {
+                name,
+                description,
+                amount,
+                period,
+                interval,
+                planType,
+                forRole,
+                features,
+                jobPostingLimit,
+                featuredJobCount,
+                hasResumeAccess,
+                hasDirectChat
+            } = req.body;
 
             // Validation
             if (!name || !amount || !period || !planType) {
@@ -33,13 +46,29 @@ const PlanController = {
                 });
             }
 
+            const allowedRoles = ["EMPLOYER", "TRAINING_CENTRE", "JOBSEEKER"];
+            const resolvedRole = forRole ? forRole.toUpperCase() : "EMPLOYER";
+            if (!allowedRoles.includes(resolvedRole)) {
+                return res.status(400).json({
+                    success: false,
+                    statusCode: 400,
+                    message: `Invalid forRole. Must be one of: ${allowedRoles.join(", ")}`
+                });
+            }
+
             const createdPlan = await PlanService.createPlan({
                 name,
                 description,
                 amount: Number(amount),
                 period,
                 interval: interval ? Number(interval) : 1,
-                planType
+                planType,
+                forRole: resolvedRole,
+                features: Array.isArray(features) ? features : [],
+                jobPostingLimit: jobPostingLimit !== undefined ? Number(jobPostingLimit) : 5,
+                featuredJobCount: featuredJobCount !== undefined ? Number(featuredJobCount) : 1,
+                hasResumeAccess: hasResumeAccess === true || hasResumeAccess === "true",
+                hasDirectChat: hasDirectChat === true || hasDirectChat === "true"
             });
 
             return res.status(201).json({
@@ -99,8 +128,9 @@ const PlanController = {
         try {
             // Default to returning only active plans, unless explicitly asked otherwise
             const onlyActive = req.query.onlyActive !== "false";
+            const role = req.query.role;
 
-            const plans = await PlanService.getAllPlans(onlyActive);
+            const plans = await PlanService.getAllPlans(onlyActive, role);
 
             return res.status(200).json({
                 success: true,

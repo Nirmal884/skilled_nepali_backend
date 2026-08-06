@@ -13,7 +13,13 @@ const PlanModel = {
                 period: data.period,
                 interval: data.interval || 1,
                 planType: data.planType,
+                forRole: data.forRole,
                 isActive: data.isActive !== undefined ? data.isActive : true,
+                features: data.features || [],
+                jobPostingLimit: data.jobPostingLimit !== undefined ? data.jobPostingLimit : 5,
+                featuredJobCount: data.featuredJobCount !== undefined ? data.featuredJobCount : 1,
+                hasResumeAccess: data.hasResumeAccess !== undefined ? data.hasResumeAccess : false,
+                hasDirectChat: data.hasDirectChat !== undefined ? data.hasDirectChat : false,
             }
         });
     },
@@ -41,8 +47,11 @@ const PlanModel = {
     },
 
     // Get all plans
-    async getAllPlans(onlyActive = false) {
+    async getAllPlans(onlyActive = false, role) {
         const whereClause = onlyActive ? { isActive: true } : {};
+        if (role) {
+            whereClause.forRole = role;
+        }
         return await prisma.plan.findMany({
             where: whereClause,
             orderBy: { createdAt: "desc" }
