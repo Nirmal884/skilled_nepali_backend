@@ -11,6 +11,7 @@ const SkillsController = require('../controllers/skills.controller');
 const TestimonialsController = require('../controllers/testimonials.controller');
 const NewsLetterController = require('../controllers/newsletter.controller');
 const SubscriptionController = require('../controllers/subscription.controller');
+const PlanController = require('../controllers/plan.controller');
 const router = express.Router();
 
 // users routes
@@ -96,5 +97,10 @@ router.post('/create-subscription', authenticate, SubscriptionController.createS
 
 //verify subscription
 router.post('/verify-subscription', authenticate, SubscriptionController.verifySubscription)
+
+//plan routes
+router.post('/create-plan', authenticate, authorize('ADMIN'), PlanController.createPlan)
+router.patch('/toggle-plan-status/:id', authenticate, authorize('ADMIN'), PlanController.togglePlanStatus)
+router.get('/get-plans', PlanController.getPlans)
 
 module.exports = router;

@@ -135,6 +135,9 @@ const UserModel = {
         const [users, count] = await prisma.$transaction([
             prisma.user.findMany({
                 where: whereClause,
+                include: {
+                    subscriptions: true
+                },
                 skip: page ? (page - 1) * limit : 0,
                 take: limit ? limit : 10,
                 orderBy: {
@@ -235,7 +238,8 @@ const UserModel = {
                         id: true,
                         skillName: true
                     }
-                }
+                },
+                subscriptions: true
             }
         });
 
