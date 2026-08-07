@@ -245,28 +245,30 @@ model Subscriptions {
 }
 
 model Plan {
-  id               String   @id @default(uuid())
-  razorpayPlanId   String   @unique
-  name             String
-  description      String?
-  amount           Int      // in paise (e.g. 499900 for 4999.00 INR)
-  currency         String   @default("INR")
-  period           String   // "daily" | "weekly" | "monthly" | "yearly"
-  interval         Int      @default(1)
-  planType         PlanType
-  forRole          Role     @default(EMPLOYER)
-  isActive         Boolean  @default(true)
-  features         String[]
-  jobPostingLimit  Int      @default(5)
-  featuredJobCount Int      @default(1)
-  hasResumeAccess  Boolean  @default(false)
-  hasDirectChat    Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                         String   @id @default(uuid())
+  razorpayPlanId             String   @unique
+  name                       String
+  description                String?
+  amount                     Int // in paise (e.g. 499900 for 4999.00 INR)
+  currency                   String   @default("INR")
+  period                     String // "monthly" | "yearly"
+  interval                   Int      @default(1)
+  planType                   PlanType
+  forRole                    Role     @default(EMPLOYER)
+  isActive                   Boolean  @default(true)
+  features                   String[]
+  jobPostingLimit            Int      @default(5)
+  featuredJobCount           Int      @default(1)
+  hasResumeAccess            Boolean  @default(false)
+  hasDirectChat              Boolean  @default(false)
+  hasCandidateAccess         Boolean  @default(false)
+  employerVisibilityDuration Int      @default(1)
+  searchVisibilityDuration   Int      @default(1)
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
 
   @@map("plans")
 }
-
 
 enum Role {
   JOBSEEKER

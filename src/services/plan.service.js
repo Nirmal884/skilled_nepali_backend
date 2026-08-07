@@ -2,15 +2,12 @@ const PlanModel = require("../models/plan.model");
 const razorpay = require("../config/razorpay");
 
 const PlanService = {
-    // Create plan on Razorpay and local database
     async createPlan(data) {
-        // Amount is sent in standard unit (e.g. Rupees) and converted to Paise (e.g. * 100)
         const amountInPaise = data.amount * 100;
         const currency = data.currency || "INR";
 
-        // 1. Create the plan in Razorpay
         const razorpayPlan = await razorpay.plans.create({
-            period: data.period.toLowerCase(), // monthly, yearly, daily, weekly
+            period: data.period.toLowerCase(),
             interval: data.interval || 1,
             item: {
                 name: data.name,
@@ -20,7 +17,6 @@ const PlanService = {
             }
         });
 
-        // 2. Save the plan in our database
         const newPlan = await PlanModel.createPlan({
             razorpayPlanId: razorpayPlan.id,
             name: data.name,
@@ -36,7 +32,10 @@ const PlanService = {
             jobPostingLimit: data.jobPostingLimit,
             featuredJobCount: data.featuredJobCount,
             hasResumeAccess: data.hasResumeAccess,
-            hasDirectChat: data.hasDirectChat
+            hasDirectChat: data.hasDirectChat,
+            hasCandidateAccess: data.hasCandidateAccess,
+            employerVisibilityDuration: data.employerVisibilityDuration,
+            searchVisibilityDuration: data.searchVisibilityDuration
         });
 
         return newPlan;

@@ -16,7 +16,10 @@ const PlanController = {
                 jobPostingLimit,
                 featuredJobCount,
                 hasResumeAccess,
-                hasDirectChat
+                hasDirectChat,
+                hasCandidateAccess,
+                employerVisibilityDuration,
+                searchVisibilityDuration
             } = req.body;
 
             // Validation
@@ -46,7 +49,7 @@ const PlanController = {
                 });
             }
 
-            const allowedRoles = ["EMPLOYER", "TRAINING_CENTRE", "JOBSEEKER"];
+            const allowedRoles = ["EMPLOYER", "TRAINING_CENTRE"];
             const resolvedRole = forRole ? forRole.toUpperCase() : "EMPLOYER";
             if (!allowedRoles.includes(resolvedRole)) {
                 return res.status(400).json({
@@ -68,7 +71,10 @@ const PlanController = {
                 jobPostingLimit: jobPostingLimit !== undefined ? Number(jobPostingLimit) : 5,
                 featuredJobCount: featuredJobCount !== undefined ? Number(featuredJobCount) : 1,
                 hasResumeAccess: hasResumeAccess === true || hasResumeAccess === "true",
-                hasDirectChat: hasDirectChat === true || hasDirectChat === "true"
+                hasDirectChat: hasDirectChat === true || hasDirectChat === "true",
+                hasCandidateAccess: hasCandidateAccess === true || hasCandidateAccess === "true",
+                employerVisibilityDuration: employerVisibilityDuration !== undefined ? Number(employerVisibilityDuration) : 1,
+                searchVisibilityDuration: searchVisibilityDuration !== undefined ? Number(searchVisibilityDuration) : 1
             });
 
             return res.status(201).json({

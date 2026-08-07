@@ -20,6 +20,9 @@ const PlanModel = {
                 featuredJobCount: data.featuredJobCount !== undefined ? data.featuredJobCount : 1,
                 hasResumeAccess: data.hasResumeAccess !== undefined ? data.hasResumeAccess : false,
                 hasDirectChat: data.hasDirectChat !== undefined ? data.hasDirectChat : false,
+                hasCandidateAccess: data.hasCandidateAccess !== undefined ? data.hasCandidateAccess : false,
+                employerVisibilityDuration: data.employerVisibilityDuration !== undefined ? data.employerVisibilityDuration : 1,
+                searchVisibilityDuration: data.searchVisibilityDuration !== undefined ? data.searchVisibilityDuration : 1
             }
         });
     },
