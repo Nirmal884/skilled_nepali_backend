@@ -35,6 +35,7 @@ router.post("/update-resume", authenticate, upload.fields([
     { name: 'resume', maxCount: 1 }
 ]), UserController.updateResume);
 router.get("/get-all-users", authenticate, UserController.getAllUsers);
+router.get("/list-all-users-for-dropdown", UserController.listAllUsersForDropdown);
 router.delete("/delete-user/:id", authenticate, UserController.deleteUser);
 router.get("/get-user-profile/:id", authenticate, UserController.getUserProfile);
 router.put("/update-profile/:id", authenticate, UserController.updateProfile);

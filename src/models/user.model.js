@@ -446,7 +446,24 @@ const UserModel = {
             }
         })
         return deletedCertification;
-    }
+    },
 
+    async listAllUsersForDropdown(page, limit, role) {
+        return await prisma.$transaction(async (prisma) => {
+            const users = await prisma.user.findMany({
+                where: { deletedAt: null, role: role },
+                skip: page && limit ? (page - 1) * limit : 0,
+                take: page && limit ? limit : undefined,
+                select: {
+                    id: true,
+                    centreName: true,
+                }
+            });
+            const count = await prisma.user.count({
+                where: { deletedAt: null, role: role },
+            });
+            return { users, count };
+        });
+    }
 }
 module.exports = UserModel;
