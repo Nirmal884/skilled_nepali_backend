@@ -61,6 +61,9 @@ router.post("/create-enquiry", TestimonialsController.addEnquiry);
 router.get("/get-enquiries", authenticate, TestimonialsController.getEnquiries);
 
 // job category routes
+router.post('/create-job-category', authenticate, authorize('ADMIN'), JobCategoryController.createJobCategory)
+router.put('/update-job-category/:id', authenticate, authorize('ADMIN'), JobCategoryController.updateJobCategory);
+router.delete('/delete-job-category/:id', authenticate, authorize('ADMIN'), JobCategoryController.deleteJobCategory);
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);
 router.get('/get-countries', JobCategoryController.getCountries);
 

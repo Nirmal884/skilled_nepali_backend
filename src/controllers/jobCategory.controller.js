@@ -34,6 +34,29 @@ const JobCategoryController = {
         }
     },
 
+    async updateJobCategory(req, res) {
+        try {
+            const { id } = req.params;
+            const data = req.body;
+            const { jobCategory, message } = await JobCategoryService.updateJobCategory(id, data);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: jobCategory });
+        } catch (error) {
+            console.error('Error updating job category:', error);
+            return res.status(500).json({ success: false, statusCode: 500, message: error.message || 'Internal server error' });
+        }
+    },
+
+    async deleteJobCategory(req, res) {
+        try {
+            const { id } = req.params;
+            const { jobCategory, message } = await JobCategoryService.deleteJobCategory(id);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: jobCategory });
+        } catch (error) {
+            console.error('Error deleting job category:', error);
+            return res.status(500).json({ success: false, statusCode: 500, message: error.message || 'Internal server error' });
+        }
+    },
+
 }
 
 module.exports = JobCategoryController;
