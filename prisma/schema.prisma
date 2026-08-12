@@ -45,6 +45,7 @@ model User {
   otp               String?
   otpExpiry         DateTime?
   subscriptions     Subscriptions[]
+  courses           Course[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   deletedAt         DateTime?
@@ -104,6 +105,7 @@ model JobCategory {
   categoryName String    @unique
   users        User[]    @relation("UserJobCategories")
   jobs         Jobs[]
+  courses      Course[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
@@ -269,6 +271,52 @@ model Plan {
 
   @@map("plans")
 }
+
+model Course {
+  id            String    @id @default(uuid())
+  courseName    String
+  description   String
+  duration      String
+  durationHours String?
+  level         String
+  isFree        Boolean   @default(false)
+  price         String?
+  seats         Int
+  seatsLeft     Int
+  isCertified   Boolean   @default(false)
+  certBody      String?
+  topics        String[]
+  mode          String    @default("ONLINE")
+  language      String?
+  image         String?
+  videoUrl      String?
+  trainer       String
+  status        JobStatus @default(PENDING)
+
+  jobCategoryId    String
+  jobCategory      JobCategory @relation(fields: [jobCategoryId], references: [id])
+  trainingCentreId String
+  trainingCentre   User        @relation(fields: [trainingCentreId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("courses")
+}
+
+// model CourseEnrollment {
+//   id        String   @id @default(uuid())
+//   courseId  String
+//   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+//   userId    String
+//   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@unique([userId, courseId])
+//   @@map("course_enrollments")
+// }
 
 enum Role {
   JOBSEEKER

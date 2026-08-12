@@ -12,6 +12,7 @@ const TestimonialsController = require('../controllers/testimonials.controller')
 const NewsLetterController = require('../controllers/newsletter.controller');
 const SubscriptionController = require('../controllers/subscription.controller');
 const PlanController = require('../controllers/plan.controller');
+const TrainingController = require('../controllers/training.controller');
 const router = express.Router();
 
 // users routes
@@ -106,5 +107,19 @@ router.post('/verify-subscription', authenticate, SubscriptionController.verifyS
 router.post('/create-plan', authenticate, authorize('ADMIN'), PlanController.createPlan)
 router.patch('/toggle-plan-status/:id', authenticate, authorize('ADMIN'), PlanController.togglePlanStatus)
 router.get('/get-plans', PlanController.getPlans)
+
+//course&training
+router.post('/create-course', authenticate, upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'videoUrl', maxCount: 1 }
+]), TrainingController.createCourse)
+router.get('/get-courses', authenticate, TrainingController.getAllCourses)
+router.get('/get-all-course-list', authenticate, TrainingController.getAllCoursesList)
+router.put('/edit-selected-course/:id', authenticate, upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'videoUrl', maxCount: 1 }
+]), TrainingController.editSelectedCourse)
+router.delete('/delete-course/:id', authenticate, TrainingController.deleteCourse)
+router.put('/admin-approve-course/:id', authenticate, authorize('ADMIN'), TrainingController.adminApproveCourse)
 
 module.exports = router;
