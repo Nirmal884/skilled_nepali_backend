@@ -337,6 +337,27 @@ const UserController = {
         }
     },
 
+    async listAllUsersForDropdown(req, res) {
+        try {
+            const { page, limit, role } = req.query;
+            const { users, count, message } = await UserService.listAllUsersForDropdown(Number(page), Number(limit), role);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: { users, count }
+            });
+        } catch (error) {
+            console.error('Error fetching users for dropdown:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
+    },
+
 
 }
 

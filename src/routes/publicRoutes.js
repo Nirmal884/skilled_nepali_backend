@@ -12,6 +12,8 @@ const TestimonialsController = require('../controllers/testimonials.controller')
 const NewsLetterController = require('../controllers/newsletter.controller');
 const SubscriptionController = require('../controllers/subscription.controller');
 const PlanController = require('../controllers/plan.controller');
+const TrainingController = require('../controllers/training.controller');
+const CourseEnrollmentController = require('../controllers/courseEnrollment.controller');
 const router = express.Router();
 
 // users routes
@@ -35,6 +37,7 @@ router.post("/update-resume", authenticate, upload.fields([
     { name: 'resume', maxCount: 1 }
 ]), UserController.updateResume);
 router.get("/get-all-users", authenticate, UserController.getAllUsers);
+router.get("/list-all-users-for-dropdown", UserController.listAllUsersForDropdown);
 router.delete("/delete-user/:id", authenticate, UserController.deleteUser);
 router.get("/get-user-profile/:id", authenticate, UserController.getUserProfile);
 router.put("/update-profile/:id", authenticate, UserController.updateProfile);
@@ -61,6 +64,9 @@ router.post("/create-enquiry", TestimonialsController.addEnquiry);
 router.get("/get-enquiries", authenticate, TestimonialsController.getEnquiries);
 
 // job category routes
+router.post('/create-job-category', authenticate, authorize('ADMIN'), JobCategoryController.createJobCategory)
+router.put('/update-job-category/:id', authenticate, authorize('ADMIN'), JobCategoryController.updateJobCategory);
+router.delete('/delete-job-category/:id', authenticate, authorize('ADMIN'), JobCategoryController.deleteJobCategory);
 router.get('/get-job-categories', JobCategoryController.getAllJobCategories);
 router.get('/get-countries', JobCategoryController.getCountries);
 
@@ -102,5 +108,30 @@ router.post('/verify-subscription', authenticate, SubscriptionController.verifyS
 router.post('/create-plan', authenticate, authorize('ADMIN'), PlanController.createPlan)
 router.patch('/toggle-plan-status/:id', authenticate, authorize('ADMIN'), PlanController.togglePlanStatus)
 router.get('/get-plans', PlanController.getPlans)
+
+//course&training
+router.post('/create-course', authenticate, upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'videoUrl', maxCount: 1 }
+]), TrainingController.createCourse)
+router.get('/get-courses', authenticate, TrainingController.getAllCourses)
+router.get('/get-courses-dropdown', authenticate, TrainingController.getCoursesDropdown)
+router.get('/get-all-course-list', TrainingController.getAllCoursesList)
+router.put('/edit-selected-course/:id', authenticate, upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'videoUrl', maxCount: 1 }
+]), TrainingController.editSelectedCourse)
+router.get('/get-single-course/:id', TrainingController.getSingleCourseDetails)
+router.delete('/delete-course/:id', authenticate, TrainingController.deleteCourse)
+router.put('/admin-approve-course/:id', authenticate, authorize('ADMIN'), TrainingController.adminApproveCourse)
+
+// course enrollment routes
+router.post('/enroll-course', CourseEnrollmentController.enrollInCourse)
+router.get('/user-enrollments/:userId', CourseEnrollmentController.getUserEnrollments)
+router.get('/course-enrollments/:courseId', CourseEnrollmentController.getCourseEnrollments)
+router.get('/centre-enrollments', authenticate, authorize('TRAINING_CENTRE'), CourseEnrollmentController.getCentreEnrollments)
+router.get('/admin-course-enrollments', authenticate, authorize('ADMIN'), CourseEnrollmentController.getAdminCourseEnrollments)
+router.put('/enrollment-status/:id', authenticate, CourseEnrollmentController.updateEnrollmentStatus)
+router.post('/manual-enroll-course', authenticate, authorize('TRAINING_CENTRE'), CourseEnrollmentController.manualEnrollInCourse)
 
 module.exports = router;

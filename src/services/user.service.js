@@ -178,6 +178,18 @@ const UserService = {
     async deleteCertification(certificationId) {
         const deletedCertification = await UserModel.deleteCertification(certificationId);
         return { deletedCertification, message: "Certification deleted successfully" };
+    },
+
+    async listAllUsersForDropdown(page, limit, role) {
+        const { users, count } = await UserModel.listAllUsersForDropdown(Number(page), Number(limit), role)
+        return {
+            users: users,
+            count: count,
+            currentPage: page,
+            totalPages: Math.ceil(count / limit),
+            message: "Users fetched successfully"
+        }
+
     }
 }
 
