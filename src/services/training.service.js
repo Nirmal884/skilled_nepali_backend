@@ -95,8 +95,8 @@ const TrainingService = {
         return { courses, message: "Courses fetched successfully", count }
     },
 
-    async getAllCoursesList(page, limit, search, status) {
-        const { courses, count } = await TrainingModel.getAllCoursesList(page, limit, search, status)
+    async getAllCoursesList(page, limit, search, status, filters) {
+        const { courses, count } = await TrainingModel.getAllCoursesList(page, limit, search, status, filters)
         return { courses, message: "Courses fetched successfully", count }
     },
 
@@ -187,6 +187,10 @@ const TrainingService = {
 
     async adminApproveCourse(id, status) {
         return await TrainingModel.adminApproveCourse(id, status)
+    },
+
+    async getSingleCourseDetail(id) {
+        return await TrainingModel.getSingleCourseDetail(id)
     }
 
 

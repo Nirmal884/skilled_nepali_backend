@@ -114,11 +114,12 @@ router.post('/create-course', authenticate, upload.fields([
     { name: 'videoUrl', maxCount: 1 }
 ]), TrainingController.createCourse)
 router.get('/get-courses', authenticate, TrainingController.getAllCourses)
-router.get('/get-all-course-list', authenticate, TrainingController.getAllCoursesList)
+router.get('/get-all-course-list', TrainingController.getAllCoursesList)
 router.put('/edit-selected-course/:id', authenticate, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'videoUrl', maxCount: 1 }
 ]), TrainingController.editSelectedCourse)
+router.get('/get-single-course/:id', TrainingController.getSingleCourseDetails)
 router.delete('/delete-course/:id', authenticate, TrainingController.deleteCourse)
 router.put('/admin-approve-course/:id', authenticate, authorize('ADMIN'), TrainingController.adminApproveCourse)
 

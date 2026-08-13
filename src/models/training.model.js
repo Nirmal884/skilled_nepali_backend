@@ -49,7 +49,7 @@ const TrainingModel = {
         return { courses, count };
     },
 
-    async getAllCoursesList(page, limit, search, status) {
+    async getAllCoursesList(page, limit, search, status, filters = {}) {
 
         const whereClause = {
             deletedAt: null,
@@ -63,9 +63,37 @@ const TrainingModel = {
             ];
         }
 
+        if (filters.categoryName && filters.categoryName !== 'All') {
+            whereClause.jobCategory = {
+                categoryName: filters.categoryName
+            };
+        }
+
+        if (filters.centreName && filters.centreName !== 'All Centers') {
+            whereClause.trainingCentre = {
+                centreName: filters.centreName
+            };
+        }
+
+        if (filters.level && filters.level !== 'all') {
+            whereClause.level = filters.level;
+        }
+
+        if (filters.isFree !== undefined && filters.isFree !== null && filters.isFree !== '') {
+            whereClause.isFree = filters.isFree === 'true' || filters.isFree === true;
+        }
+
+        let orderByClause = { createdAt: 'desc' };
+        if (filters.sortBy === 'price-free-first') {
+            orderByClause = { isFree: 'desc' };
+        } else if (filters.sortBy === 'seats') {
+            orderByClause = { seatsLeft: 'desc' };
+        }
+
         const [courses, count] = await prisma.$transaction([
             prisma.course.findMany({
                 where: whereClause,
+                orderBy: orderByClause,
                 skip: page && (page - 1) * limit,
                 take: limit && limit,
                 select: {
@@ -82,6 +110,8 @@ const TrainingModel = {
                     status: true,
                     isCertified: true,
                     certBody: true,
+                    image: true,
+                    topics: true,
                     jobCategory: {
                         select: {
                             categoryName: true
@@ -90,7 +120,8 @@ const TrainingModel = {
                     trainingCentre: {
                         select: {
                             centreName: true,
-                            fullName: true
+                            fullName: true,
+                            centreLogo: true
                         }
                     }
                 }
@@ -113,7 +144,8 @@ const TrainingModel = {
                 trainingCentre: {
                     select: {
                         centreName: true,
-                        fullName: true
+                        fullName: true,
+                        centreLogo: true
                     }
                 }
             }
@@ -133,7 +165,8 @@ const TrainingModel = {
                 trainingCentre: {
                     select: {
                         centreName: true,
-                        fullName: true
+                        fullName: true,
+                        centreLogo: true
                     }
                 }
             }
@@ -158,6 +191,26 @@ const TrainingModel = {
             }
         })
     },
+
+    async getSingleCourseDetail(id) {
+        return await prisma.course.findUnique({
+            where: { id },
+            include: {
+                jobCategory: {
+                    select: {
+                        categoryName: true
+                    }
+                },
+                trainingCentre: {
+                    select: {
+                        centreName: true,
+                        fullName: true,
+                        centreLogo: true
+                    }
+                }
+            }
+        })
+    }
 
 }
 

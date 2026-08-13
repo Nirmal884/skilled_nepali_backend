@@ -51,8 +51,14 @@ const TrainingController = {
 
     async getAllCoursesList(req, res) {
         try {
-            const { page, limit, search, status } = req.query;
-            const { courses, message, count } = await TrainingService.getAllCoursesList(Number(page), Number(limit), search, status);
+            const { page, limit, search, status, categoryName, centreName, level, isFree, sortBy } = req.query;
+            const { courses, message, count } = await TrainingService.getAllCoursesList(
+                Number(page),
+                Number(limit),
+                search,
+                status,
+                { categoryName, centreName, level, isFree, sortBy }
+            );
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
@@ -125,6 +131,26 @@ const TrainingController = {
             });
         } catch (error) {
             console.error('Error approving/denying course:', error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || 'Internal server error'
+            });
+        }
+    },
+
+    async getSingleCourseDetails(req, res) {
+        try {
+            const { id } = req.params;
+            const course = await TrainingService.getSingleCourseDetail(id);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Course details fetched successfully",
+                data: course
+            });
+        } catch (error) {
+            console.error('Error fetching course details:', error);
             return res.status(500).json({
                 success: false,
                 statusCode: 500,
