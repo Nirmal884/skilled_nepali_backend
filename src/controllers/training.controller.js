@@ -157,6 +157,30 @@ const TrainingController = {
                 message: error.message || 'Internal server error'
             });
         }
+    },
+
+    async getCoursesDropdown(req, res) {
+        try {
+            const { search } = req.query;
+            let trainingCentreId = undefined;
+            if (req.user && req.user.role === 'TRAINING_CENTRE') {
+                trainingCentreId = req.user.id;
+            }
+            const courses = await TrainingService.getCoursesDropdown(search, trainingCentreId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Courses dropdown list fetched successfully",
+                data: courses
+            });
+        } catch (error) {
+            console.error('Error fetching courses dropdown list:', error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || 'Internal server error'
+            });
+        }
     }
 }
 

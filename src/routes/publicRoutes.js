@@ -115,6 +115,7 @@ router.post('/create-course', authenticate, upload.fields([
     { name: 'videoUrl', maxCount: 1 }
 ]), TrainingController.createCourse)
 router.get('/get-courses', authenticate, TrainingController.getAllCourses)
+router.get('/get-courses-dropdown', authenticate, TrainingController.getCoursesDropdown)
 router.get('/get-all-course-list', TrainingController.getAllCoursesList)
 router.put('/edit-selected-course/:id', authenticate, upload.fields([
     { name: 'image', maxCount: 1 },
@@ -129,6 +130,8 @@ router.post('/enroll-course', CourseEnrollmentController.enrollInCourse)
 router.get('/user-enrollments/:userId', CourseEnrollmentController.getUserEnrollments)
 router.get('/course-enrollments/:courseId', CourseEnrollmentController.getCourseEnrollments)
 router.get('/centre-enrollments', authenticate, authorize('TRAINING_CENTRE'), CourseEnrollmentController.getCentreEnrollments)
+router.get('/admin-course-enrollments', authenticate, authorize('ADMIN'), CourseEnrollmentController.getAdminCourseEnrollments)
 router.put('/enrollment-status/:id', authenticate, CourseEnrollmentController.updateEnrollmentStatus)
+router.post('/manual-enroll-course', authenticate, authorize('TRAINING_CENTRE'), CourseEnrollmentController.manualEnrollInCourse)
 
 module.exports = router;

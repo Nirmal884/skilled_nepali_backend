@@ -191,9 +191,11 @@ const TrainingService = {
 
     async getSingleCourseDetail(id) {
         return await TrainingModel.getSingleCourseDetail(id)
+    },
+
+    async getCoursesDropdown(search, trainingCentreId) {
+        return await TrainingModel.getCoursesDropdown(search, trainingCentreId);
     }
-
-
 }
 
 module.exports = TrainingService

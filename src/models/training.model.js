@@ -210,8 +210,35 @@ const TrainingModel = {
                 }
             }
         })
-    }
+    },
 
-}
+    async getCoursesDropdown(search, trainingCentreId) {
+        const whereClause = {
+            deletedAt: null,
+            status: "ACTIVE"
+        };
+        if (trainingCentreId) {
+            whereClause.trainingCentreId = trainingCentreId;
+        }
+        if (search) {
+            whereClause.courseName = {
+                contains: search,
+                mode: 'insensitive'
+            };
+        }
+
+        return await prisma.course.findMany({
+            where: whereClause,
+            select: {
+                id: true,
+                courseName: true
+            },
+            orderBy: {
+                courseName: 'asc'
+            },
+            take: 100
+        });
+    }
+};
 
 module.exports = TrainingModel;

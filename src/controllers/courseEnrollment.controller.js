@@ -150,6 +150,71 @@ const CourseEnrollmentController = {
                 message: error.message || "Internal server error"
             });
         }
+    },
+
+    async manualEnrollInCourse(req, res) {
+        try {
+            const { studentUserId, courseId } = req.body;
+            const centreId = req.user.id;
+
+            if (!studentUserId) {
+                return res.status(400).json({
+                    success: false,
+                    statusCode: 400,
+                    message: "studentUserId is required"
+                });
+            }
+
+            if (!courseId) {
+                return res.status(400).json({
+                    success: false,
+                    statusCode: 400,
+                    message: "courseId is required"
+                });
+            }
+
+            const enrollment = await CourseEnrollmentService.manualEnrollInCourse(Number(studentUserId), courseId, centreId);
+            return res.status(201).json({
+                success: true,
+                statusCode: 201,
+                message: "Student manually enrolled successfully",
+                data: enrollment
+            });
+        } catch (error) {
+            console.error("Error in manualEnrollInCourse controller:", error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message || "Internal server error"
+            });
+        }
+    },
+
+    async getAdminCourseEnrollments(req, res) {
+        try {
+            const { page, limit, search, status } = req.query;
+            const { enrollments, count } = await CourseEnrollmentService.getAdminCourseEnrollments(
+                Number(page) || 1,
+                Number(limit) || 10,
+                search,
+                status
+            );
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Admin course enrollments fetched successfully",
+                data: enrollments,
+                count: count
+            });
+        } catch (error) {
+            console.error("Error in getAdminCourseEnrollments controller:", error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || "Internal server error"
+            });
+        }
     }
 };
 
