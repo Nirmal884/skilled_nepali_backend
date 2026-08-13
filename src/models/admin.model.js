@@ -2,7 +2,7 @@ const prisma = require("../config/db")
 
 const AdminDashboardModel = {
     async getDashboardStats() {
-        const [totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers] = await prisma.$transaction([
+        const [totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers, pendingCourses, totalCourses] = await prisma.$transaction([
             prisma.user.count({
                 where: {
                     role: "JOBSEEKER",
@@ -35,6 +35,18 @@ const AdminDashboardModel = {
                     role: "EMPLOYER",
                     isAdminApproved: true
                 }
+            }),
+            prisma.course.count({
+                where: {
+                    deletedAt: null,
+                    status: "PENDING"
+                }
+            }),
+            prisma.course.count({
+                where: {
+                    deletedAt: null,
+                    status: "ACTIVE"
+                }
             })
         ])
         return {
@@ -42,7 +54,9 @@ const AdminDashboardModel = {
             pendingJobs,
             deleteRequestedJobs,
             totalJobApplications,
-            totalEmployers
+            totalEmployers,
+            pendingCourses,
+            totalCourses
         }
     },
 
