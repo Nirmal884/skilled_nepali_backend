@@ -13,6 +13,7 @@ const NewsLetterController = require('../controllers/newsletter.controller');
 const SubscriptionController = require('../controllers/subscription.controller');
 const PlanController = require('../controllers/plan.controller');
 const TrainingController = require('../controllers/training.controller');
+const CourseEnrollmentController = require('../controllers/courseEnrollment.controller');
 const router = express.Router();
 
 // users routes
@@ -122,5 +123,12 @@ router.put('/edit-selected-course/:id', authenticate, upload.fields([
 router.get('/get-single-course/:id', TrainingController.getSingleCourseDetails)
 router.delete('/delete-course/:id', authenticate, TrainingController.deleteCourse)
 router.put('/admin-approve-course/:id', authenticate, authorize('ADMIN'), TrainingController.adminApproveCourse)
+
+// course enrollment routes
+router.post('/enroll-course', CourseEnrollmentController.enrollInCourse)
+router.get('/user-enrollments/:userId', CourseEnrollmentController.getUserEnrollments)
+router.get('/course-enrollments/:courseId', CourseEnrollmentController.getCourseEnrollments)
+router.get('/centre-enrollments', authenticate, authorize('TRAINING_CENTRE'), CourseEnrollmentController.getCentreEnrollments)
+router.put('/enrollment-status/:id', authenticate, CourseEnrollmentController.updateEnrollmentStatus)
 
 module.exports = router;

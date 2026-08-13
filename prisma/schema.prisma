@@ -12,20 +12,20 @@ datasource db {
 }
 
 model User {
-  id                String           @id @default(uuid())
-  userId            Int              @default(autoincrement())
-  email             String           @unique
+  id                String             @id @default(uuid())
+  userId            Int                @default(autoincrement())
+  email             String             @unique
   fullName          String
   title             String?
   profilePicture    String?
   bio               String?
   password          String
   country           Int
-  role              Role             @default(JOBSEEKER)
-  phone             String?          @default("")
-  jobCategories     JobCategory[]    @relation("UserJobCategories")
+  role              Role               @default(JOBSEEKER)
+  phone             String?            @default("")
+  jobCategories     JobCategory[]      @relation("UserJobCategories")
   applicantTypeId   String?
-  applicantType     ApplicantType?   @relation(fields: [applicantTypeId], references: [id])
+  applicantType     ApplicantType?     @relation(fields: [applicantTypeId], references: [id])
   experience        Float?
   pastExperience    String?
   resume            String?
@@ -35,19 +35,20 @@ model User {
   centreName        String?
   centreLogo        String?
   jobs              Jobs[]
-  skills            Skill[]          @relation("UserSkills")
-  isProfileComplete Boolean          @default(false)
+  skills            Skill[]            @relation("UserSkills")
+  isProfileComplete Boolean            @default(false)
   workExperiences   WorkExperience[]
   educations        Education[]
   certifications    Certifications[]
-  isAdminApproved   Boolean          @default(false)
+  isAdminApproved   Boolean            @default(false)
   jobApplications   JobApplication[]
   otp               String?
   otpExpiry         DateTime?
   subscriptions     Subscriptions[]
   courses           Course[]
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  enrollments       CourseEnrollment[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   deletedAt         DateTime?
 
   @@map("user_profiles")
@@ -294,9 +295,10 @@ model Course {
   status        JobStatus @default(PENDING)
 
   jobCategoryId    String
-  jobCategory      JobCategory @relation(fields: [jobCategoryId], references: [id])
+  jobCategory      JobCategory        @relation(fields: [jobCategoryId], references: [id])
   trainingCentreId String
-  trainingCentre   User        @relation(fields: [trainingCentreId], references: [id], onDelete: Cascade)
+  trainingCentre   User               @relation(fields: [trainingCentreId], references: [id], onDelete: Cascade)
+  enrollments      CourseEnrollment[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -305,18 +307,25 @@ model Course {
   @@map("courses")
 }
 
-// model CourseEnrollment {
-//   id        String   @id @default(uuid())
-//   courseId  String
-//   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-//   userId    String
-//   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
+model CourseEnrollment {
+  id       String @id @default(uuid())
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-//   @@unique([userId, courseId])
-//   @@map("course_enrollments")
-// }
+  fullName   String
+  email      String
+  phone      String?
+  courseName String
+
+  status    EnrollmentStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([userId, courseId])
+  @@map("course_enrollments")
+}
 
 enum Role {
   JOBSEEKER
@@ -374,4 +383,12 @@ enum PlanType {
   MONTHLY_PLATINUM
   YEARLY_ELITE
   YEARLY_PLATINUM
+}
+
+enum EnrollmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  COMPLETED
 }
