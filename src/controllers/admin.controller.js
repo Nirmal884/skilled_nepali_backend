@@ -3,12 +3,12 @@ const AdminDashboardService = require("../services/admin.service");
 const AdminDashboardController = {
     async getAdminDashboardStats(req, res) {
         try {
-            const { totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers, pendingCourses, totalCourses, message } = await AdminDashboardService.getAdminDashboardStats();
+            const { totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers, pendingCourses, deleteRequestedCourses, totalCourses, totalTrainingCentres, message } = await AdminDashboardService.getAdminDashboardStats();
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
                 message: message,
-                data: { totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers, pendingCourses, totalCourses }
+                data: { totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers, pendingCourses, deleteRequestedCourses, totalCourses, totalTrainingCentres }
             });
         } catch (error) {
             console.error('Error fetching admin dashboard stats:', error);

@@ -183,12 +183,25 @@ const TrainingModel = {
         })
     },
 
-    async adminApproveCourse(id, status = "ACTIVE") {
+    async requestCourseDeletion(id, reason = "Requested deletion") {
         return await prisma.course.update({
             where: { id },
             data: {
-                status: status
+                deletionReason: reason,
+                deleteRequestedOn: new Date()
             }
+        });
+    },
+
+    async adminApproveCourse(id, status = "ACTIVE") {
+        const updateData = { status };
+        if (status === "ACTIVE") {
+            updateData.deletionReason = "";
+            updateData.deleteRequestedOn = null;
+        }
+        return await prisma.course.update({
+            where: { id },
+            data: updateData
         })
     },
 
@@ -238,6 +251,47 @@ const TrainingModel = {
             },
             take: 100
         });
+    },
+
+    async listDeleteRequestedCourses(page, limit) {
+        const skip = page ? (page - 1) * limit : 0;
+        const take = limit ? limit : 10;
+
+        const [courses, totalCourses] = await prisma.$transaction([
+            prisma.course.findMany({
+                where: {
+                    deletedAt: null,
+                    AND: [
+                        { deletionReason: { not: null } },
+                        { deletionReason: { not: "" } }
+                    ]
+                },
+                skip,
+                take,
+                include: {
+                    trainingCentre: {
+                        select: {
+                            centreName: true,
+                            fullName: true
+                        }
+                    }
+                },
+                orderBy: {
+                    deleteRequestedOn: 'desc'
+                }
+            }),
+            prisma.course.count({
+                where: {
+                    deletedAt: null,
+                    AND: [
+                        { deletionReason: { not: null } },
+                        { deletionReason: { not: "" } }
+                    ]
+                }
+            })
+        ]);
+
+        return { courses, totalCourses };
     }
 };
 

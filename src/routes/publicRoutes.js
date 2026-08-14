@@ -124,6 +124,7 @@ router.put('/edit-selected-course/:id', authenticate, upload.fields([
 router.get('/get-single-course/:id', TrainingController.getSingleCourseDetails)
 router.delete('/delete-course/:id', authenticate, TrainingController.deleteCourse)
 router.put('/admin-approve-course/:id', authenticate, authorize('ADMIN'), TrainingController.adminApproveCourse)
+router.get('/list-delete-requested-courses', authenticate, authorize('ADMIN'), TrainingController.listDeleteRequestedCourses)
 
 // course enrollment routes
 router.post('/enroll-course', CourseEnrollmentController.enrollInCourse)

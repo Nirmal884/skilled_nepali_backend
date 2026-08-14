@@ -300,6 +300,9 @@ model Course {
   trainingCentre   User               @relation(fields: [trainingCentreId], references: [id], onDelete: Cascade)
   enrollments      CourseEnrollment[]
 
+  deletionReason    String?   @default("")
+  deleteRequestedOn DateTime?
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?

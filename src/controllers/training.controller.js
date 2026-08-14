@@ -5,7 +5,7 @@ const TrainingController = {
         try {
             const data = req.body;
             const files = req.files;
-            const trainingCentreId = "0e3bfed1-2f4b-45e7-a56a-764130e298b3";
+            const trainingCentreId = req.user?.id;
 
             const course = await TrainingService.createCourse(data, files, trainingCentreId);
             return res.status(201).json({
@@ -100,12 +100,13 @@ const TrainingController = {
 
     async deleteCourse(req, res) {
         try {
-            const { id } = req.params
-            const course = await TrainingService.deleteCourse(id)
+            const { id } = req.params;
+            const user = req.user;
+            const { course, message } = await TrainingService.deleteCourse(id, user);
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
-                message: "Course deleted successfully",
+                message: message,
                 data: course
             });
         } catch (error) {
@@ -179,6 +180,27 @@ const TrainingController = {
                 success: false,
                 statusCode: 500,
                 message: error.message || 'Internal server error'
+            });
+        }
+    },
+
+    async listDeleteRequestedCourses(req, res) {
+        try {
+            const { page, limit } = req.query;
+            const { courses, totalCourses, message } = await TrainingService.listDeleteRequestedCourses(Number(page), Number(limit));
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                data: courses,
+                count: totalCourses,
+                message: message
+            });
+        } catch (error) {
+            console.error("Error fetching delete-requested courses:", error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || "Internal server error"
             });
         }
     }

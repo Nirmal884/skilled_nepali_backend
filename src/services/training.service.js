@@ -100,6 +100,33 @@ const TrainingService = {
         return { courses, message: "Courses fetched successfully", count }
     },
 
+    async deleteCourse(id, user) {
+        const course = await TrainingModel.getSingleCourseDetail(id);
+        if (!course) {
+            throw new Error("Course not found");
+        }
+
+        if (user && user.role === 'TRAINING_CENTRE') {
+            if (course.trainingCentreId !== user.id) {
+                throw new Error("Forbidden: You do not own this course");
+            }
+
+            if (course.status === 'ACTIVE') {
+                const updatedCourse = await TrainingModel.requestCourseDeletion(id, "Requested by training centre");
+                return {
+                    course: updatedCourse,
+                    message: "Course deletion request sent to admin for approval"
+                };
+            }
+        }
+
+        const deletedCourse = await TrainingModel.deleteCourse(id);
+        return {
+            course: deletedCourse,
+            message: "Course deleted successfully"
+        };
+    },
+
     async editSelectedCourse(id, data, files) {
         const {
             courseName,
@@ -181,9 +208,6 @@ const TrainingService = {
         return await TrainingModel.updateCourse(id, updateData);
     },
 
-    async deleteCourse(id) {
-        return await TrainingModel.deleteCourse(id)
-    },
 
     async adminApproveCourse(id, status) {
         return await TrainingModel.adminApproveCourse(id, status)
@@ -195,6 +219,15 @@ const TrainingService = {
 
     async getCoursesDropdown(search, trainingCentreId) {
         return await TrainingModel.getCoursesDropdown(search, trainingCentreId);
+    },
+
+    async listDeleteRequestedCourses(page, limit) {
+        const { courses, totalCourses } = await TrainingModel.listDeleteRequestedCourses(page, limit);
+        return {
+            courses,
+            totalCourses,
+            message: "Delete requested courses fetched successfully"
+        };
     }
 }
 

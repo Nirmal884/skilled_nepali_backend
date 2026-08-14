@@ -6,7 +6,7 @@ const allCountries = [...countryOptions, ...gccCountryOptions];
 
 const AdminDashboardService = {
     async getAdminDashboardStats() {
-        const { totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers, pendingCourses, totalCourses } = await AdminDashboardModel.getDashboardStats();
+        const { totalUsers, pendingJobs, deleteRequestedJobs, totalJobApplications, totalEmployers, pendingCourses, deleteRequestedCourses, totalCourses, totalTrainingCentres } = await AdminDashboardModel.getDashboardStats();
         return {
             totalUsers,
             pendingJobs,
@@ -14,7 +14,9 @@ const AdminDashboardService = {
             totalJobApplications,
             totalEmployers,
             pendingCourses,
+            deleteRequestedCourses,
             totalCourses,
+            totalTrainingCentres,
             message: "Admin dashboard stats fetched successfully"
         }
     },
