@@ -14,6 +14,7 @@ const SubscriptionController = require('../controllers/subscription.controller')
 const PlanController = require('../controllers/plan.controller');
 const TrainingController = require('../controllers/training.controller');
 const CourseEnrollmentController = require('../controllers/courseEnrollment.controller');
+const AIController = require('../controllers/ai.controller');
 const router = express.Router();
 
 // users routes
@@ -134,5 +135,8 @@ router.get('/centre-enrollments', authenticate, authorize('TRAINING_CENTRE'), Co
 router.get('/admin-course-enrollments', authenticate, authorize('ADMIN'), CourseEnrollmentController.getAdminCourseEnrollments)
 router.put('/enrollment-status/:id', authenticate, CourseEnrollmentController.updateEnrollmentStatus)
 router.post('/manual-enroll-course', authenticate, authorize('TRAINING_CENTRE'), CourseEnrollmentController.manualEnrollInCourse)
+
+// chatbot route
+router.post('/chat', AIController.handleChat);
 
 module.exports = router;
