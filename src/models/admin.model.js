@@ -32,8 +32,7 @@ const AdminDashboardModel = {
             prisma.user.count({
                 where: {
                     deletedAt: null,
-                    role: "EMPLOYER",
-                    isAdminApproved: true
+                    role: "EMPLOYER"
                 }
             }),
             prisma.course.count({
