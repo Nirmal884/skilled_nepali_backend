@@ -32,7 +32,7 @@ app.use(cookieParser())
 
 // routes
 
-app.use('/api/v1/public', publicRoutes)
+app.use('/api/v1', publicRoutes)
 
 
 app.get("/", (req, res) => {
