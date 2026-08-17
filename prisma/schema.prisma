@@ -50,6 +50,7 @@ model User {
   subscriptions     Subscriptions[]
   courses           Course[]
   enrollments       CourseEnrollment[]
+  companyProfile    CompanyProfile?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   deletedAt         DateTime?
@@ -397,4 +398,20 @@ enum EnrollmentStatus {
   REJECTED
   CANCELLED
   COMPLETED
+}
+
+
+model CompanyProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address   String?  @default("")
+  about     String?  @default("")
+  website   String?  @default("")
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("company_profiles")
 }

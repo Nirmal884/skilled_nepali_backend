@@ -148,12 +148,27 @@ const UserService = {
 
     async getUserProfile(userId) {
         const user = await UserModel.getUserProfile(userId);
+        if (user && user.companyProfile) {
+            user.address = user.companyProfile.address;
+            user.about = user.companyProfile.about;
+            user.website = user.companyProfile.website;
+            user.latitude = user.companyProfile.latitude;
+            user.longitude = user.companyProfile.longitude;
+        }
         return { user, message: "User profile fetched successfully" };
     },
 
     async updateProfile(userId, data) {
-        const updatedUser = await UserModel.updateProfile(userId, data);
-        return { updatedUser, message: "Profile updated successfully" };
+        await UserModel.updateProfile(userId, data);
+        const userProfile = await UserModel.getUserProfile(userId);
+        if (userProfile && userProfile.companyProfile) {
+            userProfile.address = userProfile.companyProfile.address;
+            userProfile.about = userProfile.companyProfile.about;
+            userProfile.website = userProfile.companyProfile.website;
+            userProfile.latitude = userProfile.companyProfile.latitude;
+            userProfile.longitude = userProfile.companyProfile.longitude;
+        }
+        return { updatedUser: userProfile, message: "Profile updated successfully" };
     },
     async createOrUpdateExperience(userId, data) {
         const experience = await UserModel.createOrUpdateExperience(userId, data);
