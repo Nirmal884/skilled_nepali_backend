@@ -468,9 +468,10 @@ const JobModel = {
                     jobCategory: true,
                     user: {
                         select: {
-                            companyName: true
+                            companyName: true,
+                            isVerified: true
                         }
-                    }
+                    },
                 },
                 orderBy: {
                     createdAt: 'desc'
@@ -494,7 +495,8 @@ const JobModel = {
                 jobCategory: true,
                 user: {
                     select: {
-                        companyName: true
+                        companyName: true,
+                        isVerified: true
                     }
                 },
                 ...(userId ? {

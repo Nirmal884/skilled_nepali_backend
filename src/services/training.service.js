@@ -3,6 +3,14 @@ const { uploadToS3 } = require('../utils/s3Uploader');
 
 const TrainingService = {
     async createCourse(data, files, trainingCentreId) {
+        const prisma = require('../config/db');
+        const user = await prisma.user.findUnique({ where: { id: trainingCentreId } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+        if (!user.isAdminApproved) {
+            throw new Error("Forbidden: Your account must be approved by the admin to publish courses");
+        }
         const {
             courseName,
             description,

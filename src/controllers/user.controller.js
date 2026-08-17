@@ -358,7 +358,40 @@ const UserController = {
         }
     },
 
+    async uploadBusinessDocument(req, res) {
+        try {
+            const { id: userId } = req.user;
+            const files = req.files;
+            const { updatedUser, message } = await UserService.uploadBusinessDocument(userId, files);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: updatedUser });
+        } catch (error) {
+            console.error('Error uploading business document:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({ success: false, statusCode: statusCode, message: error.message });
+        }
+    },
 
+    async adminVerifyUser(req, res) {
+        try {
+            const { id } = req.params;
+            const { isAdminApproved, verificationStatus } = req.body;
+            const updatedUser = await UserService.adminVerifyUser(id, { isAdminApproved, verificationStatus });
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "User verification status updated successfully",
+                data: updatedUser
+            });
+        } catch (error) {
+            console.error('Error in adminVerifyUser:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
+    }
 }
 
 module.exports = UserController;

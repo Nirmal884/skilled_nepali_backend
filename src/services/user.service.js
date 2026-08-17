@@ -148,12 +148,27 @@ const UserService = {
 
     async getUserProfile(userId) {
         const user = await UserModel.getUserProfile(userId);
+        if (user && user.companyProfile) {
+            user.address = user.companyProfile.address;
+            user.about = user.companyProfile.about;
+            user.website = user.companyProfile.website;
+            user.latitude = user.companyProfile.latitude;
+            user.longitude = user.companyProfile.longitude;
+        }
         return { user, message: "User profile fetched successfully" };
     },
 
     async updateProfile(userId, data) {
-        const updatedUser = await UserModel.updateProfile(userId, data);
-        return { updatedUser, message: "Profile updated successfully" };
+        await UserModel.updateProfile(userId, data);
+        const userProfile = await UserModel.getUserProfile(userId);
+        if (userProfile && userProfile.companyProfile) {
+            userProfile.address = userProfile.companyProfile.address;
+            userProfile.about = userProfile.companyProfile.about;
+            userProfile.website = userProfile.companyProfile.website;
+            userProfile.latitude = userProfile.companyProfile.latitude;
+            userProfile.longitude = userProfile.companyProfile.longitude;
+        }
+        return { updatedUser: userProfile, message: "Profile updated successfully" };
     },
     async createOrUpdateExperience(userId, data) {
         const experience = await UserModel.createOrUpdateExperience(userId, data);
@@ -190,6 +205,33 @@ const UserService = {
             message: "Users fetched successfully"
         }
 
+    },
+
+    async uploadBusinessDocument(userId, files) {
+        if (!files || !files.businessDocument) {
+            throw new Error("Business document is required");
+        }
+        const file = files.businessDocument[0];
+        const uploadedDoc = await uploadToS3(file.buffer, file.originalname, file.mimetype, "documents");
+        const updatedUser = await UserModel.updateVerificationDocument(userId, uploadedDoc.Location);
+        return { updatedUser, message: "Business verification document uploaded successfully. Status set to Pending Verification." };
+    },
+
+    async adminVerifyUser(userId, { isAdminApproved, verificationStatus }) {
+        const updateData = {};
+        if (isAdminApproved !== undefined) {
+            updateData.isAdminApproved = isAdminApproved;
+        }
+        if (verificationStatus !== undefined) {
+            updateData.verificationStatus = verificationStatus;
+            if (verificationStatus === "VERIFIED") {
+                updateData.isVerified = true;
+            } else if (verificationStatus === "REJECTED" || verificationStatus === "UNVERIFIED") {
+                updateData.isVerified = false;
+            }
+        }
+        const updatedUser = await UserModel.adminVerifyUser(userId, updateData);
+        return updatedUser;
     }
 }
 

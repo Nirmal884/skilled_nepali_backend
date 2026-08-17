@@ -121,7 +121,8 @@ const TrainingModel = {
                         select: {
                             centreName: true,
                             fullName: true,
-                            centreLogo: true
+                            centreLogo: true,
+                            isVerified: true
                         }
                     }
                 }
@@ -218,7 +219,8 @@ const TrainingModel = {
                     select: {
                         centreName: true,
                         fullName: true,
-                        centreLogo: true
+                        centreLogo: true,
+                        isVerified: true
                     }
                 }
             }
