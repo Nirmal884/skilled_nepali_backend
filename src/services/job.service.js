@@ -3,6 +3,14 @@ const JobModel = require("../models/job.model")
 
 const JobService = {
     async createJob(data) {
+        const prisma = require("../config/db");
+        const user = await prisma.user.findUnique({ where: { id: data.userId } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+        if (!user.isAdminApproved) {
+            throw new Error("Forbidden: Your account must be approved by the admin to post jobs");
+        }
         const { jobData, isUpdated } = await JobModel.createJob(data)
         return { jobResponse: jobData, message: isUpdated ? "Job updated successfully" : "Job created successfully" }
     },

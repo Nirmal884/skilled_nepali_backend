@@ -464,6 +464,23 @@ const UserModel = {
             });
             return { users, count };
         });
+    },
+
+    async updateVerificationDocument(userId, docUrl) {
+        return await prisma.user.update({
+            where: { id: userId },
+            data: {
+                businessDocument: docUrl,
+                verificationStatus: "PENDING"
+            }
+        });
+    },
+
+    async adminVerifyUser(userId, updateData) {
+        return await prisma.user.update({
+            where: { id: userId },
+            data: updateData
+        });
     }
 }
 module.exports = UserModel;

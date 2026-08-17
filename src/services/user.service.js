@@ -190,6 +190,33 @@ const UserService = {
             message: "Users fetched successfully"
         }
 
+    },
+
+    async uploadBusinessDocument(userId, files) {
+        if (!files || !files.businessDocument) {
+            throw new Error("Business document is required");
+        }
+        const file = files.businessDocument[0];
+        const uploadedDoc = await uploadToS3(file.buffer, file.originalname, file.mimetype, "documents");
+        const updatedUser = await UserModel.updateVerificationDocument(userId, uploadedDoc.Location);
+        return { updatedUser, message: "Business verification document uploaded successfully. Status set to Pending Verification." };
+    },
+
+    async adminVerifyUser(userId, { isAdminApproved, verificationStatus }) {
+        const updateData = {};
+        if (isAdminApproved !== undefined) {
+            updateData.isAdminApproved = isAdminApproved;
+        }
+        if (verificationStatus !== undefined) {
+            updateData.verificationStatus = verificationStatus;
+            if (verificationStatus === "VERIFIED") {
+                updateData.isVerified = true;
+            } else if (verificationStatus === "REJECTED" || verificationStatus === "UNVERIFIED") {
+                updateData.isVerified = false;
+            }
+        }
+        const updatedUser = await UserModel.adminVerifyUser(userId, updateData);
+        return updatedUser;
     }
 }
 

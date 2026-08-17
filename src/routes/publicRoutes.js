@@ -139,4 +139,7 @@ router.post('/manual-enroll-course', authenticate, authorize('TRAINING_CENTRE'),
 // chatbot route
 router.post('/chat', AIController.handleChat);
 
+router.post("/upload-business-document", authenticate, upload.fields([{ name: 'businessDocument', maxCount: 1 }]), UserController.uploadBusinessDocument);
+router.put("/admin/verify-user/:id", authenticate, authorize('ADMIN'), UserController.adminVerifyUser);
+
 module.exports = router;
