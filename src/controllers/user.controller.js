@@ -391,6 +391,26 @@ const UserController = {
                 message: error.message
             });
         }
+    },
+
+    async clearResume(req, res) {
+        try {
+            const { id: userId } = req.user;
+            const { message } = await UserService.clearResume(userId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message
+            });
+        } catch (error) {
+            console.error('Error clearing resume:', error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                statusCode: statusCode,
+                message: error.message
+            });
+        }
     }
 }
 

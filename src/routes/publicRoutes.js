@@ -48,6 +48,7 @@ router.post("/create-or-update-education/:id", authenticate, UserController.crea
 router.post("/delete-education/:id", authenticate, UserController.deleteEducation);
 router.post("/create-or-update-certification/:id", authenticate, UserController.createOrUpdateCertification);
 router.post("/delete-certification/:id", authenticate, UserController.deleteCertification);
+router.post("/clear-resume", authenticate, UserController.clearResume);
 
 // skills section
 router.post("/create-skills", authenticate, SkillsController.createSkills);
