@@ -139,6 +139,15 @@ router.post('/manual-enroll-course', authenticate, authorize('TRAINING_CENTRE'),
 // chatbot route
 router.post('/chat', AIController.handleChat);
 
+const multer = require('multer');
+const audioUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 50 * 1024 * 1024 }
+});
+
+router.post('/voice-to-text', audioUpload.single('audio'), AIController.voiceToText);
+router.post('/parse-resume-json', AIController.parseResumeJson);
+
 router.post("/upload-business-document", authenticate, upload.fields([{ name: 'businessDocument', maxCount: 1 }]), UserController.uploadBusinessDocument);
 router.put("/admin/verify-user/:id", authenticate, authorize('ADMIN'), UserController.adminVerifyUser);
 
