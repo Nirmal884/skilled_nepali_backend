@@ -40,13 +40,26 @@ const TrainingModel = {
                             centreName: true,
                             fullName: true
                         }
+                    },
+                    _count: {
+                        select: {
+                            enrollments: true
+                        }
                     }
                 }
             }),
             prisma.course.count({ where: whereClause })
         ])
 
-        return { courses, count };
+        const mappedCourses = courses.map(course => {
+            const { _count, ...rest } = course;
+            return {
+                ...rest,
+                enrolledCount: _count?.enrollments || 0
+            };
+        });
+
+        return { courses: mappedCourses, count };
     },
 
     async getAllCoursesList(page, limit, search, status, filters = {}) {
@@ -124,13 +137,26 @@ const TrainingModel = {
                             centreLogo: true,
                             isVerified: true
                         }
+                    },
+                    _count: {
+                        select: {
+                            enrollments: true
+                        }
                     }
                 }
             }),
             prisma.course.count({ where: whereClause })
         ])
 
-        return { courses, count };
+        const mappedCourses = courses.map(course => {
+            const { _count, ...rest } = course;
+            return {
+                ...rest,
+                enrolledCount: _count?.enrollments || 0
+            };
+        });
+
+        return { courses: mappedCourses, count };
     },
 
     async editSelectedCourse(id) {

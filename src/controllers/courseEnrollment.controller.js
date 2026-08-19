@@ -42,6 +42,7 @@ const CourseEnrollmentController = {
     async getUserEnrollments(req, res) {
         try {
             const { userId } = req.params;
+            const { search } = req.query;
             if (!userId) {
                 return res.status(400).json({
                     success: false,
@@ -50,7 +51,7 @@ const CourseEnrollmentController = {
                 });
             }
 
-            const enrollments = await CourseEnrollmentService.getUserEnrollments(userId);
+            const enrollments = await CourseEnrollmentService.getUserEnrollments(userId, search);
             return res.status(200).json({
                 success: true,
                 statusCode: 200,

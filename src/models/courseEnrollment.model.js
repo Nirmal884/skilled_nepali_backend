@@ -17,11 +17,31 @@ const CourseEnrollmentModel = {
         });
     },
 
-    async getEnrollmentsByUserId(userId) {
+    async getEnrollmentsByUserId(userId, search) {
+
+        const whereClause = {
+            userId: userId
+        }
+        if (search) {
+            whereClause.OR = [{
+                course: { courseName: { contains: search } }
+            }]
+        }
+
         return await prisma.courseEnrollment.findMany({
-            where: { userId },
+            where: whereClause,
             include: {
-                course: true
+                course: {
+                    include: {
+                        trainingCentre: {
+                            select: {
+                                centreName: true,
+                                fullName: true,
+                                isVerified: true
+                            }
+                        }
+                    }
+                }
             }
         });
     },

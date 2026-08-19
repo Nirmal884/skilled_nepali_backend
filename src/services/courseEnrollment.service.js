@@ -78,8 +78,8 @@ const CourseEnrollmentService = {
         return result;
     },
 
-    async getUserEnrollments(userId) {
-        return await CourseEnrollmentModel.getEnrollmentsByUserId(userId);
+    async getUserEnrollments(userId, search) {
+        return await CourseEnrollmentModel.getEnrollmentsByUserId(userId, search);
     },
 
     async getCourseEnrollments(courseId) {
