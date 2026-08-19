@@ -74,7 +74,7 @@ Rules:
             // Call Gemini API using the @google/genai SDK
             const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
-                model: 'gemini-3.5-flash',
+                model: process.env.GEMINI_MODEL,
                 contents,
                 config: {
                     systemInstruction: systemPrompt,
@@ -107,7 +107,7 @@ Rules:
 
             const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
-                model: 'gemini-3.5-flash',
+                model: process.env.GEMINI_MODEL,
                 contents: [
                     {
                         role: 'user',
@@ -162,7 +162,7 @@ Ensure that all these headers are present in the final output text, even if they
 
             const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
-                model: 'gemini-3.5-flash',
+                model: process.env.GEMINI_MODEL,
                 contents: `Extract all candidate resume fields from the following text into structured JSON format:
                 
 "${text}"`,
