@@ -232,6 +232,11 @@ const UserService = {
         }
         const updatedUser = await UserModel.adminVerifyUser(userId, updateData);
         return updatedUser;
+    },
+
+    async clearResume(userId) {
+        await UserModel.clearResume(userId);
+        return { message: "Resume cleared successfully" };
     }
 }
 

@@ -601,6 +601,23 @@ const UserModel = {
             where: { id: userId },
             data: updateData
         });
+    },
+
+    async clearResume(userId) {
+        return await prisma.$transaction([
+            prisma.workExperience.deleteMany({ where: { userId } }),
+            prisma.education.deleteMany({ where: { userId } }),
+            prisma.certifications.deleteMany({ where: { userId } }),
+            prisma.user.update({
+                where: { id: userId },
+                data: {
+                    title: '',
+                    bio: '',
+                    phone: '',
+                    skills: { set: [] }
+                }
+            })
+        ]);
     }
 }
 module.exports = UserModel;

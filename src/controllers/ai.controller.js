@@ -74,7 +74,7 @@ Rules:
             // Call Gemini API using the @google/genai SDK
             const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
-                model: 'gemini-3.5-flash',
+                model: process.env.GEMINI_MODEL,
                 contents,
                 config: {
                     systemInstruction: systemPrompt,
@@ -88,6 +88,158 @@ Rules:
         } catch (error) {
             console.error('AI Chatbot Controller Error:', error);
             return res.status(500).json({ error: 'Failed to process AI chat request' });
+        }
+    }
+
+    static async voiceToText(req, res) {
+        try {
+            const { language } = req.body;
+            const audioFile = req.file;
+
+            if (!audioFile) {
+                return res.status(400).json({ error: 'Audio file is required' });
+            }
+
+            const apiKey = process.env.TRANSLATION_API_KEY;
+            if (!apiKey) {
+                return res.status(500).json({ error: 'TRANSLATION_API_KEY is not defined in backend' });
+            }
+
+            const ai = new GoogleGenAI({ apiKey });
+            const response = await ai.models.generateContent({
+                model: process.env.GEMINI_MODEL,
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [
+                            {
+                                inlineData: {
+                                    data: audioFile.buffer.toString('base64'),
+                                    mimeType: audioFile.mimetype || 'audio/webm'
+                                }
+                            },
+                            {
+                                text: `You are an expert audio transcriber and translator.
+The attached audio is a candidate describing their career for a resume. The user has selected the language: ${language || 'English'}.
+The recording might be in Malayalam, Nepali, or English.
+Please translate and transcribe the audio into clean, grammatically correct English text.
+Do NOT summarize or shorten their points. Keep all responsibilities and numbers they mention.
+Format the output clearly under the following section headers:
+SUMMARY
+SKILLS
+EXPERIENCE
+EDUCATION
+CERTIFICATIONS
+LANGUAGES
+
+Ensure that all these headers are present in the final output text, even if they are empty under some headers.`
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            const text = response.text || "";
+            return res.json({ text });
+        } catch (error) {
+            console.error('Voice-to-Text API Error:', error);
+            return res.status(500).json({ error: 'Failed to process audio recording' });
+        }
+    }
+
+    static async parseResumeJson(req, res) {
+        try {
+            const { text } = req.body;
+
+            if (!text) {
+                return res.status(400).json({ error: 'Text content is required' });
+            }
+
+            const apiKey = process.env.TRANSLATION_API_KEY;
+            if (!apiKey) {
+                return res.status(500).json({ error: 'TRANSLATION_API_KEY is not defined in backend' });
+            }
+
+            const ai = new GoogleGenAI({ apiKey });
+            const response = await ai.models.generateContent({
+                model: process.env.GEMINI_MODEL,
+                contents: `Extract all candidate resume fields from the following text into structured JSON format:
+                
+"${text}"`,
+                config: {
+                    responseMimeType: 'application/json',
+                    responseSchema: {
+                        type: 'OBJECT',
+                        properties: {
+                            fullName: { type: 'STRING' },
+                            title: { type: 'STRING' },
+                            email: { type: 'STRING' },
+                            phone: { type: 'STRING' },
+                            location: { type: 'STRING', description: 'City, Country' },
+                            careerSummary: { type: 'STRING', description: 'Professional bio or career summary' },
+                            skills: {
+                                type: 'ARRAY',
+                                items: { type: 'STRING' }
+                            },
+                            languages: {
+                                type: 'ARRAY',
+                                items: { type: 'STRING' }
+                            },
+                            experiences: {
+                                type: 'ARRAY',
+                                items: {
+                                    type: 'OBJECT',
+                                    properties: {
+                                        companyName: { type: 'STRING' },
+                                        role: { type: 'STRING' },
+                                        location: { type: 'STRING' },
+                                        startDate: { type: 'STRING', description: 'YYYY-MM-DD format (approximate if year only)' },
+                                        endDate: { type: 'STRING', description: 'YYYY-MM-DD format (or empty if current)' },
+                                        isCurrent: { type: 'BOOLEAN' },
+                                        description: { type: 'STRING', description: 'Duties and accomplishments' }
+                                    },
+                                    required: ['companyName', 'role']
+                                }
+                            },
+                            educations: {
+                                type: 'ARRAY',
+                                items: {
+                                    type: 'OBJECT',
+                                    properties: {
+                                        institution: { type: 'STRING' },
+                                        degree: { type: 'STRING', description: 'Field of study or degree title' },
+                                        startDate: { type: 'STRING', description: 'YYYY-MM-DD' },
+                                        endDate: { type: 'STRING', description: 'YYYY-MM-DD' },
+                                        isCompleted: { type: 'BOOLEAN' }
+                                    },
+                                    required: ['institution', 'degree']
+                                }
+                            },
+                            certifications: {
+                                type: 'ARRAY',
+                                items: {
+                                    type: 'OBJECT',
+                                    properties: {
+                                        certificationName: { type: 'STRING' },
+                                        issuingAuthority: { type: 'STRING' },
+                                        issueDate: { type: 'STRING', description: 'YYYY-MM-DD' }
+                                    },
+                                    required: ['certificationName']
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            let data = {};
+            if (response.text) {
+                data = JSON.parse(response.text);
+            }
+            return res.json(data);
+        } catch (error) {
+            console.error('Parse Resume JSON Error:', error);
+            return res.status(500).json({ error: 'Failed to parse resume text into JSON' });
         }
     }
 }
