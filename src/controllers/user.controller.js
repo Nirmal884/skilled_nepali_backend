@@ -133,8 +133,12 @@ const UserController = {
     async getMe(req, res) {
         try {
             const userData = req.user;
-            const user = await UserService.getUserProfile(userData.id)
-            return res.status(200).json({ success: true, statusCode: 200, data: user });
+            const result = await UserService.getUserProfile(userData.id);
+            if (result && result.user) {
+                result.user.isImpersonated = !!userData.isImpersonated;
+                result.user.impersonatedBy = userData.impersonatedBy || null;
+            }
+            return res.status(200).json({ success: true, statusCode: 200, data: result });
         } catch (error) {
             console.error('Error fetching user:', error);
             return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error' });
