@@ -4,7 +4,8 @@ const ApplicantTypeController = require('../controllers/applicantType.controller
 const upload = require('../middleware/multer');
 const UserController = require('../controllers/user.controller');
 const loginLimiter = require('../middleware/ratelimiter');
-const { authenticate, optionalAuthenticate, authorize } = require('../middleware/auth.middleware');
+const { authenticate, optionalAuthenticate, authorize, blockImpersonatedSession } = require('../middleware/auth.middleware');
+const ImpersonationController = require('../controllers/impersonation.controller');
 const JobController = require('../controllers/job.controller');
 const AdminDashboardController = require('../controllers/admin.controller');
 const SkillsController = require('../controllers/skills.controller');
@@ -101,10 +102,10 @@ router.get('/download-all-users-excel', authenticate, AdminDashboardController.d
 router.post('/subscribe', NewsLetterController.subscribe)
 
 //subscription route
-router.post('/create-subscription', authenticate, SubscriptionController.createSubscription)
+router.post('/create-subscription', authenticate, blockImpersonatedSession, SubscriptionController.createSubscription)
 
 //verify subscription
-router.post('/verify-subscription', authenticate, SubscriptionController.verifySubscription)
+router.post('/verify-subscription', authenticate, blockImpersonatedSession, SubscriptionController.verifySubscription)
 
 //plan routes
 router.post('/create-plan', authenticate, authorize('ADMIN'), PlanController.createPlan)
@@ -151,5 +152,9 @@ router.post('/parse-resume-json', AIController.parseResumeJson);
 
 router.post("/upload-business-document", authenticate, upload.fields([{ name: 'businessDocument', maxCount: 1 }]), UserController.uploadBusinessDocument);
 router.put("/admin/verify-user/:id", authenticate, authorize('ADMIN'), UserController.adminVerifyUser);
+
+// Impersonation routes
+router.post('/admin/impersonate', authenticate, authorize('ADMIN'), ImpersonationController.impersonateUser);
+router.post('/admin/stop-impersonation', authenticate, ImpersonationController.stopImpersonating);
 
 module.exports = router;

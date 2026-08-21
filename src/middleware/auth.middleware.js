@@ -55,4 +55,15 @@ const authorize = (...allowedRoles) => {
     };
 };
 
-module.exports = { authenticate, optionalAuthenticate, authorize };
+const blockImpersonatedSession = (req, res, next) => {
+    if (req.user && req.user.isImpersonated) {
+        return res.status(403).json({
+            success: false,
+            statusCode: 403,
+            message: "Action forbidden: High-security operations are blocked during impersonation."
+        });
+    }
+    next();
+};
+
+module.exports = { authenticate, optionalAuthenticate, authorize, blockImpersonatedSession };
