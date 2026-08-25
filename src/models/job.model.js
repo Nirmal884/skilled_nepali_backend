@@ -609,6 +609,74 @@ const JobModel = {
             }
             throw error;
         }
+    },
+
+    async downloadAppliedJobsExcel(userId, search, status, employerId) {
+        let statusFilter = null;
+        if (status) {
+            const statusList = Array.isArray(status)
+                ? status
+                : status.split(',');
+            const cleanArray = statusList
+                .map(s => s.trim())
+                .filter(s => s !== "" && s !== "undefined" && s !== "null");
+            if (cleanArray.length > 0) {
+                statusFilter = { in: cleanArray };
+            }
+        }
+
+        const whereClause = {
+            ...(userId && { userId: userId }),
+            ...(employerId && {
+                job: {
+                    userId: employerId
+                }
+            }),
+            ...(statusFilter && { status: statusFilter }),
+            ...(search && {
+                OR: [
+                    {
+                        job: {
+                            title: {
+                                contains: search,
+                                mode: 'insensitive'
+                            }
+                        }
+                    },
+                    {
+                        user: {
+                            fullName: {
+                                contains: search,
+                                mode: 'insensitive'
+                            }
+                        }
+                    }
+                ]
+            })
+        };
+
+        const jobApplications = await prisma.jobApplication.findMany({
+            where: whereClause,
+            include: {
+                user: {
+                    select: {
+                        fullName: true,
+                        email: true,
+                        phone: true
+                    }
+                },
+                job: {
+                    select: {
+                        title: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return jobApplications;
     }
 }
 

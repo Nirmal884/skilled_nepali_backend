@@ -90,6 +90,7 @@ router.get('/list-all-verified-jobs', optionalAuthenticate, JobController.listAl
 router.get('/fetch-job-by-id/:jobId', optionalAuthenticate, JobController.fetchJobById)
 router.post('/apply-job', authenticate, authorize('JOBSEEKER'), JobController.applyJob)
 router.get('/list-applied-jobs', authenticate, JobController.listJobApplicaton)
+router.get('/download-applied-jobs-excel', authenticate, JobController.downloadAppliedJobsExcel)
 router.patch('/update-job-status', authenticate, JobController.updateJobApplicationStatus)
 
 // admin router

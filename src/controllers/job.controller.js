@@ -311,6 +311,33 @@ const JobController = {
                 message: error?.message || "Internal server error"
             })
         }
+    },
+
+    async downloadAppliedJobsExcel(req, res) {
+        try {
+            const { userId, search, status, employerId } = req.query;
+            const statusFilter = status || req.query['status[]'];
+
+            const { buffer } = await JobService.downloadAppliedJobsExcel(userId, search, statusFilter, employerId);
+
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=applied-jobs.xlsx'
+            );
+
+            return res.status(200).send(buffer);
+        } catch (error) {
+            console.error('Error downloading job applications excel:', error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error?.message || "Internal server error"
+            });
+        }
     }
 }
 
