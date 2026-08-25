@@ -279,6 +279,19 @@ const JobModel = {
         const skip = page ? (page - 1) * limit : 0;
         const take = limit ? limit : 10;
 
+        let statusFilter = null;
+        if (status) {
+            const statusList = Array.isArray(status)
+                ? status
+                : status.split(',');
+            const cleanArray = statusList
+                .map(s => s.trim())
+                .filter(s => s !== "" && s !== "undefined" && s !== "null");
+            if (cleanArray.length > 0) {
+                statusFilter = { in: cleanArray };
+            }
+        }
+
         const whereClause = {
             ...(userId && { userId: userId }),
             ...(employerId && {
@@ -286,7 +299,7 @@ const JobModel = {
                     userId: employerId
                 }
             }),
-            ...(status && { status }),
+            ...(statusFilter && { status: statusFilter }),
             ...(search && {
                 OR: [
                     {

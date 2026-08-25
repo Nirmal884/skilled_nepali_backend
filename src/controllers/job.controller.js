@@ -189,7 +189,8 @@ const JobController = {
     async listJobApplicaton(req, res) {
         try {
             const { page, limit, userId, search, status, employerId } = req.query;
-            const { jobAplication, count, inReviewCount, shortlistCount, rejectedCount, message } = await JobService.listJobApplicaton(userId, Number(page), Number(limit), search, status, employerId)
+            const statusFilter = status || req.query['status[]'];
+            const { jobAplication, count, inReviewCount, shortlistCount, rejectedCount, message } = await JobService.listJobApplicaton(userId, Number(page), Number(limit), search, statusFilter, employerId)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
