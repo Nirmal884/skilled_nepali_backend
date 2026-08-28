@@ -166,5 +166,6 @@ router.get('/profile-requests/employer', authenticate, authorize('EMPLOYER'), Pr
 router.get('/profile-requests/admin', authenticate, authorize('ADMIN'), ProfileRequestController.getAdminProfileRequests);
 router.put('/profile-requests/:id/status', authenticate, authorize('ADMIN'), ProfileRequestController.updateProfileRequestStatus);
 router.get('/profile-requests/:id/candidates', authenticate, ProfileRequestController.getApprovedRequestCandidates);
+router.get('/profile-requests/:id/candidates/download', authenticate, ProfileRequestController.downloadApprovedRequestCandidatesExcel);
 
 module.exports = router;

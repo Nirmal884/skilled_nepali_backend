@@ -90,6 +90,32 @@ const ProfileRequestController = {
                 message: error.message || "Failed to fetch candidates"
             });
         }
+    },
+
+    async downloadApprovedRequestCandidatesExcel(req, res) {
+        try {
+            const { id } = req.params;
+            const { buffer, categoryName } = await ProfileRequestService.downloadApprovedRequestCandidatesExcel(id);
+            const sanitizedCategory = categoryName.toLowerCase().replace(/[^a-z0-9]/g, "_");
+
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.setHeader(
+                'Content-Disposition',
+                `attachment; filename=candidates_${sanitizedCategory}.xlsx`
+            );
+
+            return res.status(200).send(buffer);
+        } catch (error) {
+            console.error("Error downloading candidates excel:", error);
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
+                success: false,
+                message: error.message || "Failed to download candidates Excel"
+            });
+        }
     }
 };
 
