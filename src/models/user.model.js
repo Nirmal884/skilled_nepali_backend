@@ -246,9 +246,35 @@ const UserModel = {
 
         if (!user) return null;
 
+        const certificationsCount = user.certifications?.length || 0;
+        let skillBadge = null;
+        if (certificationsCount >= 3) {
+            skillBadge = {
+                level: 3,
+                name: "Gold Expert",
+                color: "#ca8a04",
+                description: "Completed 3 or more courses"
+            };
+        } else if (certificationsCount === 2) {
+            skillBadge = {
+                level: 2,
+                name: "Silver Achiever",
+                color: "#475569",
+                description: "Completed 2 courses"
+            };
+        } else if (certificationsCount === 1) {
+            skillBadge = {
+                level: 1,
+                name: "Bronze Starter",
+                color: "#d97706",
+                description: "Completed 1 course"
+            };
+        }
+
         const mappedUser = {
             ...user,
             country: allCountries.find(item => item.value === user.country)?.label || user.country,
+            skillBadge
         };
 
         delete mappedUser.password;
