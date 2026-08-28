@@ -437,6 +437,7 @@ model ProfileRequest {
   jobCategory    JobCategory         @relation("JobCategoryProfileRequests", fields: [jobCategoryId], references: [id], onDelete: Cascade)
   noOfCandidates Int
   status         AdminApprovalStatus @default(PENDING)
+  adminNote      String?
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
   deletedAt      DateTime?

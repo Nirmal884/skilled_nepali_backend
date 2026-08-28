@@ -17,14 +17,22 @@ const ProfileRequestService = {
     },
 
     async getAdminProfileRequests() {
-        return await ProfileRequestModel.getAdminProfileRequests();
+        const requests = await ProfileRequestModel.getAdminProfileRequests();
+        // Add matching candidate count to each request
+        return await Promise.all(requests.map(async (req) => {
+            const availableCandidates = await ProfileRequestModel.countMatchingCandidates(req.jobCategoryId);
+            return {
+                ...req,
+                availableCandidates
+            };
+        }));
     },
 
-    async updateProfileRequestStatus(id, status) {
+    async updateProfileRequestStatus(id, status, adminNote) {
         if (!['PENDING', 'APPROVED', 'REJECTED'].includes(status)) {
             throw new Error("Invalid approval status");
         }
-        return await ProfileRequestModel.updateProfileRequestStatus(id, status);
+        return await ProfileRequestModel.updateProfileRequestStatus(id, status, adminNote);
     },
 
     async getApprovedRequestCandidates(id) {

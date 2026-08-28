@@ -58,8 +58,8 @@ const ProfileRequestController = {
     async updateProfileRequestStatus(req, res) {
         try {
             const { id } = req.params;
-            const { status } = req.body;
-            const result = await ProfileRequestService.updateProfileRequestStatus(id, status);
+            const { status, adminNote } = req.body;
+            const result = await ProfileRequestService.updateProfileRequestStatus(id, status, adminNote);
             return res.status(200).json({
                 success: true,
                 message: `Profile request status updated to ${status}`,

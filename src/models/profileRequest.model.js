@@ -60,10 +60,14 @@ const ProfileRequestModel = {
         });
     },
 
-    async updateProfileRequestStatus(id, status) {
+    async updateProfileRequestStatus(id, status, adminNote) {
+        const updateData = { status };
+        if (adminNote !== undefined) {
+            updateData.adminNote = adminNote;
+        }
         return await prisma.profileRequest.update({
             where: { id },
-            data: { status },
+            data: updateData,
             include: {
                 jobCategory: true,
                 employer: {
@@ -72,6 +76,20 @@ const ProfileRequestModel = {
                         fullName: true,
                         companyName: true,
                         email: true
+                    }
+                }
+            }
+        });
+    },
+
+    async countMatchingCandidates(jobCategoryId) {
+        return await prisma.user.count({
+            where: {
+                role: 'JOBSEEKER',
+                deletedAt: null,
+                jobCategories: {
+                    some: {
+                        id: jobCategoryId
                     }
                 }
             }
@@ -133,7 +151,7 @@ const ProfileRequestModel = {
         });
 
         // Limit the results
-        return candidates.slice(0, limit);
+        return candidates.slice(0, limit).map(({ password, ...candidate }) => candidate);
     }
 };
 
