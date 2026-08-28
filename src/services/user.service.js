@@ -113,6 +113,11 @@ const UserService = {
             const updatedUser = await UserModel.updateLogo(userId, role, uploadedLogo.Location);
             return { updatedUser, message: "Logo updated successfully" };
         }
+        if (files.profilePicture) {
+            const uploadedPic = await uploadToS3(files.profilePicture[0].buffer, files.profilePicture[0].originalname, files.profilePicture[0].mimetype, "images");
+            const updatedUser = await UserModel.updateLogo(userId, role, uploadedPic.Location);
+            return { updatedUser, message: "Profile picture updated successfully" };
+        }
     },
 
     async updateResume(userId, files) {

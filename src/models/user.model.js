@@ -85,6 +85,8 @@ const UserModel = {
             data.companyLogo = logo;
         } else if (role === "TRAINING_CENTRE") {
             data.centreLogo = logo;
+        } else if (role === "JOBSEEKER") {
+            data.profilePicture = logo;
         }
 
         const updatedUser = await prisma.user.update({

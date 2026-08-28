@@ -51,6 +51,7 @@ model User {
   courses           Course[]
   enrollments       CourseEnrollment[]
   companyProfile    CompanyProfile?
+  profileRequests   ProfileRequest[]   @relation("EmployerProfileRequests")
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   deletedAt         DateTime?
@@ -111,6 +112,7 @@ model JobCategory {
   users        User[]    @relation("UserJobCategories")
   jobs         Jobs[]
   courses      Course[]
+  profileRequests ProfileRequest[] @relation("JobCategoryProfileRequests")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
@@ -426,3 +428,19 @@ model ImpersonationLog {
 
   @@map("impersonation_logs")
 }
+
+model ProfileRequest {
+  id             String              @id @default(uuid())
+  employerId     String
+  employer       User                @relation("EmployerProfileRequests", fields: [employerId], references: [id], onDelete: Cascade)
+  jobCategoryId  String
+  jobCategory    JobCategory         @relation("JobCategoryProfileRequests", fields: [jobCategoryId], references: [id], onDelete: Cascade)
+  noOfCandidates Int
+  status         AdminApprovalStatus @default(PENDING)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  deletedAt      DateTime?
+
+  @@map("profile_requests")
+}
+

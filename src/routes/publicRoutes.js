@@ -16,6 +16,7 @@ const PlanController = require('../controllers/plan.controller');
 const TrainingController = require('../controllers/training.controller');
 const CourseEnrollmentController = require('../controllers/courseEnrollment.controller');
 const AIController = require('../controllers/ai.controller');
+const ProfileRequestController = require('../controllers/profileRequest.controller');
 const router = express.Router();
 
 // users routes
@@ -33,7 +34,8 @@ router.get("/me", authenticate, UserController.getMe);
 router.post("/verify-phone", UserController.verifyPhone);
 router.post("/update-logo", authenticate, upload.fields([
     { name: 'companyLogo', maxCount: 1 },
-    { name: 'centreLogo', maxCount: 1 }
+    { name: 'centreLogo', maxCount: 1 },
+    { name: 'profilePicture', maxCount: 1 }
 ]), UserController.updateLogo);
 router.post("/update-resume", authenticate, upload.fields([
     { name: 'resume', maxCount: 1 }
@@ -157,5 +159,12 @@ router.put("/admin/verify-user/:id", authenticate, authorize('ADMIN'), UserContr
 // Impersonation routes
 router.post('/admin/impersonate', authenticate, authorize('ADMIN'), ImpersonationController.impersonateUser);
 router.post('/admin/stop-impersonation', authenticate, ImpersonationController.stopImpersonating);
+
+// Profile Request routes
+router.post('/profile-requests', authenticate, authorize('EMPLOYER'), ProfileRequestController.createProfileRequest);
+router.get('/profile-requests/employer', authenticate, authorize('EMPLOYER'), ProfileRequestController.getEmployerProfileRequests);
+router.get('/profile-requests/admin', authenticate, authorize('ADMIN'), ProfileRequestController.getAdminProfileRequests);
+router.put('/profile-requests/:id/status', authenticate, authorize('ADMIN'), ProfileRequestController.updateProfileRequestStatus);
+router.get('/profile-requests/:id/candidates', authenticate, ProfileRequestController.getApprovedRequestCandidates);
 
 module.exports = router;
