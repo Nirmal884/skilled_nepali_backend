@@ -17,6 +17,7 @@ const TrainingController = require('../controllers/training.controller');
 const CourseEnrollmentController = require('../controllers/courseEnrollment.controller');
 const AIController = require('../controllers/ai.controller');
 const ProfileRequestController = require('../controllers/profileRequest.controller');
+const ChatController = require('../controllers/chat.controller');
 const router = express.Router();
 
 // users routes
@@ -167,5 +168,10 @@ router.get('/profile-requests/admin', authenticate, authorize('ADMIN'), ProfileR
 router.put('/profile-requests/:id/status', authenticate, authorize('ADMIN'), ProfileRequestController.updateProfileRequestStatus);
 router.get('/profile-requests/:id/candidates', authenticate, ProfileRequestController.getApprovedRequestCandidates);
 router.get('/profile-requests/:id/candidates/download', authenticate, ProfileRequestController.downloadApprovedRequestCandidatesExcel);
+
+// Chat routes
+router.post('/chat/room', authenticate, ChatController.getOrCreateRoom);
+router.get('/chat/rooms', authenticate, ChatController.getUserRooms);
+router.get('/chat/rooms/:roomId/messages', authenticate, ChatController.getRoomMessages);
 
 module.exports = router;
