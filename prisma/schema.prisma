@@ -52,6 +52,9 @@ model User {
   enrollments       CourseEnrollment[]
   companyProfile    CompanyProfile?
   profileRequests   ProfileRequest[]   @relation("EmployerProfileRequests")
+  jobseekerRooms    ChatRoom[]         @relation("JobseekerRooms")
+  employerRooms     ChatRoom[]         @relation("EmployerRooms")
+  chatMessages      ChatMessage[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   deletedAt         DateTime?
@@ -443,5 +446,33 @@ model ProfileRequest {
   deletedAt      DateTime?
 
   @@map("profile_requests")
+}
+
+model ChatRoom {
+  id           String        @id @default(uuid())
+  jobseekerId  String
+  jobseeker    User          @relation("JobseekerRooms", fields: [jobseekerId], references: [id], onDelete: Cascade)
+  employerId   String
+  employer     User          @relation("EmployerRooms", fields: [employerId], references: [id], onDelete: Cascade)
+  
+  messages     ChatMessage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([jobseekerId, employerId])
+  @@map("chat_rooms")
+}
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  roomId     String
+  room       ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId   String
+  sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  message    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("chat_messages")
 }
 
