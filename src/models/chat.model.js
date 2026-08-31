@@ -45,14 +45,27 @@ const ChatModel = {
         });
     },
 
-    async getRoomMessages(roomId) {
-        return await prisma.chatMessage.findMany({
+    async getRoomMessages(roomId, limit, cursor) {
+
+        const queryOption = {
             where: { roomId },
+            take: Number(limit),
+            orderBy: { createdAt: 'desc' },
+
             include: {
                 sender: { select: { id: true, fullName: true, role: true } }
-            },
-            orderBy: { createdAt: 'asc' }
-        });
+            }
+        }
+
+        if (cursor) {
+            queryOption.cursor = { id: cursor }
+            queryOption.skip = 1
+        }
+
+        const messages = await prisma.chatMessage.findMany(queryOption);
+
+        // Reverse the messages to return in ascending order (oldest first)
+        return messages.reverse();
     },
 
     async createMessage(roomId, senderId, message) {

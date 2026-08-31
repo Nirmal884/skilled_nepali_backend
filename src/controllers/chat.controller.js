@@ -66,6 +66,7 @@ const ChatController = {
         try {
             const { roomId } = req.params;
             const userId = req.user.id;
+            const { limit = 20, cursor } = req.query;
 
             // Optional: verify that the user belongs to the room
             const room = await ChatService.getRoomById(roomId);
@@ -83,11 +84,12 @@ const ChatController = {
                 });
             }
 
-            const messages = await ChatService.getRoomMessages(roomId);
+            const messages = await ChatService.getRoomMessages(roomId, limit, cursor);
             return res.status(200).json({
                 success: true,
                 message: "Messages fetched successfully",
-                data: messages
+                data: messages,
+                nextCursor: messages.length === Number(limit) ? messages[0].id : null
             });
         } catch (error) {
             return res.status(500).json({

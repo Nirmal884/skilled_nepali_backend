@@ -9,8 +9,8 @@ const ChatService = {
         return await ChatModel.getUserRooms(userId);
     },
 
-    async getRoomMessages(roomId) {
-        return await ChatModel.getRoomMessages(roomId);
+    async getRoomMessages(roomId, limit, cursor) {
+        return await ChatModel.getRoomMessages(roomId, limit, cursor);
     },
 
     async createMessage(roomId, senderId, message) {
