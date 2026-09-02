@@ -153,6 +153,7 @@ model Jobs {
   deadLine                DateTime?
   jobStatus               JobStatus           @default(PENDING)
   isUrgent                Boolean             @default(false)
+  isFeatured              Boolean             @default(false)
   noOfOpenings            Int                 @default(1)
   userId                  String
   user                    User                @relation(fields: [userId], references: [id])

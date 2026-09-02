@@ -42,6 +42,11 @@ const checkPostingLimit = (postType) => {
             if (role !== "EMPLOYER" && role !== "TRAINING_CENTRE") {
                 return next();
             }
+
+            // If editing an existing job or course, do not enforce new post limit
+            if (req.body?.jobId || req.body?.courseId || req.params?.id) {
+                return next();
+            }
             
             // Fetch limits dynamically from Plan table in DB
             const { limits } = await getPlanLimitsForUser(userId, role);

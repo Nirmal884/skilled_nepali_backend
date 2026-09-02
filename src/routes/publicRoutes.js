@@ -112,6 +112,11 @@ router.post('/create-subscription', authenticate, blockImpersonatedSession, Subs
 //verify subscription
 router.post('/verify-subscription', authenticate, blockImpersonatedSession, SubscriptionController.verifySubscription)
 
+//subscription upgrade routes
+router.post('/subscription/upgrade-quote', authenticate, blockImpersonatedSession, SubscriptionController.getUpgradeQuote)
+router.post('/subscription/create-upgrade-order', authenticate, blockImpersonatedSession, SubscriptionController.createUpgradeOrder)
+router.post('/subscription/verify-upgrade', authenticate, blockImpersonatedSession, SubscriptionController.verifyUpgrade)
+
 //plan routes
 router.post('/create-plan', authenticate, authorize('ADMIN'), PlanController.createPlan)
 router.patch('/toggle-plan-status/:id', authenticate, authorize('ADMIN'), PlanController.togglePlanStatus)
