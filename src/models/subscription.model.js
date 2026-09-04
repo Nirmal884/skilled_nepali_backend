@@ -251,7 +251,7 @@ const SubscriptionModel = {
             try {
                 await razorpay.subscriptions.cancel(activeSub.razorpaySubId);
             } catch (err) {
-                console.warn("Old subscription cancellation notice:", err.message);
+                console.warn("Old subscription cancellation notice:", err);
             }
         }
 
