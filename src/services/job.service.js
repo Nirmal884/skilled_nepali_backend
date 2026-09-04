@@ -12,6 +12,36 @@ const JobService = {
         if (!user.isAdminApproved) {
             throw new Error("Forbidden: Your account must be approved by the admin to post jobs");
         }
+
+        if (data.isFeatured) {
+            const { getPlanLimitsForUser } = require("../utils/featureMatrix");
+            const { limits } = await getPlanLimitsForUser(data.userId, user.role);
+            const featuredLimit = limits.featuredJobCount || 0;
+
+            if (featuredLimit <= 0) {
+                const error = new Error("Your current plan does not allow posting featured jobs. Please upgrade your plan.");
+                error.code = "FEATURED_JOB_LIMIT_EXCEEDED";
+                error.statusCode = 403;
+                throw error;
+            }
+
+            const currentFeaturedCount = await prisma.jobs.count({
+                where: {
+                    userId: data.userId,
+                    isFeatured: true,
+                    deletedAt: null,
+                    ...(data.jobId ? { id: { not: data.jobId } } : {})
+                }
+            });
+
+            if (currentFeaturedCount >= featuredLimit) {
+                const error = new Error(`You have reached your limit of ${featuredLimit} featured job(s). Upgrade your plan to feature more jobs.`);
+                error.code = "FEATURED_JOB_LIMIT_EXCEEDED";
+                error.statusCode = 403;
+                throw error;
+            }
+        }
+
         const { jobData, isUpdated } = await JobModel.createJob(data)
         return { jobResponse: jobData, message: isUpdated ? "Job updated successfully" : "Job created successfully" }
     },

@@ -12,8 +12,11 @@ const JobController = {
             })
         } catch (error) {
             console.log("Error:", error)
-            return res.status(500).json({
+            const statusCode = error.statusCode || 500;
+            return res.status(statusCode).json({
                 success: false,
+                statusCode: statusCode,
+                code: error.code,
                 message: error?.message || "Internal server error"
             })
         }

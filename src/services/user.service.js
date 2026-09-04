@@ -1,7 +1,8 @@
 const UserModel = require("../models/user.model");
 const { uploadToS3 } = require("../utils/s3Uploader");
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { getPlanLimitsForUser } = require("../utils/featureMatrix");
 
 const UserService = {
     async createUser(data, files) {
@@ -153,12 +154,19 @@ const UserService = {
 
     async getUserProfile(userId) {
         const user = await UserModel.getUserProfile(userId);
-        if (user && user.companyProfile) {
-            user.address = user.companyProfile.address;
-            user.about = user.companyProfile.about;
-            user.website = user.companyProfile.website;
-            user.latitude = user.companyProfile.latitude;
-            user.longitude = user.companyProfile.longitude;
+        if (user) {
+            const { limits, planType, planName } = await getPlanLimitsForUser(userId, user.role);
+            user.planLimits = limits;
+            user.activePlanType = planType;
+            user.activePlanName = planName;
+
+            if (user.companyProfile) {
+                user.address = user.companyProfile.address;
+                user.about = user.companyProfile.about;
+                user.website = user.companyProfile.website;
+                user.latitude = user.companyProfile.latitude;
+                user.longitude = user.companyProfile.longitude;
+            }
         }
         return { user, message: "User profile fetched successfully" };
     },
@@ -166,12 +174,19 @@ const UserService = {
     async updateProfile(userId, data) {
         await UserModel.updateProfile(userId, data);
         const userProfile = await UserModel.getUserProfile(userId);
-        if (userProfile && userProfile.companyProfile) {
-            userProfile.address = userProfile.companyProfile.address;
-            userProfile.about = userProfile.companyProfile.about;
-            userProfile.website = userProfile.companyProfile.website;
-            userProfile.latitude = userProfile.companyProfile.latitude;
-            userProfile.longitude = userProfile.companyProfile.longitude;
+        if (userProfile) {
+            const { limits, planType, planName } = await getPlanLimitsForUser(userId, userProfile.role);
+            userProfile.planLimits = limits;
+            userProfile.activePlanType = planType;
+            userProfile.activePlanName = planName;
+
+            if (userProfile.companyProfile) {
+                userProfile.address = userProfile.companyProfile.address;
+                userProfile.about = userProfile.companyProfile.about;
+                userProfile.website = userProfile.companyProfile.website;
+                userProfile.latitude = userProfile.companyProfile.latitude;
+                userProfile.longitude = userProfile.companyProfile.longitude;
+            }
         }
         return { updatedUser: userProfile, message: "Profile updated successfully" };
     },
