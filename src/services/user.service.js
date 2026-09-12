@@ -167,6 +167,36 @@ const UserService = {
                 user.latitude = user.companyProfile.latitude;
                 user.longitude = user.companyProfile.longitude;
             }
+
+            if (user.trainingCentreProfile) {
+                user.centreName = user.trainingCentreProfile.centreName || user.centreName;
+                user.tagline = user.trainingCentreProfile.tagline;
+                user.centreType = user.trainingCentreProfile.centreType;
+                user.registrationNumber = user.trainingCentreProfile.registrationNumber;
+                user.affiliationNumber = user.trainingCentreProfile.affiliationNumber;
+                user.establishedYear = user.trainingCentreProfile.establishedYear;
+                user.contactPerson = user.trainingCentreProfile.contactPerson;
+                user.contactDesignation = user.trainingCentreProfile.contactDesignation;
+                user.primaryPhone = user.trainingCentreProfile.primaryPhone || user.phone;
+                user.alternativePhone = user.trainingCentreProfile.alternativePhone;
+                user.officialEmail = user.trainingCentreProfile.officialEmail || user.email;
+                user.website = user.trainingCentreProfile.website;
+                user.facebookUrl = user.trainingCentreProfile.facebookUrl;
+                user.linkedinUrl = user.trainingCentreProfile.linkedinUrl;
+                user.youtubeUrl = user.trainingCentreProfile.youtubeUrl;
+                user.address = user.trainingCentreProfile.address;
+                user.city = user.trainingCentreProfile.city;
+                user.district = user.trainingCentreProfile.district;
+                user.province = user.trainingCentreProfile.province;
+                user.postalCode = user.trainingCentreProfile.postalCode;
+                user.latitude = user.trainingCentreProfile.latitude;
+                user.longitude = user.trainingCentreProfile.longitude;
+                user.about = user.trainingCentreProfile.about;
+                user.facilities = user.trainingCentreProfile.facilities || [];
+                user.specializations = user.trainingCentreProfile.specializations || [];
+                user.operatingHours = user.trainingCentreProfile.operatingHours;
+                user.coverImage = user.trainingCentreProfile.coverImage;
+            }
         }
         return { user, message: "User profile fetched successfully" };
     },
@@ -186,6 +216,36 @@ const UserService = {
                 userProfile.website = userProfile.companyProfile.website;
                 userProfile.latitude = userProfile.companyProfile.latitude;
                 userProfile.longitude = userProfile.companyProfile.longitude;
+            }
+
+            if (userProfile.trainingCentreProfile) {
+                userProfile.centreName = userProfile.trainingCentreProfile.centreName || userProfile.centreName;
+                userProfile.tagline = userProfile.trainingCentreProfile.tagline;
+                userProfile.centreType = userProfile.trainingCentreProfile.centreType;
+                userProfile.registrationNumber = userProfile.trainingCentreProfile.registrationNumber;
+                userProfile.affiliationNumber = userProfile.trainingCentreProfile.affiliationNumber;
+                userProfile.establishedYear = userProfile.trainingCentreProfile.establishedYear;
+                userProfile.contactPerson = userProfile.trainingCentreProfile.contactPerson;
+                userProfile.contactDesignation = userProfile.trainingCentreProfile.contactDesignation;
+                userProfile.primaryPhone = userProfile.trainingCentreProfile.primaryPhone || userProfile.phone;
+                userProfile.alternativePhone = userProfile.trainingCentreProfile.alternativePhone;
+                userProfile.officialEmail = userProfile.trainingCentreProfile.officialEmail || userProfile.email;
+                userProfile.website = userProfile.trainingCentreProfile.website;
+                userProfile.facebookUrl = userProfile.trainingCentreProfile.facebookUrl;
+                userProfile.linkedinUrl = userProfile.trainingCentreProfile.linkedinUrl;
+                userProfile.youtubeUrl = userProfile.trainingCentreProfile.youtubeUrl;
+                userProfile.address = userProfile.trainingCentreProfile.address;
+                userProfile.city = userProfile.trainingCentreProfile.city;
+                userProfile.district = userProfile.trainingCentreProfile.district;
+                userProfile.province = userProfile.trainingCentreProfile.province;
+                userProfile.postalCode = userProfile.trainingCentreProfile.postalCode;
+                userProfile.latitude = userProfile.trainingCentreProfile.latitude;
+                userProfile.longitude = userProfile.trainingCentreProfile.longitude;
+                userProfile.about = userProfile.trainingCentreProfile.about;
+                userProfile.facilities = userProfile.trainingCentreProfile.facilities || [];
+                userProfile.specializations = userProfile.trainingCentreProfile.specializations || [];
+                userProfile.operatingHours = userProfile.trainingCentreProfile.operatingHours;
+                userProfile.coverImage = userProfile.trainingCentreProfile.coverImage;
             }
         }
         return { updatedUser: userProfile, message: "Profile updated successfully" };

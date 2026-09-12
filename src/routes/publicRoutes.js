@@ -138,6 +138,8 @@ router.get('/get-single-course/:id', TrainingController.getSingleCourseDetails)
 router.delete('/delete-course/:id', authenticate, TrainingController.deleteCourse)
 router.put('/admin-approve-course/:id', authenticate, authorize('ADMIN'), TrainingController.adminApproveCourse)
 router.get('/list-delete-requested-courses', authenticate, authorize('ADMIN'), TrainingController.listDeleteRequestedCourses)
+router.get('/get-all-training-centres', TrainingController.getAllTrainingCentres)
+router.get('/get-training-centre-details/:id', TrainingController.getTrainingCentreDetails)
 
 // course enrollment routes
 router.post('/enroll-course', CourseEnrollmentController.enrollInCourse)
