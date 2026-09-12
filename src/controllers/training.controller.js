@@ -144,6 +144,14 @@ const TrainingController = {
         try {
             const { id } = req.params;
             const course = await TrainingService.getSingleCourseDetail(id);
+            if (!course) {
+                return res.status(404).json({
+                    success: false,
+                    statusCode: 404,
+                    message: "Course not found",
+                    data: null
+                });
+            }
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
@@ -200,6 +208,60 @@ const TrainingController = {
             return res.status(500).json({
                 success: false,
                 statusCode: 500,
+                message: error.message || "Internal server error"
+            });
+        }
+    },
+
+    async getAllTrainingCentres(req, res) {
+        try {
+            const { page, limit, search, district, province, centreType } = req.query;
+            const result = await TrainingService.getAllTrainingCentres(
+                page ? Number(page) : 1,
+                limit ? Number(limit) : 12,
+                search || '',
+                { district, province, centreType }
+            );
+
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: result.message,
+                data: {
+                    trainingCentres: result.trainingCentres,
+                    totalCount: result.totalCount,
+                    totalPages: result.totalPages,
+                    currentPage: result.currentPage,
+                    limit: result.limit
+                }
+            });
+        } catch (error) {
+            console.error("Error fetching training centres:", error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || "Internal server error"
+            });
+        }
+    },
+
+    async getTrainingCentreDetails(req, res) {
+        try {
+            const { id } = req.params;
+            const { centre, message } = await TrainingService.getTrainingCentreDetails(id);
+
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: centre
+            });
+        } catch (error) {
+            console.error("Error fetching training centre details:", error);
+            const status = error.message === "Training centre not found" ? 404 : 500;
+            return res.status(status).json({
+                success: false,
+                statusCode: status,
                 message: error.message || "Internal server error"
             });
         }

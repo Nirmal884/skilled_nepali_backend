@@ -50,7 +50,8 @@ model User {
   subscriptions     Subscriptions[]
   courses           Course[]
   enrollments       CourseEnrollment[]
-  companyProfile    CompanyProfile?
+  companyProfile        CompanyProfile?
+  trainingCentreProfile TrainingCentreProfile?
   profileRequests   ProfileRequest[]   @relation("EmployerProfileRequests")
   jobseekerRooms    ChatRoom[]         @relation("JobseekerRooms")
   employerRooms     ChatRoom[]         @relation("EmployerRooms")
@@ -263,7 +264,7 @@ model Plan {
   name                       String
   description                String?
   amount                     Int // in paise (e.g. 499900 for 4999.00 INR)
-  currency                   String   @default("INR")
+  currency                   String   @default("USD")
   period                     String // "monthly" | "yearly"
   interval                   Int      @default(1)
   planType                   PlanType
@@ -420,6 +421,50 @@ model CompanyProfile {
   updatedAt DateTime @updatedAt
 
   @@map("company_profiles")
+}
+
+model TrainingCentreProfile {
+  id                 String    @id @default(uuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  centreName         String?   @default("")
+  tagline            String?   @default("")
+  centreType         String?   @default("VOCATIONAL_TECHNICAL")
+  registrationNumber String?   @default("")
+  affiliationNumber  String?   @default("")
+  establishedYear    Int?
+  
+  contactPerson      String?   @default("")
+  contactDesignation String?   @default("")
+  primaryPhone       String?   @default("")
+  alternativePhone   String?   @default("")
+  officialEmail      String?   @default("")
+  website            String?   @default("")
+  facebookUrl        String?   @default("")
+  linkedinUrl        String?   @default("")
+  youtubeUrl         String?   @default("")
+  
+  address            String?   @default("")
+  city               String?   @default("")
+  district           String?   @default("")
+  province           String?   @default("")
+  postalCode         String?   @default("")
+  latitude           Float?
+  longitude          Float?
+  
+  about              String?   @default("")
+  facilities         String[]  @default([])
+  specializations    String[]  @default([])
+  operatingHours     String?   @default("")
+  
+  centreLogo         String?   @default("")
+  coverImage         String?   @default("")
+  
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@map("training_centre_profiles")
 }
 
 model ImpersonationLog {

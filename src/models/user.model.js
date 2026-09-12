@@ -242,7 +242,8 @@ const UserModel = {
                     }
                 },
                 subscriptions: true,
-                companyProfile: true
+                companyProfile: true,
+                trainingCentreProfile: true
             }
         });
 
@@ -417,48 +418,118 @@ const UserModel = {
             updateData.skills = { set: skillsToConnect };
         }
 
-        // Upsert nested CompanyProfile
-        if (data.address !== undefined || data.about !== undefined || data.website !== undefined || data.latitude !== undefined || data.longitude !== undefined) {
-            const companyProfileData = {
-                ...(data.address !== undefined && { address: data.address }),
-                ...(data.about !== undefined && { about: data.about }),
-                ...(data.website !== undefined && { website: data.website }),
-            };
+        const existingUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, role: true }
+        });
+
+        if (existingUser?.role === 'TRAINING_CENTRE') {
+            const tcProfileData = {};
+            if (data.centreName !== undefined) tcProfileData.centreName = data.centreName;
+            if (data.tagline !== undefined) tcProfileData.tagline = data.tagline;
+            if (data.centreType !== undefined) tcProfileData.centreType = data.centreType;
+            if (data.registrationNumber !== undefined) tcProfileData.registrationNumber = data.registrationNumber;
+            if (data.affiliationNumber !== undefined) tcProfileData.affiliationNumber = data.affiliationNumber;
+            if (data.establishedYear !== undefined) {
+                tcProfileData.establishedYear = data.establishedYear ? parseInt(data.establishedYear, 10) : null;
+            }
+            if (data.contactPerson !== undefined) tcProfileData.contactPerson = data.contactPerson;
+            if (data.contactDesignation !== undefined) tcProfileData.contactDesignation = data.contactDesignation;
+            if (data.primaryPhone !== undefined) tcProfileData.primaryPhone = data.primaryPhone;
+            if (data.alternativePhone !== undefined) tcProfileData.alternativePhone = data.alternativePhone;
+            if (data.officialEmail !== undefined) tcProfileData.officialEmail = data.officialEmail;
+            if (data.website !== undefined) tcProfileData.website = data.website;
+            if (data.facebookUrl !== undefined) tcProfileData.facebookUrl = data.facebookUrl;
+            if (data.linkedinUrl !== undefined) tcProfileData.linkedinUrl = data.linkedinUrl;
+            if (data.youtubeUrl !== undefined) tcProfileData.youtubeUrl = data.youtubeUrl;
+            if (data.address !== undefined) tcProfileData.address = data.address;
+            if (data.city !== undefined) tcProfileData.city = data.city;
+            if (data.district !== undefined) tcProfileData.district = data.district;
+            if (data.province !== undefined) tcProfileData.province = data.province;
+            if (data.postalCode !== undefined) tcProfileData.postalCode = data.postalCode;
+            if (data.about !== undefined) tcProfileData.about = data.about;
+            if (data.operatingHours !== undefined) tcProfileData.operatingHours = data.operatingHours;
+            if (data.facilities !== undefined) {
+                tcProfileData.facilities = Array.isArray(data.facilities) ? data.facilities : (typeof data.facilities === 'string' ? data.facilities.split(',').map(s => s.trim()).filter(Boolean) : []);
+            }
+            if (data.specializations !== undefined) {
+                tcProfileData.specializations = Array.isArray(data.specializations) ? data.specializations : (typeof data.specializations === 'string' ? data.specializations.split(',').map(s => s.trim()).filter(Boolean) : []);
+            }
+            if (data.centreLogo !== undefined) tcProfileData.centreLogo = data.centreLogo;
+            if (data.coverImage !== undefined) tcProfileData.coverImage = data.coverImage;
 
             if (data.latitude !== undefined) {
                 if (data.latitude === null || data.latitude === '') {
-                    companyProfileData.latitude = null;
+                    tcProfileData.latitude = null;
                 } else {
                     const parsedLat = parseFloat(data.latitude);
-                    if (!isNaN(parsedLat)) {
-                        companyProfileData.latitude = parsedLat;
-                    }
+                    if (!isNaN(parsedLat)) tcProfileData.latitude = parsedLat;
                 }
             }
 
             if (data.longitude !== undefined) {
                 if (data.longitude === null || data.longitude === '') {
-                    companyProfileData.longitude = null;
+                    tcProfileData.longitude = null;
                 } else {
                     const parsedLng = parseFloat(data.longitude);
-                    if (!isNaN(parsedLng)) {
-                        companyProfileData.longitude = parsedLng;
-                    }
+                    if (!isNaN(parsedLng)) tcProfileData.longitude = parsedLng;
                 }
             }
 
-            await prisma.companyProfile.upsert({
-                where: { userId: userId },
-                update: companyProfileData,
-                create: {
-                    userId: userId,
-                    address: data.address || "",
-                    about: data.about || "",
-                    website: data.website || "",
-                    latitude: companyProfileData.latitude,
-                    longitude: companyProfileData.longitude,
+            if (Object.keys(tcProfileData).length > 0) {
+                await prisma.trainingCentreProfile.upsert({
+                    where: { userId: userId },
+                    update: tcProfileData,
+                    create: {
+                        userId: userId,
+                        ...tcProfileData
+                    }
+                });
+            }
+        } else {
+            // Upsert nested CompanyProfile
+            if (data.address !== undefined || data.about !== undefined || data.website !== undefined || data.latitude !== undefined || data.longitude !== undefined) {
+                const companyProfileData = {
+                    ...(data.address !== undefined && { address: data.address }),
+                    ...(data.about !== undefined && { about: data.about }),
+                    ...(data.website !== undefined && { website: data.website }),
+                };
+
+                if (data.latitude !== undefined) {
+                    if (data.latitude === null || data.latitude === '') {
+                        companyProfileData.latitude = null;
+                    } else {
+                        const parsedLat = parseFloat(data.latitude);
+                        if (!isNaN(parsedLat)) {
+                            companyProfileData.latitude = parsedLat;
+                        }
+                    }
                 }
-            });
+
+                if (data.longitude !== undefined) {
+                    if (data.longitude === null || data.longitude === '') {
+                        companyProfileData.longitude = null;
+                    } else {
+                        const parsedLng = parseFloat(data.longitude);
+                        if (!isNaN(parsedLng)) {
+                            companyProfileData.longitude = parsedLng;
+                        }
+                    }
+                }
+
+                await prisma.companyProfile.upsert({
+                    where: { userId: userId },
+                    update: companyProfileData,
+                    create: {
+                        userId: userId,
+                        address: data.address || "",
+                        about: data.about || "",
+                        website: data.website || "",
+                        latitude: companyProfileData.latitude,
+                        longitude: companyProfileData.longitude,
+                    }
+                });
+            }
         }
 
         const updatedUser = await prisma.user.update({

@@ -236,6 +236,25 @@ const TrainingService = {
             totalCourses,
             message: "Delete requested courses fetched successfully"
         };
+    },
+
+    async getAllTrainingCentres(page, limit, search, filters) {
+        const result = await TrainingModel.getAllTrainingCentres(page, limit, search, filters);
+        return {
+            ...result,
+            message: "Training centres fetched successfully"
+        };
+    },
+
+    async getTrainingCentreDetails(id) {
+        const centre = await TrainingModel.getTrainingCentreDetails(id);
+        if (!centre) {
+            throw new Error("Training centre not found");
+        }
+        return {
+            centre,
+            message: "Training centre details fetched successfully"
+        };
     }
 }
 
