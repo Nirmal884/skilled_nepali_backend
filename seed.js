@@ -304,7 +304,8 @@ async function runSeed() {
         // await seedApplicantTypes();
         // await seedAdmin();
         // await seedSkills();
-        await seedPlans();
+        // await seedPlans();
+        // await seedMedicalCentres();
         console.log('🚀 Seeding completed successfully!');
     } catch (e) {
         console.error('❌ Seeding failed:', e);
