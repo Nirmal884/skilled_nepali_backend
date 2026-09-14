@@ -18,6 +18,7 @@ const CourseEnrollmentController = require('../controllers/courseEnrollment.cont
 const AIController = require('../controllers/ai.controller');
 const ProfileRequestController = require('../controllers/profileRequest.controller');
 const ChatController = require('../controllers/chat.controller');
+const MedicalCentreController = require('../controllers/medicalCentre.controller');
 const { checkSubscriptionFeature, checkPostingLimit } = require('../middleware/subscription.middleware');
 const router = express.Router();
 
@@ -181,5 +182,16 @@ router.get('/profile-requests/:id/candidates/download', authenticate, checkSubsc
 router.post('/chat/room', authenticate, checkSubscriptionFeature('hasDirectChat'), ChatController.getOrCreateRoom);
 router.get('/chat/rooms', authenticate, ChatController.getUserRooms);
 router.get('/chat/rooms/:roomId/messages', authenticate, ChatController.getRoomMessages);
+
+// Medical Centre routes (Public)
+router.get('/medical-centres', MedicalCentreController.getMedicalCentresPublic);
+router.get('/medical-centres/:id', MedicalCentreController.getMedicalCentreById);
+
+// Medical Centre routes (Admin only)
+router.post('/admin/medical-centres', authenticate, authorize('ADMIN'), upload.fields([{ name: 'logo', maxCount: 1 }]), MedicalCentreController.createMedicalCentre);
+router.get('/admin/medical-centres', authenticate, authorize('ADMIN'), MedicalCentreController.getAllMedicalCentresAdmin);
+router.get('/admin/medical-centres/:id', authenticate, authorize('ADMIN'), MedicalCentreController.getMedicalCentreById);
+router.put('/admin/medical-centres/:id', authenticate, authorize('ADMIN'), upload.fields([{ name: 'logo', maxCount: 1 }]), MedicalCentreController.updateMedicalCentre);
+router.delete('/admin/medical-centres/:id', authenticate, authorize('ADMIN'), MedicalCentreController.deleteMedicalCentre);
 
 module.exports = router;
