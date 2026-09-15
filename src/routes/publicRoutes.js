@@ -19,6 +19,7 @@ const AIController = require('../controllers/ai.controller');
 const ProfileRequestController = require('../controllers/profileRequest.controller');
 const ChatController = require('../controllers/chat.controller');
 const MedicalCentreController = require('../controllers/medicalCentre.controller');
+const OrientationCentreController = require('../controllers/orientationCentre.controller');
 const { checkSubscriptionFeature, checkPostingLimit } = require('../middleware/subscription.middleware');
 const router = express.Router();
 
@@ -193,5 +194,16 @@ router.get('/admin/medical-centres', authenticate, authorize('ADMIN'), MedicalCe
 router.get('/admin/medical-centres/:id', authenticate, authorize('ADMIN'), MedicalCentreController.getMedicalCentreById);
 router.put('/admin/medical-centres/:id', authenticate, authorize('ADMIN'), upload.fields([{ name: 'logo', maxCount: 1 }]), MedicalCentreController.updateMedicalCentre);
 router.delete('/admin/medical-centres/:id', authenticate, authorize('ADMIN'), MedicalCentreController.deleteMedicalCentre);
+
+// Orientation Centre routes (Public)
+router.get('/orientation-centres', OrientationCentreController.getOrientationCentresPublic);
+router.get('/orientation-centres/:id', OrientationCentreController.getOrientationCentreById);
+
+// Orientation Centre routes (Admin only)
+router.post('/admin/orientation-centres', authenticate, authorize('ADMIN'), upload.fields([{ name: 'logo', maxCount: 1 }]), OrientationCentreController.createOrientationCentre);
+router.get('/admin/orientation-centres', authenticate, authorize('ADMIN'), OrientationCentreController.getAllOrientationCentresAdmin);
+router.get('/admin/orientation-centres/:id', authenticate, authorize('ADMIN'), OrientationCentreController.getOrientationCentreById);
+router.put('/admin/orientation-centres/:id', authenticate, authorize('ADMIN'), upload.fields([{ name: 'logo', maxCount: 1 }]), OrientationCentreController.updateOrientationCentre);
+router.delete('/admin/orientation-centres/:id', authenticate, authorize('ADMIN'), OrientationCentreController.deleteOrientationCentre);
 
 module.exports = router;

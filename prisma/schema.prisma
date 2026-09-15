@@ -550,4 +550,33 @@ model MedicalCentre {
   @@map("medical_centres")
 }
 
+model OrientationCentre {
+  id                 String    @id @default(uuid())
+  name               String
+  description        String?
+  status             String    @default("Government Approved (DOFE)")
+  registrationNumber String?   @default("")
+  email              String?   @default("")
+  phone              String
+  alternativePhone   String?   @default("")
+  website            String?   @default("")
+  address            String
+  city               String?   @default("")
+  district           String?   @default("")
+  province           String?   @default("")
+  postalCode         String?   @default("")
+  latitude           Float?
+  longitude          Float?
+  timing             String?   @default("")
+  features           String[]  @default([])
+  logo               String?   @default("")
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  @@map("orientation_centres")
+}
+
+
 
