@@ -12,53 +12,53 @@ datasource db {
 }
 
 model User {
-  id                String             @id @default(uuid())
-  userId            Int                @default(autoincrement())
-  email             String             @unique
-  fullName          String
-  title             String?
-  profilePicture    String?
-  bio               String?
-  password          String
-  country           Int
-  role              Role               @default(JOBSEEKER)
-  phone             String?            @default("")
-  jobCategories     JobCategory[]      @relation("UserJobCategories")
-  applicantTypeId   String?
-  applicantType     ApplicantType?     @relation(fields: [applicantTypeId], references: [id])
-  experience        Float?
-  pastExperience    String?
-  resume            String?
-  companyName       String?
-  designation       String?
-  companyLogo       String?
-  centreName        String?
-  centreLogo        String?
-  jobs              Jobs[]
-  skills            Skill[]            @relation("UserSkills")
-  isProfileComplete Boolean            @default(false)
-  workExperiences   WorkExperience[]
-  educations        Education[]
-  certifications    Certifications[]
-  isAdminApproved   Boolean            @default(false)
-  businessDocument   String?            @default("")
-  isVerified         Boolean            @default(false)
-  verificationStatus String             @default("UNVERIFIED")
-  jobApplications   JobApplication[]
-  otp               String?
-  otpExpiry         DateTime?
-  subscriptions     Subscriptions[]
-  courses           Course[]
-  enrollments       CourseEnrollment[]
+  id                    String                 @id @default(uuid())
+  userId                Int                    @default(autoincrement())
+  email                 String                 @unique
+  fullName              String
+  title                 String?
+  profilePicture        String?
+  bio                   String?
+  password              String
+  country               Int
+  role                  Role                   @default(JOBSEEKER)
+  phone                 String?                @default("")
+  jobCategories         JobCategory[]          @relation("UserJobCategories")
+  applicantTypeId       String?
+  applicantType         ApplicantType?         @relation(fields: [applicantTypeId], references: [id])
+  experience            Float?
+  pastExperience        String?
+  resume                String?
+  companyName           String?
+  designation           String?
+  companyLogo           String?
+  centreName            String?
+  centreLogo            String?
+  jobs                  Jobs[]
+  skills                Skill[]                @relation("UserSkills")
+  isProfileComplete     Boolean                @default(false)
+  workExperiences       WorkExperience[]
+  educations            Education[]
+  certifications        Certifications[]
+  isAdminApproved       Boolean                @default(false)
+  businessDocument      String?                @default("")
+  isVerified            Boolean                @default(false)
+  verificationStatus    String                 @default("UNVERIFIED")
+  jobApplications       JobApplication[]
+  otp                   String?
+  otpExpiry             DateTime?
+  subscriptions         Subscriptions[]
+  courses               Course[]
+  enrollments           CourseEnrollment[]
   companyProfile        CompanyProfile?
   trainingCentreProfile TrainingCentreProfile?
-  profileRequests   ProfileRequest[]   @relation("EmployerProfileRequests")
-  jobseekerRooms    ChatRoom[]         @relation("JobseekerRooms")
-  employerRooms     ChatRoom[]         @relation("EmployerRooms")
-  chatMessages      ChatMessage[]
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  deletedAt         DateTime?
+  profileRequests       ProfileRequest[]       @relation("EmployerProfileRequests")
+  jobseekerRooms        ChatRoom[]             @relation("JobseekerRooms")
+  employerRooms         ChatRoom[]             @relation("EmployerRooms")
+  chatMessages          ChatMessage[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  deletedAt             DateTime?
 
   @@map("user_profiles")
 }
@@ -111,15 +111,15 @@ model Certifications {
 }
 
 model JobCategory {
-  id           String    @id @default(uuid())
-  categoryName String    @unique
-  users        User[]    @relation("UserJobCategories")
-  jobs         Jobs[]
-  courses      Course[]
+  id              String           @id @default(uuid())
+  categoryName    String           @unique
+  users           User[]           @relation("UserJobCategories")
+  jobs            Jobs[]
+  courses         Course[]
   profileRequests ProfileRequest[] @relation("JobCategoryProfileRequests")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
 
   @@map("job_categories")
 }
@@ -407,7 +407,6 @@ enum EnrollmentStatus {
   COMPLETED
 }
 
-
 model CompanyProfile {
   id        String   @id @default(uuid())
   userId    String   @unique
@@ -424,45 +423,45 @@ model CompanyProfile {
 }
 
 model TrainingCentreProfile {
-  id                 String    @id @default(uuid())
-  userId             String    @unique
-  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  centreName         String?   @default("")
-  tagline            String?   @default("")
-  centreType         String?   @default("VOCATIONAL_TECHNICAL")
-  registrationNumber String?   @default("")
-  affiliationNumber  String?   @default("")
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  centreName         String? @default("")
+  tagline            String? @default("")
+  centreType         String? @default("VOCATIONAL_TECHNICAL")
+  registrationNumber String? @default("")
+  affiliationNumber  String? @default("")
   establishedYear    Int?
-  
-  contactPerson      String?   @default("")
-  contactDesignation String?   @default("")
-  primaryPhone       String?   @default("")
-  alternativePhone   String?   @default("")
-  officialEmail      String?   @default("")
-  website            String?   @default("")
-  facebookUrl        String?   @default("")
-  linkedinUrl        String?   @default("")
-  youtubeUrl         String?   @default("")
-  
-  address            String?   @default("")
-  city               String?   @default("")
-  district           String?   @default("")
-  province           String?   @default("")
-  postalCode         String?   @default("")
-  latitude           Float?
-  longitude          Float?
-  
-  about              String?   @default("")
-  facilities         String[]  @default([])
-  specializations    String[]  @default([])
-  operatingHours     String?   @default("")
-  
-  centreLogo         String?   @default("")
-  coverImage         String?   @default("")
-  
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+
+  contactPerson      String? @default("")
+  contactDesignation String? @default("")
+  primaryPhone       String? @default("")
+  alternativePhone   String? @default("")
+  officialEmail      String? @default("")
+  website            String? @default("")
+  facebookUrl        String? @default("")
+  linkedinUrl        String? @default("")
+  youtubeUrl         String? @default("")
+
+  address    String? @default("")
+  city       String? @default("")
+  district   String? @default("")
+  province   String? @default("")
+  postalCode String? @default("")
+  latitude   Float?
+  longitude  Float?
+
+  about           String?  @default("")
+  facilities      String[] @default([])
+  specializations String[] @default([])
+  operatingHours  String?  @default("")
+
+  centreLogo String? @default("")
+  coverImage String? @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("training_centre_profiles")
 }
@@ -471,7 +470,7 @@ model ImpersonationLog {
   id           String   @id @default(uuid())
   adminId      String
   targetUserId String
-  action       String   // "START_IMPERSONATION" | "STOP_IMPERSONATION"
+  action       String // "START_IMPERSONATION" | "STOP_IMPERSONATION"
   ipAddress    String?
   createdAt    DateTime @default(now())
 
@@ -495,29 +494,29 @@ model ProfileRequest {
 }
 
 model ChatRoom {
-  id           String        @id @default(uuid())
-  jobseekerId  String
-  jobseeker    User          @relation("JobseekerRooms", fields: [jobseekerId], references: [id], onDelete: Cascade)
-  employerId   String
-  employer     User          @relation("EmployerRooms", fields: [employerId], references: [id], onDelete: Cascade)
-  
-  messages     ChatMessage[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id          String @id @default(uuid())
+  jobseekerId String
+  jobseeker   User   @relation("JobseekerRooms", fields: [jobseekerId], references: [id], onDelete: Cascade)
+  employerId  String
+  employer    User   @relation("EmployerRooms", fields: [employerId], references: [id], onDelete: Cascade)
+
+  messages  ChatMessage[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@unique([jobseekerId, employerId])
   @@map("chat_rooms")
 }
 
 model ChatMessage {
-  id         String   @id @default(uuid())
-  roomId     String
-  room       ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  senderId   String
-  sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  message    String
-  isRead     Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   @@map("chat_messages")
 }
@@ -578,5 +577,72 @@ model OrientationCentre {
   @@map("orientation_centres")
 }
 
+enum UserType {
+  EMPLOYER
+  JOBSEEKER
+  TRAINING_CENTRE
+}
 
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_ON_USER
+  RESOLVED
+  CLOSED
+  CANCELLED
+}
 
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Ticket {
+  id           String           @id @default(uuid())
+  ticketNumber String           @unique
+  userType     UserType
+  name         String
+  email        String
+  phone        String?
+  subject      String
+  description  String
+  category     String
+  status       TicketStatus     @default(OPEN)
+  priority     Priority         @default(MEDIUM)
+  assigneeName String?
+  referenceId  String?
+  messages     TicketMessage[]
+  logs         TicketAuditLog[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id             String   @id @default(uuid())
+  ticketId       String
+  ticket         Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderType     String
+  senderName     String
+  message        String
+  isInternalNote Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  @@map("ticket_messages")
+}
+
+model TicketAuditLog {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  actorName String
+  action    String
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime @default(now())
+
+  @@map("ticket_audit_logs")
+}
