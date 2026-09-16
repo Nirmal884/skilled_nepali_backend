@@ -20,6 +20,7 @@ const ProfileRequestController = require('../controllers/profileRequest.controll
 const ChatController = require('../controllers/chat.controller');
 const MedicalCentreController = require('../controllers/medicalCentre.controller');
 const OrientationCentreController = require('../controllers/orientationCentre.controller');
+const TicketController = require('../controllers/ticket.controller');
 const { checkSubscriptionFeature, checkPostingLimit } = require('../middleware/subscription.middleware');
 const router = express.Router();
 
@@ -205,5 +206,14 @@ router.get('/admin/orientation-centres', authenticate, authorize('ADMIN'), Orien
 router.get('/admin/orientation-centres/:id', authenticate, authorize('ADMIN'), OrientationCentreController.getOrientationCentreById);
 router.put('/admin/orientation-centres/:id', authenticate, authorize('ADMIN'), upload.fields([{ name: 'logo', maxCount: 1 }]), OrientationCentreController.updateOrientationCentre);
 router.delete('/admin/orientation-centres/:id', authenticate, authorize('ADMIN'), OrientationCentreController.deleteOrientationCentre);
+
+// Ticketing System routes
+router.get('/tickets/categories', TicketController.getCategories);
+router.get('/tickets/stats', optionalAuthenticate, TicketController.getTicketStats);
+router.post('/tickets', optionalAuthenticate, TicketController.createTicket);
+router.get('/tickets', optionalAuthenticate, TicketController.listTickets);
+router.get('/tickets/:id', optionalAuthenticate, TicketController.getTicketDetails);
+router.patch('/tickets/:id', optionalAuthenticate, TicketController.updateTicket);
+router.post('/tickets/:id/messages', optionalAuthenticate, TicketController.addMessage);
 
 module.exports = router;
