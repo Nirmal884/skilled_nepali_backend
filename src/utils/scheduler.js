@@ -1,4 +1,5 @@
 const { startJobExpiryCron } = require("../jobs/jobexpiryCron");
+const { startCleanupTokensCron } = require("../jobs/cleanupTokensCron");
 const { expirePastDeadlineJob } = require("../services/job.service");
 
 module.exports.initSchedulers = async () => {
@@ -10,4 +11,5 @@ module.exports.initSchedulers = async () => {
     }
 
     startJobExpiryCron();
+    startCleanupTokensCron();
 }

@@ -32,6 +32,7 @@ router.post("/create-user", upload.fields([
 ]), UserController.createUser);
 router.post("/login", loginLimiter, UserController.login);
 router.post("/logout", UserController.logout);
+router.post("/refresh-token", UserController.refreshToken);
 router.post("/send-otp-for-password-change", UserController.sendOtpForPasswordChange);
 router.post("/verify-otp-for-password-change", UserController.verifyOtpForPasswordChange);
 router.post("/change-password", UserController.changePassword);

@@ -2,6 +2,7 @@ const UserModel = require("../models/user.model");
 const { uploadToS3 } = require("../utils/s3Uploader");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
+const TokenService = require("./token.service");
 const { getPlanLimitsForUser } = require("../utils/featureMatrix");
 
 const UserService = {
@@ -41,7 +42,7 @@ const UserService = {
         const userData = await UserModel.createUser(data)
         return { userData, message: "User created successfully" };
     },
-    async login(email, passowrd) {
+    async login(email, passowrd, { userAgent = '', ipAddress = '' } = {}) {
 
         const user = await UserModel.findUserByEmail(email);
         if (!user) {
@@ -57,21 +58,20 @@ const UserService = {
             throw error
         }
 
-        const token = jwt.sign({
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            name: user.fullName,
-            companyName: user.companyName,
-            companyLogo: user.companyLogo,
-            centreName: user.centreName,
-            centreLogo: user.centreLogo,
-            resume: user.resume
-        }, process.env.JWT_SECRET, { expiresIn: '24h' })
+        const {
+            accessToken,
+            rawRefreshToken,
+            accessCookieOptions,
+            refreshCookieOptions
+        } = await TokenService.generateTokens(user, { userAgent, ipAddress });
 
         return ({
             message: "Successfully logged in",
-            token,
+            token: accessToken,
+            accessToken,
+            rawRefreshToken,
+            accessCookieOptions,
+            refreshCookieOptions,
             user: {
                 id: user.id,
                 email: user.email,
@@ -100,6 +100,7 @@ const UserService = {
     async changePassword(userId, password) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const updatedUser = await UserModel.changePassword(userId, hashedPassword);
+        await TokenService.revokeAllUserTokens(userId);
         return { updatedUser, message: "Password changed successfully" };
     },
 
@@ -137,6 +138,7 @@ const UserService = {
 
     async deleteUser(userId) {
         const deletedUser = await UserModel.deleteUser(userId);
+        await TokenService.revokeAllUserTokens(userId);
         return { deletedUser, message: "User deleted successfully" };
     },
 

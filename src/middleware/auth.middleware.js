@@ -1,39 +1,52 @@
 const jwt = require('jsonwebtoken');
 
 const authenticate = (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.cookies.token || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : null);
+    const secret = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET;
 
     if (!token) {
         return res.status(401).json({
             success: false,
             statusCode: 401,
+            code: "AUTH_REQUIRED",
             message: "Authentication required"
         });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, secret);
         req.user = decoded;
         next();
     } catch (error) {
-        console.error("JWT Verification Error:", error);
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                statusCode: 401,
+                code: "TOKEN_EXPIRED",
+                message: "Access token expired"
+            });
+        }
+
+        console.error("JWT Verification Error:", error.message);
         return res.status(401).json({
             success: false,
             statusCode: 401,
-            message: "Invalid or expired token"
+            code: "INVALID_TOKEN",
+            message: "Invalid token"
         });
     }
 };
 
 const optionalAuthenticate = (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.cookies.token || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : null);
+    const secret = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET;
 
     if (!token) {
         return next();
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, secret);
         req.user = decoded;
         next();
     } catch (error) {

@@ -56,6 +56,7 @@ model User {
   jobseekerRooms        ChatRoom[]             @relation("JobseekerRooms")
   employerRooms         ChatRoom[]             @relation("EmployerRooms")
   chatMessages          ChatMessage[]
+  refreshTokens         RefreshToken[]
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   deletedAt             DateTime?
@@ -645,4 +646,20 @@ model TicketAuditLog {
   createdAt DateTime @default(now())
 
   @@map("ticket_audit_logs")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  tokenHash  String    @unique
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+  replacedBy String?
+  userAgent  String?
+  ipAddress  String?
+
+  @@index([userId])
+  @@map("refresh_tokens")
 }
