@@ -1,4 +1,5 @@
 const UserService = require("../services/user.service");
+const TokenService = require("../services/token.service");
 
 const UserController = {
     async createUser(req, res) {
@@ -16,14 +17,22 @@ const UserController = {
     async login(req, res) {
         try {
             const { email, password } = req.body;
-            const { message, token, user } = await UserService.login(email, password);
+            const userAgent = req.headers['user-agent'] || '';
+            const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
 
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Lax', // Use Lax for localhost cross-port
-                maxAge: 24 * 60 * 60 * 1000 // 24 hours
-            });
+            const {
+                message,
+                token,
+                rawRefreshToken,
+                accessCookieOptions,
+                refreshCookieOptions,
+                user
+            } = await UserService.login(email, password, { userAgent, ipAddress });
+
+            res.cookie('token', token, accessCookieOptions);
+            if (rawRefreshToken) {
+                res.cookie('refreshToken', rawRefreshToken, refreshCookieOptions);
+            }
 
             return res.status(200).json({ success: true, statusCode: 200, message: message, data: { user } });
         } catch (error) {
@@ -34,7 +43,17 @@ const UserController = {
     },
 
     async logout(req, res) {
-        res.clearCookie('token');
+        try {
+            const rawRefreshToken = req.cookies.refreshToken;
+            if (rawRefreshToken) {
+                await TokenService.revokeRefreshToken(rawRefreshToken);
+            }
+        } catch (error) {
+            console.error('Error revoking refresh token on logout:', error);
+        }
+
+        res.clearCookie('token', { path: '/' });
+        res.clearCookie('refreshToken', { path: '/api/v1/refresh-token' });
         return res.status(200).json({ success: true, statusCode: 200, message: "Successfully logged out" });
     },
 
@@ -145,15 +164,49 @@ const UserController = {
         }
     },
 
-    async generateToken(req, res) {
+    async refreshToken(req, res) {
         try {
+            const rawRefreshToken = req.cookies.refreshToken;
+            if (!rawRefreshToken) {
+                return res.status(401).json({
+                    success: false,
+                    statusCode: 401,
+                    code: 'REFRESH_TOKEN_REQUIRED',
+                    message: 'Refresh token is required'
+                });
+            }
 
+            const userAgent = req.headers['user-agent'] || '';
+            const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
+
+            const {
+                accessToken,
+                rawRefreshToken: newRefreshToken,
+                accessCookieOptions,
+                refreshCookieOptions
+            } = await TokenService.rotateRefreshToken(rawRefreshToken, { userAgent, ipAddress });
+
+            res.cookie('token', accessToken, accessCookieOptions);
+            res.cookie('refreshToken', newRefreshToken, refreshCookieOptions);
+
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: 'Token refreshed successfully'
+            });
         } catch (error) {
-            console.log("Error occoured", error)
-            const statusCode = error.statusCode || 500
+            console.error('Error refreshing token:', error.message);
+            // Clear cookies on refresh failure so frontend doesn't repeatedly call refresh
+            res.clearCookie('token', { path: '/' });
+            res.clearCookie('refreshToken', { path: '/api/v1/refresh-token' });
+
+            const statusCode = error.statusCode || 401;
             return res.status(statusCode).json({
-                success: false, statusCode: statusCode, message: error.message
-            })
+                success: false,
+                statusCode,
+                code: error.code || 'REFRESH_FAILED',
+                message: error.message
+            });
         }
     },
 
