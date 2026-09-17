@@ -210,11 +210,11 @@ router.delete('/admin/orientation-centres/:id', authenticate, authorize('ADMIN')
 
 // Ticketing System routes
 router.get('/tickets/categories', TicketController.getCategories);
-router.get('/tickets/stats', optionalAuthenticate, TicketController.getTicketStats);
-router.post('/tickets', optionalAuthenticate, TicketController.createTicket);
-router.get('/tickets', optionalAuthenticate, TicketController.listTickets);
-router.get('/tickets/:id', optionalAuthenticate, TicketController.getTicketDetails);
-router.patch('/tickets/:id', optionalAuthenticate, TicketController.updateTicket);
-router.post('/tickets/:id/messages', optionalAuthenticate, TicketController.addMessage);
+router.get('/tickets/stats', authenticate, TicketController.getTicketStats);
+router.post('/tickets', authenticate, TicketController.createTicket);
+router.get('/tickets', authenticate, TicketController.listTickets);
+router.get('/tickets/:id', authenticate, TicketController.getTicketDetails);
+router.patch('/tickets/:id', authenticate, TicketController.updateTicket);
+router.post('/tickets/:id/messages', authenticate, TicketController.addMessage);
 
 module.exports = router;
