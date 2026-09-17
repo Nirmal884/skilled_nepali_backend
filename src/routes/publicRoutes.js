@@ -1,9 +1,9 @@
 const express = require('express');
 const JobCategoryController = require('../controllers/jobCategory.controller');
 const ApplicantTypeController = require('../controllers/applicantType.controller');
-const upload = require('../middleware/multer');
+const { upload, audioUpload } = require('../middleware/multer');
 const UserController = require('../controllers/user.controller');
-const loginLimiter = require('../middleware/ratelimiter');
+const { loginLimiter, aiVoiceRateLimiter, aiParseLimit } = require('../middleware/ratelimiter');
 const { authenticate, optionalAuthenticate, authorize, blockImpersonatedSession } = require('../middleware/auth.middleware');
 const ImpersonationController = require('../controllers/impersonation.controller');
 const JobController = require('../controllers/job.controller');
@@ -89,7 +89,7 @@ router.post('/create-job', authenticate, checkPostingLimit('job'), JobController
 router.get('/get-all-jobs', authenticate, JobController.listAllJobs)
 router.get('/get-job-for-dashboard', authenticate, JobController.listJobForDashboard)
 router.get('/get-job/:id', authenticate, JobController.getJobById)
-router.post('/admin-approve-job', authenticate, JobController.adminApproveJob)
+router.post('/admin-approve-job', authenticate, authorize('ADMIN'), JobController.adminApproveJob)
 router.post('/delete-job-request', authenticate, JobController.deleteJobRequest)
 router.get('/list-delete-requested-jobs', authenticate, JobController.listDeleteRequestedJobs)
 router.post('/approve-job-deletion', authenticate, JobController.approveDeletion)
@@ -157,14 +157,9 @@ router.post('/manual-enroll-course', authenticate, authorize('TRAINING_CENTRE'),
 // chatbot route
 router.post('/chat', AIController.handleChat);
 
-const multer = require('multer');
-const audioUpload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 50 * 1024 * 1024 }
-});
 
-router.post('/voice-to-text', audioUpload.single('audio'), AIController.voiceToText);
-router.post('/parse-resume-json', AIController.parseResumeJson);
+router.post('/voice-to-text', audioUpload.single('audio'), aiVoiceRateLimiter, AIController.voiceToText);
+router.post('/parse-resume-json', authenticate, aiParseLimit, authorize('JOBSEEKER'), AIController.parseResumeJson);
 
 router.post("/upload-business-document", authenticate, upload.fields([{ name: 'businessDocument', maxCount: 1 }]), UserController.uploadBusinessDocument);
 router.put("/admin/verify-user/:id", authenticate, authorize('ADMIN'), UserController.adminVerifyUser);

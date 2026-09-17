@@ -24,10 +24,33 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
+const audioFileFilter = (req, file, cb) => {
+
+    const audioMimeTypes = [
+        "audio/webm",
+        "audio/ogg",
+        "audio/wav",
+        "audio/mpeg",
+        "audio/mp4"
+    ];
+
+    if (audioMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error("Invalid audio file type."), false);
+    }
+};
+
 const upload = multer({
     storage,
     fileFilter,
     limits: { fileSize: 100 * 1024 * 1024 }
 });
 
-module.exports = upload;
+const audioUpload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: audioFileFilter,
+    limits: { fileSize: 15 * 1024 * 1024 },
+});
+
+module.exports = { upload, audioUpload }

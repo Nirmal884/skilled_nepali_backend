@@ -19,4 +19,29 @@ const loginLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-module.exports = loginLimiter;
+//ai
+const aiVoiceRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: true,
+    message: {
+        status: 429,
+        message: "Too many request please try again after 15 minutes."
+    }
+
+})
+
+const aiParseLimit = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: true,
+    message: {
+        status: 429,
+        message: "Too many requests please try again after 15 minutes"
+    }
+
+})
+
+module.exports = { loginLimiter, aiVoiceRateLimiter, aiParseLimit };

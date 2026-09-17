@@ -100,7 +100,7 @@ const UserController = {
             const { updatedUser, message } = await UserService.updateResume(userId, files)
             return res.status(200).json({
                 success: true,
-                data: updatedUser,
+                // data: updatedUser,
                 message: message
             })
         } catch (error) {
