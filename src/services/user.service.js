@@ -8,6 +8,13 @@ const { getPlanLimitsForUser } = require("../utils/featureMatrix");
 const UserService = {
     async createUser(data, files) {
 
+        const PUBLIC_REGISTRATION_ROLES = ['JOBSEEKER', 'EMPLOYER', 'TRAINING_CENTRE'];
+
+
+        if (!PUBLIC_REGISTRATION_ROLES.includes(data.role)) {
+            throw new Error("Invalid role")
+        }
+
         const existingUser = await UserModel.findUserByEmail(data.email)
         if (existingUser) {
             throw new Error("User already exists")
