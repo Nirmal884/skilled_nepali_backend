@@ -241,6 +241,12 @@ const UserModel = {
                         skillName: true
                     }
                 },
+                languages: {
+                    select: {
+                        id: true,
+                        languageName: true
+                    }
+                },
                 subscriptions: true,
                 companyProfile: true,
                 trainingCentreProfile: true
@@ -416,6 +422,42 @@ const UserModel = {
                 skillsToConnect.push({ id: existing.id });
             }
             updateData.skills = { set: skillsToConnect };
+        }
+
+        let languagesArray = data.languages;
+        if (typeof data.languages === 'string') {
+            try {
+                languagesArray = JSON.parse(data.languages);
+            } catch (e) {
+                languagesArray = data.languages.split(',').map(s => s.trim()).filter(Boolean);
+            }
+        }
+
+        if (languagesArray && Array.isArray(languagesArray)) {
+            const languagesToConnect = [];
+            for (const lang of languagesArray) {
+                const langStr = typeof lang === 'object' && lang ? (lang.languageName || lang.label || lang.name || lang.value) : lang;
+                if (!langStr || typeof langStr !== 'string') continue;
+                const trimmed = langStr.trim();
+                if (!trimmed) continue;
+
+                let existing = await prisma.language.findFirst({
+                    where: {
+                        languageName: {
+                            equals: trimmed,
+                            mode: "insensitive"
+                        }
+                    }
+                });
+
+                if (!existing) {
+                    existing = await prisma.language.create({
+                        data: { languageName: trimmed }
+                    });
+                }
+                languagesToConnect.push({ id: existing.id });
+            }
+            updateData.languages = { set: languagesToConnect };
         }
 
         const existingUser = await prisma.user.findUnique({
@@ -713,7 +755,8 @@ const UserModel = {
                     title: '',
                     bio: '',
                     phone: '',
-                    skills: { set: [] }
+                    skills: { set: [] },
+                    languages: { set: [] }
                 }
             })
         ]);
