@@ -44,4 +44,15 @@ const aiParseLimit = rateLimit({
 
 })
 
-module.exports = { loginLimiter, aiVoiceRateLimiter, aiParseLimit };
+const aiRefineLimit = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: true,
+    message: {
+        status: 429,
+        message: "Too many AI refinement requests, please try again after 15 minutes"
+    }
+});
+
+module.exports = { loginLimiter, aiVoiceRateLimiter, aiParseLimit, aiRefineLimit };

@@ -303,7 +303,8 @@ const UserService = {
         const file = files.businessDocument[0];
         const uploadedDoc = await uploadToS3(file.buffer, file.originalname, file.mimetype, "documents");
         const updatedUser = await UserModel.updateVerificationDocument(userId, uploadedDoc.Location);
-        return { updatedUser, message: "Business verification document uploaded successfully. Status set to Pending Verification." };
+        const { password, ...cleanedResponse } = updatedUser;
+        return { cleanedResponse, message: "Business verification document uploaded successfully. Status set to Pending Verification." };
     },
 
     async adminVerifyUser(userId, { isAdminApproved, verificationStatus }) {
@@ -320,7 +321,8 @@ const UserService = {
             }
         }
         const updatedUser = await UserModel.adminVerifyUser(userId, updateData);
-        return updatedUser;
+        const { password, ...cleanedResponse } = updatedUser;
+        return cleanedResponse;
     },
 
     async clearResume(userId) {

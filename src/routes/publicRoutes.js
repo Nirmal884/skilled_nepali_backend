@@ -3,7 +3,7 @@ const JobCategoryController = require('../controllers/jobCategory.controller');
 const ApplicantTypeController = require('../controllers/applicantType.controller');
 const { upload, audioUpload } = require('../middleware/multer');
 const UserController = require('../controllers/user.controller');
-const { loginLimiter, aiVoiceRateLimiter, aiParseLimit } = require('../middleware/ratelimiter');
+const { loginLimiter, aiVoiceRateLimiter, aiParseLimit, aiRefineLimit } = require('../middleware/ratelimiter');
 const { authenticate, optionalAuthenticate, authorize, blockImpersonatedSession } = require('../middleware/auth.middleware');
 const ImpersonationController = require('../controllers/impersonation.controller');
 const JobController = require('../controllers/job.controller');
@@ -160,6 +160,7 @@ router.post('/chat', AIController.handleChat);
 
 router.post('/voice-to-text', audioUpload.single('audio'), aiVoiceRateLimiter, AIController.voiceToText);
 router.post('/parse-resume-json', authenticate, aiParseLimit, authorize('JOBSEEKER'), AIController.parseResumeJson);
+router.post('/refine-job-description', authenticate, aiRefineLimit, authorize('EMPLOYER', 'ADMIN'), AIController.refineJobDescription);
 
 router.post("/upload-business-document", authenticate, upload.fields([{ name: 'businessDocument', maxCount: 1 }]), UserController.uploadBusinessDocument);
 router.put("/admin/verify-user/:id", authenticate, authorize('ADMIN'), UserController.adminVerifyUser);

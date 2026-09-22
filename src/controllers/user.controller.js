@@ -419,8 +419,8 @@ const UserController = {
         try {
             const { id: userId } = req.user;
             const files = req.files;
-            const { updatedUser, message } = await UserService.uploadBusinessDocument(userId, files);
-            return res.status(200).json({ success: true, statusCode: 200, message: message, data: updatedUser });
+            const { cleanedResponse, message } = await UserService.uploadBusinessDocument(userId, files);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: cleanedResponse });
         } catch (error) {
             console.error('Error uploading business document:', error);
             const statusCode = error.statusCode || 500;
