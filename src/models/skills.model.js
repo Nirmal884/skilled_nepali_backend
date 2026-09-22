@@ -25,6 +25,11 @@ const SkillsModel = {
 
         const whereCondition = {
             deletedAt: null,
+            NOT: {
+                skillName: {
+                    startsWith: 'Language: '
+                }
+            },
             ...(search && {
                 skillName: {
                     contains: search,
