@@ -1,6 +1,8 @@
 const { gccCountryOptions } = require("../data/countryData")
 const JobModel = require("../models/job.model")
 const ExcelJS = require("exceljs")
+const { getPlanLimitsForUser } = require("../utils/featureMatrix");
+const { sendEmailToAdminOnJobPosting, sendJobCreationMailToEmployer, sendAdminJobApprovalMail } = require("./emailSend.service");
 
 const JobService = {
     async createJob(data) {
@@ -14,7 +16,6 @@ const JobService = {
         }
 
         if (data.isFeatured) {
-            const { getPlanLimitsForUser } = require("../utils/featureMatrix");
             const { limits } = await getPlanLimitsForUser(data.userId, user.role);
             const featuredLimit = limits.featuredJobCount || 0;
 
@@ -43,6 +44,8 @@ const JobService = {
         }
 
         const { jobData, isUpdated } = await JobModel.createJob(data)
+        await sendEmailToAdminOnJobPosting(user.email, data.title, user.companyName, user.fullName)
+        await sendJobCreationMailToEmployer(user.email, data.title, user.companyName, user.fullName)
         return { jobResponse: jobData, message: isUpdated ? "Job updated successfully" : "Job created successfully" }
     },
 
@@ -62,8 +65,9 @@ const JobService = {
         return { jobs, totalJobs, activeJobs, pendingJobs, totalJobApplications, todaysApplications, message: "Jobs fetched successfully" }
     },
 
-    async adminApproveJob(jobId, status) {
+    async adminApproveJob(jobId, status, email, title, companyName, employerName) {
         const jobResponse = await JobModel.adminApproveJob(jobId, status)
+        await sendAdminJobApprovalMail(status, email, title, companyName, employerName)
         return { jobResponse, message: "Job approved successfully" }
     },
 

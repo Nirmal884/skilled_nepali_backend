@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const TokenService = require("./token.service");
 const { getPlanLimitsForUser } = require("../utils/featureMatrix");
+const { sendOtpEmail, sendPasswordResetConfirmationEmail, sendAccountCreationConfirmationEmail, sendMailToAdminWhenNewUserCreated } = require("./emailSend.service");
 
 const UserService = {
     async createUser(data, files) {
@@ -47,6 +48,8 @@ const UserService = {
         }
 
         const userData = await UserModel.createUser(data)
+        await sendAccountCreationConfirmationEmail(data?.fullName, data?.email, data?.role);
+        await sendMailToAdminWhenNewUserCreated(userData);
         return { userData, message: "User created successfully" };
     },
     async login(email, passowrd, { userAgent = '', ipAddress = '' } = {}) {
@@ -94,21 +97,26 @@ const UserService = {
 
     },
 
-    async sendOtpForPasswordChange(number) {
-        const updatedUser = await UserModel.sendOtpForPasswordChange(number);
-        return { updatedUser, message: "OTP sent successfully" };
+    async sendOtpForPasswordChange(email) {
+        const updatedUser = await UserModel.sendOtpForPasswordChange(email);
+        await sendOtpEmail(email, updatedUser.otp);
+        return { message: "OTP sent successfully" };
     },
 
-    async verifyOtpForPasswordChange(number, otp) {
-        const updatedUser = await UserModel.verifyOtpForPasswordChange(number, otp);
-        return { updatedUser, message: "OTP verified successfully" };
+    async verifyOtpForPasswordChange(email, otp) {
+        const updatedUser = await UserModel.verifyOtpForPasswordChange(email, otp);
+        const userId = updatedUser.id;
+        return { userId, message: "OTP verified successfully" };
     },
 
     async changePassword(userId, password) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const updatedUser = await UserModel.changePassword(userId, hashedPassword);
+        const user = await UserModel.changePassword(userId, hashedPassword);
         await TokenService.revokeAllUserTokens(userId);
-        return { updatedUser, message: "Password changed successfully" };
+        if (user && user.email) {
+            await sendPasswordResetConfirmationEmail(user.email);
+        }
+        return { message: "Password changed successfully" };
     },
 
     async updateLogo(userId, role, files) {

@@ -1,7 +1,7 @@
 const prisma = require("../config/db");
 
 const DEFAULT_FREE_LIMITS = {
-  jobPostLimit: 1,
+  jobPostLimit: 2,
   courseLimit: 1,
   hasDirectChat: false,
   hasExcelDownloads: false,
