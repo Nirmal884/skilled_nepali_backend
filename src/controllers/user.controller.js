@@ -59,8 +59,8 @@ const UserController = {
 
     async sendOtpForPasswordChange(req, res) {
         try {
-            const { number } = req.body;
-            const { message } = await UserService.sendOtpForPasswordChange(number);
+            const { email } = req.body;
+            const { message } = await UserService.sendOtpForPasswordChange(email);
             return res.status(200).json({ success: true, statusCode: 200, message: message });
         } catch (error) {
             console.error('Error sending OTP for password change:', error);
@@ -71,9 +71,9 @@ const UserController = {
 
     async verifyOtpForPasswordChange(req, res) {
         try {
-            const { number, otp } = req.body;
-            const { updatedUser, message } = await UserService.verifyOtpForPasswordChange(number, otp);
-            return res.status(200).json({ success: true, statusCode: 200, message: message, data: updatedUser });
+            const { email, otp } = req.body;
+            const { userId, message } = await UserService.verifyOtpForPasswordChange(email, otp);
+            return res.status(200).json({ success: true, statusCode: 200, message: message, data: { userId } });
         } catch (error) {
             console.error('Error verifying OTP for password change:', error);
             const statusCode = error.statusCode || 500;
@@ -84,8 +84,8 @@ const UserController = {
     async changePassword(req, res) {
         try {
             const { userId, password } = req.body;
-            const { updatedUser, message } = await UserService.changePassword(userId, password);
-            return res.status(200).json({ success: true, statusCode: 200, message: message, data: updatedUser });
+            const { message } = await UserService.changePassword(userId, password);
+            return res.status(200).json({ success: true, statusCode: 200, message: message });
         } catch (error) {
             console.error('Error changing password:', error);
             const statusCode = error.statusCode || 500;

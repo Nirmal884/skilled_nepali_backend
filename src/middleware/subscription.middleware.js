@@ -6,15 +6,15 @@ const checkSubscriptionFeature = (featureName) => {
         try {
             const userId = req.user?.id;
             const role = req.user?.role;
-            
+
             // Only EMPLOYER and TRAINING_CENTRE are subject to subscription checks
             if (role !== "EMPLOYER" && role !== "TRAINING_CENTRE") {
                 return next();
             }
-            
+
             // Fetch limits dynamically from Plan table in DB
             const { limits } = await getPlanLimitsForUser(userId, role);
-            
+
             // Check boolean feature access
             if (typeof limits[featureName] === 'boolean' && !limits[featureName]) {
                 return res.status(403).json({
@@ -24,7 +24,7 @@ const checkSubscriptionFeature = (featureName) => {
                     message: `Upgrade to a premium plan to access this feature.`
                 });
             }
-            
+
             req.planLimits = limits;
             next();
         } catch (error) {
@@ -39,7 +39,7 @@ const checkPostingLimit = (postType) => {
             const userId = req.user?.id;
             const role = req.user?.role;
 
-            if (role !== "EMPLOYER" && role !== "TRAINING_CENTRE") {
+            if (!["EMPLOYER", "TRAINING_CENTRE"].includes(role)) {
                 return next();
             }
 
@@ -47,11 +47,11 @@ const checkPostingLimit = (postType) => {
             if (req.body?.jobId || req.body?.courseId || req.params?.id) {
                 return next();
             }
-            
+
             // Fetch limits dynamically from Plan table in DB
             const { limits } = await getPlanLimitsForUser(userId, role);
             const limit = postType === 'job' ? limits.jobPostLimit : limits.courseLimit;
-            
+
             if (postType === 'job') {
                 const jobCount = await prisma.jobs.count({
                     where: { userId, deletedAt: null }
@@ -77,7 +77,7 @@ const checkPostingLimit = (postType) => {
                     });
                 }
             }
-            
+
             next();
         } catch (error) {
             next(error);

@@ -37,9 +37,9 @@ const UserModel = {
         return userData;
     },
 
-    async sendOtpForPasswordChange(number) {
+    async sendOtpForPasswordChange(email) {
         const user = await prisma.user.findFirst({
-            where: { phone: number, deletedAt: null }
+            where: { email: email, deletedAt: null }
         })
         if (!user) {
             throw new Error("User not found");
@@ -58,9 +58,9 @@ const UserModel = {
         return updatedUser;
     },
 
-    async verifyOtpForPasswordChange(number, otp) {
+    async verifyOtpForPasswordChange(email, otp) {
         const user = await prisma.user.findFirst({
-            where: { phone: number, otp: otp, deletedAt: null }
+            where: { email, otp, deletedAt: null }
         })
         if (!user) {
             throw new Error("Invalid OTP");

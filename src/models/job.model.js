@@ -58,7 +58,9 @@ const JobModel = {
             include: {
                 user: {
                     select: {
-                        companyName: true
+                        companyName: true,
+                        email: true,
+                        fullName: true
                     }
                 },
                 _count: {

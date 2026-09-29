@@ -70,8 +70,8 @@ const JobController = {
 
     async adminApproveJob(req, res) {
         try {
-            const { jobId, status } = req.body;
-            const { jobResponse, message } = await JobService.adminApproveJob(jobId, status)
+            const { jobId, status, email, title, companyName, employerName } = req.body;
+            const { jobResponse, message } = await JobService.adminApproveJob(jobId, status, email, title, companyName, employerName)
             return res.status(200).json({
                 success: true,
                 statusCode: 200,
