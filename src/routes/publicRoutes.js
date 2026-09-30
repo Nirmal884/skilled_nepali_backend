@@ -24,12 +24,7 @@ const TicketController = require('../controllers/ticket.controller');
 const { checkSubscriptionFeature, checkPostingLimit } = require('../middleware/subscription.middleware');
 const router = express.Router();
 
-// users routes
-router.post("/create-user", upload.fields([
-    { name: 'resume', maxCount: 1 },
-    { name: 'companyLogo', maxCount: 1 },
-    { name: 'centreLogo', maxCount: 1 }
-]), UserController.createUser);
+//auth
 router.post("/login", loginLimiter, UserController.login);
 router.post("/logout", UserController.logout);
 router.post("/refresh-token", UserController.refreshToken);
@@ -37,6 +32,13 @@ router.post("/send-otp-for-password-change", UserController.sendOtpForPasswordCh
 router.post("/verify-otp-for-password-change", UserController.verifyOtpForPasswordChange);
 router.post("/change-password", UserController.changePassword);
 router.get("/me", authenticate, UserController.getMe);
+
+// users routes
+router.post("/create-user", upload.fields([
+    { name: 'resume', maxCount: 1 },
+    { name: 'companyLogo', maxCount: 1 },
+    { name: 'centreLogo', maxCount: 1 }
+]), UserController.createUser);
 router.post("/verify-phone", UserController.verifyPhone);
 router.post("/update-logo", authenticate, upload.fields([
     { name: 'companyLogo', maxCount: 1 },
