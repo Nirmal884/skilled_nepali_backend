@@ -128,6 +128,7 @@ const UserService = {
         if (files.centreLogo) {
             const uploadedLogo = await uploadToS3(files.centreLogo[0].buffer, files.centreLogo[0].originalname, files.centreLogo[0].mimetype, "images");
             const updatedUser = await UserModel.updateLogo(userId, role, uploadedLogo.Location);
+            delete updatedUser.password;
             return { updatedUser, message: "Logo updated successfully" };
         }
         if (files.profilePicture) {
