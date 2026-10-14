@@ -277,7 +277,7 @@ model Plan {
   name                       String
   description                String?
   amount                     Int // in paise (e.g. 499900 for 4999.00 INR)
-  currency                   String   @default("USD")
+  currency                   String   @default("INR")
   period                     String // "monthly" | "yearly"
   interval                   Int      @default(1)
   planType                   PlanType
@@ -323,6 +323,7 @@ model Course {
   trainingCentreId String
   trainingCentre   User               @relation(fields: [trainingCentreId], references: [id], onDelete: Cascade)
   enrollments      CourseEnrollment[]
+  enquiries        CourseEnquiry[]
 
   deletionReason    String?   @default("")
   deleteRequestedOn DateTime?
@@ -352,6 +353,29 @@ model CourseEnrollment {
 
   @@unique([userId, courseId])
   @@map("course_enrollments")
+}
+
+model CourseEnquiry {
+  id        String        @id @default(uuid())
+  courseId  String
+  course    Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  name      String
+  email     String
+  phone     String?
+  status    EnquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  deletedAt DateTime?
+
+  @@map("course_enquiries")
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  REPLIED
+  ENROLLED
+  ARCHIVED
 }
 
 enum Role {

@@ -568,6 +568,132 @@ const TrainingModel = {
             totalCourses: user.courses?.length || 0,
             courses: user.courses || []
         };
+    },
+
+    async courseEnquiry(data) {
+        const { courseId, name, email, phone } = data;
+        const enquiry = await prisma.courseEnquiry.create({
+            data: {
+                courseId,
+                name,
+                email,
+                phone,
+                status: 'NEW'
+            }
+        });
+        return enquiry;
+    },
+
+    async getCourseEnquiries(userId) {
+        return await prisma.courseEnquiry.findMany({
+            where: {
+                course: {
+                    trainingCentreId: userId,
+                    deletedAt: null
+                }
+            }
+        })
+    },
+
+    async updateCourseEnquiryStatus(id, status) {
+        return await prisma.courseEnquiry.update({
+            where: {
+                id: id
+            },
+            data: {
+                status: status
+            }
+        })
+    },
+
+    async getTrainingCentreDashboardData(userId) {
+        const [totalCourse, enrolledStudents, newEnquiriesCount, enquiryList, activeCoursesList] = await prisma.$transaction([
+            prisma.course.count({
+                where: {
+                    trainingCentreId: userId,
+                    deletedAt: null
+                }
+            }),
+            prisma.courseEnrollment.count({
+                where: {
+                    course: {
+                        trainingCentreId: userId,
+                        deletedAt: null
+                    }
+                }
+            }),
+            prisma.courseEnquiry.count({
+                where: {
+                    course: {
+                        trainingCentreId: userId,
+                        deletedAt: null
+                    },
+                    status: "NEW"
+                }
+            }),
+            prisma.courseEnquiry.findMany({
+                where: {
+                    course: {
+                        trainingCentreId: userId,
+                        deletedAt: null
+                    },
+                    status: 'NEW'
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phone: true,
+                    course: {
+                        select: {
+                            id: true,
+                            courseName: true
+                        }
+                    },
+                    createdAt: true,
+                    updatedAt: true,
+                    status: true
+                },
+                take: 5,
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            }),
+            prisma.course.findMany({
+                where: {
+                    trainingCentreId: userId,
+                    status: "ACTIVE",
+                    deletedAt: null
+                },
+                select: {
+                    id: true,
+                    courseName: true,
+                    jobCategory: {
+                        select: {
+                            id: true,
+                            categoryName: true
+                        }
+                    },
+                    duration: true,
+                    _count: {
+                        select: {
+                            enrollments: true
+                        }
+                    }
+                },
+                take: 5,
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            })
+        ])
+        return {
+            totalCourse,
+            enrolledStudents,
+            newEnquiriesCount,
+            enquiryList,
+            activeCoursesList
+        }
     }
 };
 

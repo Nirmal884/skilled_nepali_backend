@@ -265,6 +265,101 @@ const TrainingController = {
                 message: error.message || "Internal server error"
             });
         }
+    },
+
+    async courseEnquiry(req, res) {
+        try {
+            const { courseId, name, email, phone } = req.body;
+            if (!courseId || !name || !email) {
+                return res.status(400).json({
+                    success: false,
+                    statusCode: 400,
+                    message: "Fill the required fields and proceed"
+                })
+            }
+            const result = await TrainingService.courseEnquiry({ courseId, name, email, phone })
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: result.message,
+                data: result.data
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Internal server error",
+                data: null
+            })
+        }
+    },
+
+    async getCourseEnquiries(req, res) {
+        try {
+            const userId = req.user.id;
+            const { courseEnquiries, message } = await TrainingService.getCourseEnquiries(userId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: courseEnquiries
+            });
+        } catch (error) {
+            console.error("Error fetching course enquiries:", error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || "Internal server error"
+            });
+        }
+    },
+
+    async updateCourseEnquiryStatus(req, res) {
+        try {
+            const { status } = req.body;
+            const { id } = req.params;
+            const { courseEnquiry, message } = await TrainingService.updateCourseEnquiryStatus(id, status);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: message,
+                data: courseEnquiry
+            });
+        } catch (error) {
+            console.error("Error updating course enquiry status:", error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || "Internal server error"
+            });
+        }
+    },
+
+    async getTrainingCentreDashboardData(req, res) {
+        try {
+            const userId = req.user.id;
+            const { totalCourse, enrolledStudents, newEnquiriesCount, enquiryList, activeCoursesList } = await TrainingService.getTrainingCentreDashboardData(userId);
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Training centre dashboard data fetched successfully",
+                data: {
+                    totalCourse,
+                    enrolledStudents,
+                    newEnquiriesCount,
+                    enquiryList,
+                    activeCoursesList
+                }
+            });
+        } catch (error) {
+            console.error("Error fetching training centre dashboard data:", error);
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: error.message || "Internal server error"
+            });
+        }
     }
 }
 

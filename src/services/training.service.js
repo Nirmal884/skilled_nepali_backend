@@ -255,6 +255,37 @@ const TrainingService = {
             centre,
             message: "Training centre details fetched successfully"
         };
+    },
+
+    async courseEnquiry(data) {
+        return await TrainingModel.courseEnquiry(data);
+    },
+
+    async getCourseEnquiries(userId) {
+        const courseEnquiries = await TrainingModel.getCourseEnquiries(userId);
+        return {
+            courseEnquiries,
+            message: "Course enquiries fetched successfully"
+        }
+    },
+
+    async updateCourseEnquiryStatus(id, status) {
+        const courseEnquiry = await TrainingModel.updateCourseEnquiryStatus(id, status);
+        return {
+            courseEnquiry,
+            message: "Course enquiry updated successfully"
+        }
+    },
+
+    async getTrainingCentreDashboardData(userId) {
+        const { totalCourse, enrolledStudents, newEnquiriesCount, enquiryList, activeCoursesList } = await TrainingModel.getTrainingCentreDashboardData(userId);
+        return {
+            totalCourse,
+            enrolledStudents,
+            newEnquiriesCount,
+            enquiryList,
+            activeCoursesList
+        }
     }
 }
 

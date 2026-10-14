@@ -129,6 +129,7 @@ router.patch('/toggle-plan-status/:id', authenticate, authorize('ADMIN'), PlanCo
 router.get('/get-plans', PlanController.getPlans)
 
 //course&training
+router.get('/get-training-centre-dashboard-data', authenticate, TrainingController.getTrainingCentreDashboardData)
 router.post('/create-course', authenticate, checkPostingLimit('course'), upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'videoUrl', maxCount: 1 }
@@ -148,7 +149,10 @@ router.get('/get-all-training-centres', TrainingController.getAllTrainingCentres
 router.get('/get-training-centre-details/:id', TrainingController.getTrainingCentreDetails)
 
 // course enrollment routes
-router.post('/enroll-course', CourseEnrollmentController.enrollInCourse)
+router.post('/enroll-course', authenticate, authorize('JOBSEEKER'), CourseEnrollmentController.enrollInCourse)
+router.post('/course-enquiry', TrainingController.courseEnquiry)
+router.get('/get-course-enquiries', authenticate, authorize('TRAINING_CENTRE'), TrainingController.getCourseEnquiries)
+router.put('/update-course-enquiry-status/:id', authenticate, authorize('TRAINING_CENTRE'), TrainingController.updateCourseEnquiryStatus)
 router.get('/user-enrollments/:userId', CourseEnrollmentController.getUserEnrollments)
 router.get('/course-enrollments/:courseId', CourseEnrollmentController.getCourseEnrollments)
 router.get('/centre-enrollments', authenticate, authorize('TRAINING_CENTRE'), CourseEnrollmentController.getCentreEnrollments)
